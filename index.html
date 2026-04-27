@@ -6,297 +6,138 @@
     <title>University of East Capital - Admission System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* CSS 🎨 */
-        :root {
-            --primary: #1a73e8;
-            --gold: #d4af37;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --white: #ffffff;
-            --success: #28a745;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: var(--light);
-            color: var(--dark);
-        }
-
-        /* Login Section */
-        .login-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--white);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 12px;
-        }
-
-        .login-card h1 { color: var(--primary); margin-bottom: 1.5rem; }
-
-        /* Dashboard Layout */
-        .wrapper { display: none; min-height: 100vh; }
+        :root { --primary: #1a73e8; --gold: #d4af37; --dark: #2c3e50; --light: #f8f9fa; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light); }
         
-        .sidebar {
-            width: 260px;
-            background: var(--dark);
-            color: var(--white);
-            position: fixed;
-            height: 100%;
-            padding-top: 20px;
-        }
-
-        .sidebar-header {
-            text-align: center;
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar-header h2 { color: var(--gold); font-size: 1.2rem; margin: 0; }
-
-        .nav-menu { list-style: none; padding: 0; margin: 20px 0; }
-        .nav-item {
-            padding: 15px 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: rgba(255,255,255,0.05);
-            border-right: 5px solid var(--gold);
-        }
-
-        .main-content {
-            margin-right: 260px;
-            padding: 30px;
-        }
-
-        /* UI Elements */
-        .card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
+        /* Login */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-card { width: 100%; max-width: 400px; padding: 2rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; }
+        
+        /* Dashboard Layout */
+        .wrapper { display: none; }
+        .sidebar { width: 260px; background: var(--dark); color: white; position: fixed; height: 100%; padding-top: 20px; }
+        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-right: 5px solid var(--gold); }
+        .main-content { margin-right: 260px; padding: 30px; }
+        
+        /* UI */
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-
-        /* Student Photo Preview */
-        .photo-preview {
-            width: 150px; height: 180px;
-            border: 2px dashed #ddd;
-            margin-bottom: 15px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-            background: #fdfdfd;
-        }
-
-        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Loader */
-        .spinner {
-            display: none;
-            position: fixed;
-            top: 20px; left: 20px;
-            background: var(--dark);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            z-index: 2000;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .sidebar h2, .nav-item span { display: none; }
-            .main-content { margin-right: 70px; }
-        }
+        .spinner { display: none; position: fixed; top: 20px; left: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 50px; z-index: 2000; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="spinner"><i class="fas fa-sync fa-spin"></i> جاري الاتصال بالسيرفر...</div>
+    <div id="loader" class="spinner"><i class="fas fa-sync fa-spin"></i> جاري المعالجة...</div>
 
     <div id="loginSection" class="login-overlay">
         <div class="login-card">
-            <h1>University of East Capital</h1>
-            <p>نظام إدارة شؤون الطلاب</p>
-            <div class="form-group">
-                <input type="text" id="username" placeholder="اسم المستخدم">
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="كلمة المرور">
-            </div>
-            <button onclick="login()" class="btn btn-primary" style="width: 100%;">دخول للنظام</button>
+            <h2 style="color:var(--primary)">East Capital Uni</h2>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <button onclick="login()" class="btn btn-primary">دخول للنظام</button>
         </div>
     </div>
 
     <div id="appSection" class="wrapper">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>East Capital Uni</h2>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item active" onclick="switchPage('admission')">
-                    <i class="fas fa-user-plus"></i> <span>صفحة القبول</span>
-                </li>
-                <li class="nav-item" onclick="switchPage('finance')">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>الحسابات</span>
-                </li>
-                <li class="nav-item" onclick="switchPage('idcard')">
-                    <i class="fas fa-id-card"></i> <span>الكارنيهات</span>
-                </li>
-                <li class="nav-item" onclick="location.reload()">
-                    <i class="fas fa-sign-out-alt"></i> <span>خروج</span>
-                </li>
+            <div style="text-align:center; padding:20px; color:var(--gold)"><h3>لوحة التحكم</h3></div>
+            <div id="user-info" style="text-align:center; font-size:12px; margin-bottom:20px"></div>
+            <ul style="list-style:none; padding:0;">
+                <li id="nav-admission" class="nav-item" onclick="switchPage('admission')"><i class="fas fa-user-plus"></i> القبول</li>
+                <li id="nav-finance" class="nav-item" onclick="switchPage('finance')"><i class="fas fa-money-bill"></i> الحسابات</li>
+                <li id="nav-id" class="nav-item" onclick="switchPage('idcard')"><i class="fas fa-id-card"></i> الكارنيهات</li>
+                <li class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> خروج</li>
             </ul>
         </aside>
 
         <main class="main-content">
-            <div id="page-admission" class="page">
-                <div class="card">
-                    <h3><i class="fas fa-address-card"></i> تسجيل طالب جديد</h3>
-                    <div class="grid">
-                        <div class="form-section">
-                            <div class="form-group">
-                                <label>رقم القيد (Student ID)</label>
-                                <input type="text" id="std_id">
-                            </div>
-                            <div class="form-group">
-                                <label>الاسم الكامل</label>
-                                <input type="text" id="std_name">
-                            </div>
-                            <div class="form-group">
-                                <label>الكلية</label>
-                                <select id="std_faculty">
-                                    <option>Computer Science</option>
-                                    <option>Engineering</option>
-                                    <option>Business Administration</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-section">
-                            <div class="form-group">
-                                <label>رابط صورة الطالب</label>
-                                <input type="text" id="std_photo" oninput="previewPhoto(this.value)">
-                            </div>
-                            <div class="photo-preview" id="photoPreview">
-                                <i class="fas fa-user fa-4x" style="color:#eee"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="submitRegistration()">حفظ الطالب في القاعدة</button>
-                </div>
+            <div id="page-admission" class="page card">
+                <h3>تسجيل طالب جديد</h3>
+                <input type="text" id="std_id" placeholder="رقم القيد">
+                <input type="text" id="std_name" placeholder="الاسم الرباعي">
+                <select id="std_faculty">
+                    <option>Computer Science</option>
+                    <option>Engineering</option>
+                </select>
+                <input type="text" id="std_photo" placeholder="رابط الصورة">
+                <button class="btn btn-primary" onclick="submitRegistration()">حفظ البيانات</button>
             </div>
-
-            <div id="page-finance" class="page" style="display:none;">
-                <div class="card">
-                    <h3><i class="fas fa-search"></i> مراجعة المدفوعات</h3>
-                    <input type="text" placeholder="ابحث برقم القيد...">
-                    <p>سيتم عرض بيانات الدفع هنا عند الربط بالـ API...</p>
-                </div>
-            </div>
+            <div id="page-finance" class="page card" style="display:none;"><h3>صفحة الحسابات</h3><p>بيانات الدفع تظهر هنا...</p></div>
+            <div id="page-idcard" class="page card" style="display:none;"><h3>صفحة الكارنيهات</h3><p>طباعة الهوية...</p></div>
         </main>
     </div>
 
     <script>
-        /* JavaScript ⚙️ */
-        
-        // 🚨 استبدل هذا الرابط برابط الـ Web App الخاص بك بعد النشر
-        const API_URL = "https://script.google.com/macros/s/AKfycby1sE3AC0hkGgGLu2cbeo1Y72IuerKIeobZGKBIlzg3Ut4k7qHK5fEL13NPeSCdZGqdbA/exec";
+        const API_URL = 'https://script.google.com/macros/s/AKfycby1sE3AC0hkGgGLu2cbeo1Y72IuerKIeobZGKBIlzg3Ut4k7qHK5fEL13NPeSCdZGqdbA/exec';
 
-        function showLoader(show) {
-            document.getElementById('loader').style.display = show ? 'block' : 'none';
-        }
+        function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
 
         async function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-
-            if(!user || !pass) return alert('يرجى إدخال البيانات');
-
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
             showLoader(true);
-            // ملاحظة: هنا نستخدم محاكاة للدخول، لربطها فعلياً ارسل fetch لـ API_URL
-            setTimeout(() => {
-                showLoader(false);
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('appSection').style.display = 'block';
-            }, 1000);
-        }
-
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById('page-' + pageId).style.display = 'block';
             
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            try {
+                const params = new URLSearchParams();
+                params.append('action', 'login');
+                params.append('username', u);
+                params.append('password', p);
+
+                const res = await fetch(API_URL, { method: 'POST', body: params });
+                const data = await res.json();
+                
+                showLoader(false);
+                if(data.success) {
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('appSection').style.display = 'block';
+                    document.getElementById('user-info').innerText = data.user + " | " + data.role;
+                    applyRole(data.role);
+                } else { alert('خطأ في البيانات'); }
+            } catch(e) { showLoader(false); alert('خطأ اتصال بالـ API'); }
         }
 
-        function previewPhoto(url) {
-            const preview = document.getElementById('photoPreview');
-            if(url) {
-                preview.innerHTML = `<img src="${url}" onerror="this.src='https://via.placeholder.com/150'">`;
+        function applyRole(role) {
+            // إخفاء الكل أولاً
+            document.getElementById('nav-admission').style.display = 'none';
+            document.getElementById('nav-finance').style.display = 'none';
+            document.getElementById('nav-id').style.display = 'none';
+
+            if(role === 'Admin') {
+                document.getElementById('nav-admission').style.display = 'flex';
+                document.getElementById('nav-finance').style.display = 'flex';
+                document.getElementById('nav-id').style.display = 'flex';
+            } else if(role === 'Admission') {
+                document.getElementById('nav-admission').style.display = 'flex';
+                switchPage('admission');
+            } else if(role === 'Finance') {
+                document.getElementById('nav-finance').style.display = 'flex';
+                switchPage('finance');
             }
+        }
+
+        function switchPage(p) {
+            document.querySelectorAll('.page').forEach(pg => pg.style.display = 'none');
+            document.getElementById('page-' + p).style.display = 'block';
         }
 
         async function submitRegistration() {
-            const data = {
-                action: 'addStudent',
-                studentData: {
-                    id: document.getElementById('std_id').value,
-                    name: document.getElementById('std_name').value,
-                    faculty: document.getElementById('std_faculty').value,
-                    photo: document.getElementById('std_photo').value
-                }
-            };
-
             showLoader(true);
+            const params = new URLSearchParams();
+            params.append('action', 'addStudent');
+            params.append('id', document.getElementById('std_id').value);
+            params.append('name', document.getElementById('std_name').value);
+            params.append('faculty', document.getElementById('std_faculty').value);
+            params.append('photo', document.getElementById('std_photo').value);
+
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                alert('تم الحفظ بنجاح');
-            } catch (error) {
-                console.error(error);
-                alert('حدث خطأ في الاتصال (تأكد من رابط API ونشره لـ Anyone)');
-            }
-            showLoader(false);
+                const res = await fetch(API_URL, { method: 'POST', body: params });
+                const data = await res.json();
+                showLoader(false);
+                alert(data.message);
+            } catch(e) { showLoader(false); alert('خطأ في الحفظ'); }
         }
     </script>
 </body>
