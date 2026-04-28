@@ -3,70 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University of East Capital - Admission System</title>
+    <title>East Capital University | Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1a73e8; --gold: #d4af37; --dark: #2c3e50; --light: #f8f9fa; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light); }
+        :root { --primary: #003366; --gold: #C5A059; --accent: #1a73e8; --bg: #f4f7f6; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         
-        /* Login */
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-card { width: 100%; max-width: 400px; padding: 2rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; }
+        /* Sidebar Styles */
+        .sidebar { width: 260px; background: var(--primary); color: white; position: fixed; height: 100%; transition: 0.3s; z-index: 100; }
+        .sidebar-brand { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-brand h2 { color: var(--gold); margin: 0; font-size: 1.4rem; letter-spacing: 1px; }
+        .nav-list { list-style: none; padding: 20px 0; margin: 0; }
+        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 1rem; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: rgba(197, 160, 89, 0.2); border-right: 4px solid var(--gold); }
         
-        /* Dashboard Layout */
-        .wrapper { display: none; }
-        .sidebar { width: 260px; background: var(--dark); color: white; position: fixed; height: 100%; padding-top: 20px; }
-        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-right: 5px solid var(--gold); }
-        .main-content { margin-right: 260px; padding: 30px; }
+        /* Main Content */
+        .main { margin-right: 260px; padding: 40px; }
+        .card { background: var(--white); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; margin-bottom: 25px; }
+        h3 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
         
-        /* UI */
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        /* Forms */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
-        .spinner { display: none; position: fixed; top: 20px; left: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 50px; z-index: 2000; }
+        .btn-gold { background: var(--gold); color: var(--primary); }
+
+        /* Student Result View */
+        .result-box { display: none; margin-top: 20px; padding: 20px; border: 1px solid #eee; border-radius: 10px; background: #fafafa; }
+        .student-photo { width: 100px; height: 120px; object-fit: cover; border-radius: 5px; border: 2px solid var(--gold); }
+        
+        /* ID Card Mockup */
+        .id-card-print { width: 350px; background: white; border: 1px solid #333; border-radius: 10px; padding: 15px; text-align: center; margin: 20px auto; display: none; position: relative;}
+        .id-header { background: var(--primary); color: var(--gold); padding: 5px; border-radius: 5px 5px 0 0; font-weight: bold; }
+
+        /* Login Overlay */
+        .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--primary); display:flex; justify-content:center; align-items:center; z-index:1000; }
+        .login-box { background:white; padding:40px; border-radius:15px; width:350px; text-align:center; }
+        
+        .loader { display:none; position:fixed; top:20px; left:20px; background:#333; color:white; padding:10px 20px; border-radius:50px; z-index:2000; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="spinner"><i class="fas fa-sync fa-spin"></i> جاري المعالجة...</div>
+    <div id="loader" class="loader"><i class="fas fa-spinner fa-spin"></i> جاري الاتصال بالخادم...</div>
 
     <div id="loginSection" class="login-overlay">
-        <div class="login-card">
+        <div class="login-box">
             <h2 style="color:var(--primary)">East Capital Uni</h2>
+            <p>نظام الإدارة المتكامل</p>
             <input type="text" id="username" placeholder="اسم المستخدم">
             <input type="password" id="password" placeholder="كلمة المرور">
-            <button onclick="login()" class="btn btn-primary">دخول للنظام</button>
+            <button onclick="login()" class="btn btn-primary" style="margin-top:20px">تسجيل الدخول</button>
         </div>
     </div>
 
-    <div id="appSection" class="wrapper">
+    <div id="appSection" class="wrapper" style="display:none;">
         <aside class="sidebar">
-            <div style="text-align:center; padding:20px; color:var(--gold)"><h3>لوحة التحكم</h3></div>
-            <div id="user-info" style="text-align:center; font-size:12px; margin-bottom:20px"></div>
-            <ul style="list-style:none; padding:0;">
-                <li id="nav-admission" class="nav-item" onclick="switchPage('admission')"><i class="fas fa-user-plus"></i> القبول</li>
-                <li id="nav-finance" class="nav-item" onclick="switchPage('finance')"><i class="fas fa-money-bill"></i> الحسابات</li>
-                <li id="nav-id" class="nav-item" onclick="switchPage('idcard')"><i class="fas fa-id-card"></i> الكارنيهات</li>
-                <li class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> خروج</li>
+            <div class="sidebar-brand"><h2>EAST CAPITAL</h2></div>
+            <ul class="nav-list">
+                <li id="nav-adm" class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> شؤون القبول</li>
+                <li id="nav-fin" class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i> قسم الحسابات</li>
+                <li id="nav-id" class="nav-item" onclick="showPage('idcard')"><i class="fas fa-id-card"></i> الكارنيهات</li>
+                <li class="nav-item" onclick="location.reload()" style="margin-top:50px; color:rgba(255,255,255,0.5)"><i class="fas fa-sign-out-alt"></i> خروج</li>
             </ul>
         </aside>
 
-        <main class="main-content">
+        <main class="main">
             <div id="page-admission" class="page card">
-                <h3>تسجيل طالب جديد</h3>
-                <input type="text" id="std_id" placeholder="رقم القيد">
-                <input type="text" id="std_name" placeholder="الاسم الرباعي">
-                <select id="std_faculty">
-                    <option>Computer Science</option>
-                    <option>Engineering</option>
-                </select>
-                <input type="text" id="std_photo" placeholder="رابط الصورة">
-                <button class="btn btn-primary" onclick="submitRegistration()">حفظ البيانات</button>
+                <h3><i class="fas fa-user-edit"></i> تسجيل طالب جديد</h3>
+                <div class="grid">
+                    <div class="form-group"><label>رقم القيد</label><input type="text" id="adm_id"></div>
+                    <div class="form-group"><label>الاسم الرباعي</label><input type="text" id="adm_name"></div>
+                    <div class="form-group"><label>الكلية / القسم</label>
+                        <select id="adm_faculty"><option>Computer Science</option><option>Engineering</option><option>Business</option></select>
+                    </div>
+                    <div class="form-group"><label>رقم الهاتف</label><input type="text" id="adm_phone"></div>
+                    <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="adm_email"></div>
+                    <div class="form-group"><label>الرقم القومي</label><input type="text" id="adm_nid"></div>
+                </div>
+                <div class="form-group"><label>رابط الصورة الشخصية</label><input type="text" id="adm_photo" placeholder="https://..."></div>
+                <button onclick="saveStudent()" class="btn btn-primary">حفظ البيانات في النظام</button>
             </div>
-            <div id="page-finance" class="page card" style="display:none;"><h3>صفحة الحسابات</h3><p>بيانات الدفع تظهر هنا...</p></div>
-            <div id="page-idcard" class="page card" style="display:none;"><h3>صفحة الكارنيهات</h3><p>طباعة الهوية...</p></div>
+
+            <div id="page-finance" class="page card" style="display:none;">
+                <h3><i class="fas fa-search-dollar"></i> مراجعة المدفوعات</h3>
+                <div style="display:flex; gap:10px; margin-bottom:20px">
+                    <input type="text" id="fin_search_id" placeholder="أدخل رقم قيد الطالب للبحث...">
+                    <button onclick="searchStudent('finance')" class="btn btn-gold" style="width:150px">بحث</button>
+                </div>
+                <div id="fin_result" class="result-box">
+                    <div style="display:flex; gap:20px; align-items:center">
+                        <img id="fin_img" class="student-photo">
+                        <div>
+                            <h4 id="fin_name"></h4>
+                            <p id="fin_faculty"></p>
+                            <span id="fin_status_label" style="padding:5px 10px; border-radius:5px; color:white"></span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="grid">
+                        <select id="fin_new_status"><option value="Paid">مدفوع</option><option value="Pending">قيد الانتظار</option></select>
+                        <select id="fin_new_type"><option value="Onsite">خزينة الجامعة</option><option value="Online">دفع إلكتروني</option></select>
+                    </div>
+                    <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:15px">تحديث حالة الدفع</button>
+                </div>
+            </div>
+
+            <div id="page-idcard" class="page card" style="display:none;">
+                <h3><i class="fas fa-print"></i> إصدار الكارنيهات</h3>
+                <div style="display:flex; gap:10px; margin-bottom:20px">
+                    <input type="text" id="id_search_id" placeholder="رقم القيد...">
+                    <button onclick="searchStudent('id')" class="btn btn-gold" style="width:150px">تحقق</button>
+                </div>
+                <div id="id_result" class="result-box" style="text-align:center">
+                    <div id="id_alert"></div>
+                    <div id="id_card_box" class="id-card-print">
+                        <div class="id-header">UNIVERSITY OF EAST CAPITAL</div>
+                        <img id="id_img" style="width:80px; height:100px; margin:10px 0; border:1px solid #333">
+                        <h4 id="id_name" style="margin:5px 0"></h4>
+                        <p id="id_faculty" style="font-size:0.8rem; margin:0"></p>
+                        <p id="id_val_id" style="font-weight:bold; color:var(--primary)"></p>
+                    </div>
+                    <button id="btn_print" class="btn btn-primary" onclick="window.print()" style="display:none; width:200px; margin:auto">طباعة الكارنيه</button>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -75,69 +138,97 @@
 
         function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
 
+        async function apiCall(params) {
+            showLoader(true);
+            const query = new URLSearchParams(params);
+            try {
+                const r = await fetch(API_URL, { method: 'POST', body: query });
+                const d = await r.json();
+                showLoader(false);
+                return d;
+            } catch(e) { showLoader(false); alert('خطأ في الاتصال'); }
+        }
+
         async function login() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            showLoader(true);
-            
-            try {
-                const params = new URLSearchParams();
-                params.append('action', 'login');
-                params.append('username', u);
-                params.append('password', p);
-
-                const res = await fetch(API_URL, { method: 'POST', body: params });
-                const data = await res.json();
-                
-                showLoader(false);
-                if(data.success) {
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('appSection').style.display = 'block';
-                    document.getElementById('user-info').innerText = data.user + " | " + data.role;
-                    applyRole(data.role);
-                } else { alert('خطأ في البيانات'); }
-            } catch(e) { showLoader(false); alert('خطأ اتصال بالـ API'); }
+            const d = await apiCall({action: 'login', username: u, password: p});
+            if(d && d.success) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('appSection').style.display = 'block';
+                applyRole(d.role);
+            } else { alert('بيانات الدخول خاطئة'); }
         }
 
         function applyRole(role) {
-            // إخفاء الكل أولاً
-            document.getElementById('nav-admission').style.display = 'none';
-            document.getElementById('nav-finance').style.display = 'none';
-            document.getElementById('nav-id').style.display = 'none';
-
+            const items = { 'Admission': 'nav-adm', 'Finance': 'nav-fin', 'ID': 'nav-id' };
+            document.querySelectorAll('.nav-item').forEach(i => i.style.display = 'none');
             if(role === 'Admin') {
-                document.getElementById('nav-admission').style.display = 'flex';
-                document.getElementById('nav-finance').style.display = 'flex';
-                document.getElementById('nav-id').style.display = 'flex';
-            } else if(role === 'Admission') {
-                document.getElementById('nav-admission').style.display = 'flex';
-                switchPage('admission');
-            } else if(role === 'Finance') {
-                document.getElementById('nav-finance').style.display = 'flex';
-                switchPage('finance');
+                document.querySelectorAll('.nav-item').forEach(i => i.style.display = 'flex');
+                showPage('admission');
+            } else {
+                document.getElementById(items[role]).style.display = 'flex';
+                showPage(Object.keys(items).find(key => items[key] === items[role]).toLowerCase());
             }
         }
 
-        function switchPage(p) {
+        function showPage(p) {
             document.querySelectorAll('.page').forEach(pg => pg.style.display = 'none');
             document.getElementById('page-' + p).style.display = 'block';
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         }
 
-        async function submitRegistration() {
-            showLoader(true);
-            const params = new URLSearchParams();
-            params.append('action', 'addStudent');
-            params.append('id', document.getElementById('std_id').value);
-            params.append('name', document.getElementById('std_name').value);
-            params.append('faculty', document.getElementById('std_faculty').value);
-            params.append('photo', document.getElementById('std_photo').value);
+        async function saveStudent() {
+            const res = await apiCall({
+                action: 'addStudent',
+                id: document.getElementById('adm_id').value,
+                name: document.getElementById('adm_name').value,
+                faculty: document.getElementById('adm_faculty').value,
+                phone: document.getElementById('adm_phone').value,
+                email: document.getElementById('adm_email').value,
+                nid: document.getElementById('adm_nid').value,
+                photo: document.getElementById('adm_photo').value
+            });
+            if(res.success) alert(res.message);
+        }
 
-            try {
-                const res = await fetch(API_URL, { method: 'POST', body: params });
-                const data = await res.json();
-                showLoader(false);
-                alert(data.message);
-            } catch(e) { showLoader(false); alert('خطأ في الحفظ'); }
+        async function searchStudent(type) {
+            const id = document.getElementById(type === 'finance' ? 'fin_search_id' : 'id_search_id').value;
+            const d = await apiCall({action: 'getStudent', id: id});
+            if(!d.success) return alert(d.message);
+
+            if(type === 'finance') {
+                document.getElementById('fin_result').style.display = 'block';
+                document.getElementById('fin_name').innerText = d.name;
+                document.getElementById('fin_faculty').innerText = d.faculty;
+                document.getElementById('fin_img').src = d.photo;
+                const lbl = document.getElementById('fin_status_label');
+                lbl.innerText = d.status === 'Paid' ? 'تم الدفع' : 'لم يدفع';
+                lbl.style.background = d.status === 'Paid' ? 'green' : 'red';
+            } else {
+                document.getElementById('id_result').style.display = 'block';
+                if(d.status !== 'Paid') {
+                    document.getElementById('id_alert').innerHTML = `<p style="color:red; font-weight:bold">عذراً! لا يمكن إصدار الكارنيه، الطالب لم يسدد الرسوم</p>`;
+                    document.getElementById('id_card_box').style.display = 'none';
+                    document.getElementById('btn_print').style.display = 'none';
+                } else {
+                    document.getElementById('id_alert').innerHTML = `<p style="color:green">تم التحقق: الطالب مسدد للرسوم</p>`;
+                    document.getElementById('id_card_box').style.display = 'block';
+                    document.getElementById('btn_print').style.display = 'block';
+                    document.getElementById('id_name').innerText = d.name;
+                    document.getElementById('id_faculty').innerText = d.faculty;
+                    document.getElementById('id_val_id').innerText = "ID: " + id;
+                    document.getElementById('id_img').src = d.photo;
+                }
+            }
+        }
+
+        async function updatePayment() {
+            const id = document.getElementById('fin_search_id').value;
+            const status = document.getElementById('fin_new_status').value;
+            const type = document.getElementById('fin_new_type').value;
+            const d = await apiCall({action: 'updatePayment', id: id, status: status, type: type});
+            if(d.success) { alert('تم التحديث بنجاح'); searchStudent('finance'); }
         }
     </script>
 </body>
