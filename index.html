@@ -9,26 +9,44 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--primary); color: var(--text); overflow-x: hidden; }
-        .sidebar { width: 260px; background: var(--secondary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 100; }
+        :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; --bg-light: #f4f7f6; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-light); color: var(--primary); overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Sidebar Styles */
+        .sidebar { width: 260px; background: var(--primary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 100; color: white; }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #8892b0; transition: 0.3s; border-left: 4px solid transparent; }
         .nav-item:hover, .nav-item.active { color: var(--gold); background: rgba(197, 160, 89, 0.1); border-left-color: var(--gold); }
-        .main { margin-left: 260px; padding: 40px; min-height: 100vh; }
-        .card { background: var(--white); border-radius: 15px; padding: 30px; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 25px; }
+        
+        /* Main Content */
+        .main { margin-left: 260px; padding: 40px; flex: 1; }
+        .card { background: var(--white); border-radius: 15px; padding: 30px; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--gold); }
+        
+        /* Elements */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; font-family: inherit; }
-        input:focus { border-color: var(--gold); outline: none; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; font-family: inherit; background: #fafafa; }
+        input:focus { border-color: var(--gold); outline: none; background: #fff; }
+        
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
         .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; margin-top: 10px; }
+        
+        /* Login Overlay */
         .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #eee; flex: 1; text-align: center; }
-        .stat-box span { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+        
+        /* Loader */
+        .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: bold; }
+        
+        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #eee; flex: 1; text-align: center; transition: 0.3s; }
+        .stat-box:hover { background: #fff; border-color: var(--gold); }
+        .stat-box span { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; text-transform: uppercase; }
         .stat-box b { font-size: 1.1rem; color: var(--primary); }
+
+        /* Footer */
+        footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; color: #666; border-top: 1px solid #ddd; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -36,37 +54,52 @@
     <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing Request...</div>
 
     <div id="loginSection" class="login-overlay">
-        <div class="card" style="width: 380px; text-align: center;">
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80">
-            <h2 style="color: var(--primary); margin-bottom: 5px;">UEC SYSTEM</h2>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px;">University Management Portal</p>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 25px;">Sign In</button>
+        <div class="card" style="width: 380px; text-align: center; border-top: 6px solid var(--gold);">
+            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="100" style="margin-bottom: 15px;">
+            <h2 style="color: var(--primary); margin: 0;">UEC PORTAL</h2>
+            <p style="color: #666; font-size: 0.85rem; margin-bottom: 25px; letter-spacing: 1px;">UNIVERSITY MANAGEMENT SYSTEM</p>
+            <div style="text-align: left;">
+                <label style="font-size: 0.8rem; font-weight: bold;">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+                <div style="margin-top: 15px;"></div>
+                <label style="font-size: 0.8rem; font-weight: bold;">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 30px; height: 50px;">Sign In Securely</button>
         </div>
     </div>
 
     <div id="appSection" style="display:none;">
         <aside class="sidebar">
-            <div style="padding: 40px 20px; text-align: center;">
-                <h2 style="color: var(--gold); letter-spacing: 2px; margin: 0;">EAST CAPITAL</h2>
+            <div class="sidebar-header">
+                <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="60" style="filter: brightness(0) invert(1); margin-bottom: 10px;">
+                <h3 style="color: var(--gold); letter-spacing: 1px; margin: 0; font-size: 1rem;">EAST CAPITAL</h3>
+                <small style="opacity: 0.6;">Management System</small>
             </div>
-            <ul style="list-style: none; padding: 0;">
+            <ul style="list-style: none; padding: 20px 0;">
                 <li id="n-adm" class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</li>
                 <li id="n-fin" class="nav-item" onclick="showPage('finance')"><i class="fas fa-file-invoice-dollar"></i> Finance</li>
                 <li id="n-id" class="nav-item" onclick="showPage('idcard')"><i class="fas fa-id-card"></i> ID Cards</li>
                 <li id="n-rep" class="nav-item" onclick="showPage('reports')"><i class="fas fa-chart-line"></i> Dashboard</li>
-                <li class="nav-item" onclick="logout()" style="margin-top: 50px; color: #ff4d4d;"><i class="fas fa-power-off"></i> Logout</li>
+                <li class="nav-item" onclick="logout()" style="margin-top: 40px; color: #ff6b6b;"><i class="fas fa-power-off"></i> Logout</li>
             </ul>
         </aside>
 
         <main class="main">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <h2 id="pageTitle" style="margin:0; color: var(--primary); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;">Dashboard</h2>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-circle-user" style="color: var(--gold); font-size: 1.5rem;"></i>
+                    <span id="user_display" style="font-weight: bold; font-size: 0.9rem;">User</span>
+                </div>
+            </div>
+
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                        <h3 style="margin:0; border-left: 4px solid var(--gold); padding-left: 15px;">Student Enrollment</h3>
-                        <button onclick="clearAdmissionFields()" class="btn btn-gold" style="font-size: 0.75rem;">
-                            <i class="fas fa-plus"></i> New Enrollment
+                        <h3 style="margin:0; border-left: 5px solid var(--gold); padding-left: 15px;">Student Enrollment</h3>
+                        <button onclick="clearAdmissionFields()" class="btn btn-gold" style="font-size: 0.7rem; padding: 8px 15px;">
+                            <i class="fas fa-rotate"></i> Reset Form
                         </button>
                     </div>
                     <div class="grid">
@@ -83,159 +116,156 @@
                         <div><label>Email Address*</label><input type="email" id="a_mail"></div>
                         <div><label>Phone Number</label><input type="text" id="a_phone"></div>
                     </div>
-                    <div style="margin-top:20px;"><label>Photo URL</label><input type="text" id="a_photo"></div>
-                    <button onclick="saveStudent()" class="btn btn-primary" style="margin-top: 30px; width: 250px;">Save Record</button>
+                    <div style="margin-top:20px;"><label>Student Photo URL</label><input type="text" id="a_photo" placeholder="https://..."></div>
+                    <button onclick="saveStudent()" class="btn btn-primary" style="margin-top: 30px; width: 250px; height: 45px;">
+                        <i class="fas fa-save"></i> Save Record
+                    </button>
                 </div>
             </div>
 
             <div id="p-finance" class="page" style="display:none;">
-    <div class="card">
-        <h3 style="border-left: 4px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">Financial Department</h3>
-        
-        <div style="display:flex; gap:10px; margin-bottom: 30px;">
-            <input type="text" id="f_search" placeholder="Search by Student ID...">
-            <button onclick="search('finance')" class="btn btn-primary" style="width: 150px;"><i class="fas fa-search"></i> Search</button>
-        </div>
+                <div class="card">
+                    <h3 style="border-left: 5px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">Finance Control</h3>
+                    <div style="display:flex; gap:10px; margin-bottom: 30px;">
+                        <input type="text" id="f_search" placeholder="Search by Student ID...">
+                        <button onclick="search('finance')" class="btn btn-primary" style="width: 150px;"><i class="fas fa-search"></i> Search</button>
+                    </div>
 
-        <div id="f_res" style="display:none; border-top: 1px solid #eee; padding-top: 30px;">
-            <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px;">
-                <img id="f_img" style="width:130px; height: 150px; object-fit: cover; border-radius:10px; border:3px solid var(--gold);">
-                <div>
-                    <h2 id="f_name_h" style="margin:0; color: var(--primary);"></h2>
-                    <p id="f_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0;"></p>
-                    <p id="f_mail_h" style="color: #666; margin: 0;"></p>
-                    <p id="f_method_h" style="font-weight:bold; color: var(--primary); margin: 5px 0; font-size: 0.9rem;"></p>
-                    <div id="f_stat_badge"></div>
+                    <div id="f_res" style="display:none; border-top: 1px solid #eee; padding-top: 30px;">
+                        <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px; border: 1px solid #f0f0f0;">
+                            <img id="f_img" style="width:130px; height: 150px; object-fit: cover; border-radius:10px; border:3px solid var(--gold);">
+                            <div>
+                                <h2 id="f_name_h" style="margin:0; color: var(--primary);"></h2>
+                                <p id="f_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0;"></p>
+                                <p id="f_mail_h" style="color: #666; margin: 0; font-size: 0.9rem;"></p>
+                                <p id="f_method_h" style="font-weight:bold; color: var(--primary); margin: 8px 0; font-size: 0.85rem;"></p>
+                                <div id="f_stat_badge"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid" style="margin-top:30px;">
+                            <div><label>Amount (EGP)</label><input type="number" id="f_amt"></div>
+                            <div><label>Payment Method</label>
+                                <select id="f_type" onchange="toggleFinBtns()">
+                                    <option value="Onsite">Cash Onsite</option>
+                                    <option value="Online">Online Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex; gap:15px; margin-top:25px;">
+                            <button onclick="updatePayment()" class="btn btn-primary" style="flex:2;"><i class="fas fa-check"></i> Confirm Payment</button>
+                            <button id="f_btn_mail_student" onclick="notifyStudent()" class="btn btn-gold" style="flex:1;"><i class="fas fa-envelope"></i> Student Mail</button>
+                            <button id="f_btn_online_adm" onclick="notifyAdmission()" class="btn btn-primary" style="display:none; flex:1; background: #172a45;"><i class="fas fa-paper-plane"></i> Notify Admission</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:40px; border-top:2px solid #eee; padding-top:25px;">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-download"></i> Finance Reports</h4>
+                        <div style="display:flex; gap:15px;">
+                            <button onclick="exportData('Paid')" class="btn" style="flex:1; background: #10b981; color: white;">
+                                <i class="fas fa-file-excel"></i> Export Paid Students
+                            </button>
+                            <button onclick="exportData('Unpaid')" class="btn btn-gold" style="flex:1;">
+                                <i class="fas fa-file-excel"></i> Export Unpaid Students
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="grid" style="margin-top:30px;">
-                <div><label>Amount Received (EGP)</label><input type="number" id="f_amt"></div>
-                <div><label>Payment Method</label>
-                    <select id="f_type" onchange="toggleFinBtns()">
-                        <option value="Onsite">Cash Onsite</option>
-                        <option value="Online">Online Transfer</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:15px; margin-top:25px;">
-                <button onclick="updatePayment()" class="btn btn-primary" style="flex:2;">Confirm Payment</button>
-                <button id="f_btn_mail_student" onclick="notifyStudent()" class="btn btn-gold" style="flex:1;"><i class="fas fa-paper-plane"></i> Send Mail</button>
-                <button id="f_btn_online_adm" onclick="notifyAdmission()" class="btn btn-primary" style="display:none; flex:1;"><i class="fas fa-university"></i> Notify Admission</button>
-            </div>
-        </div>
-
-        <div style="margin-top:40px; border-top:2px solid #eee; padding-top:25px;">
-            <h4 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-file-download"></i> Financial Reports Export</h4>
-            <div style="display:flex; gap:15px;">
-                <button onclick="exportData('Paid')" class="btn btn-primary" style="flex:1; background: #10b981;">
-                    <i class="fas fa-file-excel"></i> Export Paid List
-                </button>
-                <button onclick="exportData('Unpaid')" class="btn btn-gold" style="flex:1;">
-                    <i class="fas fa-file-excel"></i> Export Unpaid List
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
             <div id="p-idcard" class="page" style="display:none;">
                 <div class="card">
-                    <h3 style="border-left: 4px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">ID Tracking System</h3>
+                    <h3 style="border-left: 5px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">ID Tracking System</h3>
                     <div style="display:flex; gap:10px; margin-bottom: 30px;">
                         <input type="text" id="i_search" placeholder="Enter Student ID...">
-                        <button onclick="search('id')" class="btn btn-primary" style="width: 150px;">Check Status</button>
+                        <button onclick="search('id')" class="btn btn-primary" style="width: 150px;"><i class="fas fa-magnifying-glass"></i> Check</button>
                     </div>
                     <div id="i_res" style="display:none; text-align:center;">
-    <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; border: 1px solid #eee;">
-        <img id="i_img" style="width:100px; height: 120px; object-fit: cover; border-radius:10px; border:3px solid var(--gold);">
-        <div>
-            <h3 id="i_name_h" style="margin:0; color: var(--primary);"></h3>
-            <p id="i_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0; font-size: 0.9rem;"></p>
-            <p id="i_mail_h" style="color: #666; margin: 0; font-size: 0.85rem;"></p>
-        </div>
-    </div>
+                        <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; border: 1px solid #eee;">
+                            <img id="i_img" style="width:100px; height: 120px; object-fit: cover; border-radius:10px; border:2px solid var(--gold);">
+                            <div>
+                                <h3 id="i_name_h" style="margin:0; color: var(--primary);"></h3>
+                                <p id="i_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0; font-size: 0.9rem;"></p>
+                                <p id="i_mail_h" style="color: #666; margin: 0; font-size: 0.85rem;"></p>
+                            </div>
+                        </div>
 
-    <div style="display:flex; justify-content:center; gap:15px; margin-bottom:30px;">
-        <div class="stat-box"><span>Payment Status</span><b id="i_s_pay"></b></div>
-        <div class="stat-box"><span>Printing Status</span><b id="i_s_prn"></b></div>
-        <div class="stat-box"><span>Delivery Status</span><b id="i_s_del"></b></div>
-    </div>
+                        <div style="display:flex; justify-content:center; gap:15px; margin-bottom:30px;">
+                            <div class="stat-box"><span>Payment Status</span><b id="i_s_pay">-</b></div>
+                            <div class="stat-box"><span>Printing</span><b id="i_s_prn">-</b></div>
+                            <div class="stat-box"><span>Delivery</span><b id="i_s_del">-</b></div>
+                        </div>
 
-    <div style="display:flex; justify-content:center; gap:15px;">
-        <button onclick="updateID('Printed')" class="btn btn-gold" style="width: 200px;"><i class="fas fa-print"></i> Mark as Printed</button>
-        <button onclick="updateID('Delivered')" class="btn btn-primary" style="width: 200px;"><i class="fas fa-check-circle"></i> Mark as Delivered</button>
-    </div>
-</div>
+                        <div style="display:flex; justify-content:center; gap:15px;">
+                            <button onclick="updateID('Printed')" class="btn btn-gold" style="width: 220px;"><i class="fas fa-print"></i> Mark Printed</button>
+                            <button onclick="updateID('Delivered')" class="btn btn-primary" style="width: 220px;"><i class="fas fa-hand-holding-hand"></i> Mark Delivered</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="p-reports" class="page" style="display:none;">
-    <div class="grid" style="margin-bottom: 30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-        <div class="card" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; margin:0; text-align: center; border:none;">
-            <i class="fas fa-users-viewfinder" style="font-size: 1.5rem; opacity: 0.8;"></i>
-            <span>Total Registered</span>
-            <h2 id="st_total" style="font-size: 2.2rem; margin:10px 0;">0</h2>
-        </div>
-        <div class="card" style="background: linear-gradient(135deg, #065f46, #10b981); color:white; margin:0; text-align: center; border:none;">
-            <i class="fas fa-check-double" style="font-size: 1.5rem; opacity: 0.8;"></i>
-            <span>Total Paid</span>
-            <h2 id="st_paid" style="font-size: 2.2rem; margin:10px 0;">0</h2>
-        </div>
-        <div class="card" style="background: linear-gradient(135deg, #991b1b, #ef4444); color:white; margin:0; text-align: center; border:none;">
-            <i class="fas fa-hourglass-half" style="font-size: 1.5rem; opacity: 0.8;"></i>
-            <span>Unpaid Students</span>
-            <h2 id="st_unp" style="font-size: 2.2rem; margin:10px 0;">0</h2>
-        </div>
-        <div class="card" style="background: linear-gradient(135deg, #92400e, #f59e0b); color:white; margin:0; text-align: center; border:none;">
-            <i class="fas fa-truck-fast" style="font-size: 1.5rem; opacity: 0.8;"></i>
-            <span>Delivered IDs</span>
-            <h2 id="st_del" style="font-size: 2.2rem; margin:10px 0;">0</h2>
-        </div>
-    </div>
+                <div class="grid" style="margin-bottom: 30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="card" style="background: linear-gradient(135deg, #0a192f, #172a45); color:white; margin:0; text-align: center; border:none;">
+                        <i class="fas fa-users" style="font-size: 1.2rem; color: var(--gold);"></i>
+                        <span style="display:block; font-size: 0.8rem; margin-top:5px; opacity:0.8;">Total Registered</span>
+                        <h2 id="st_total" style="font-size: 2rem; margin:5px 0;">0</h2>
+                    </div>
+                    <div class="card" style="background: linear-gradient(135deg, #065f46, #10b981); color:white; margin:0; text-align: center; border:none;">
+                        <i class="fas fa-wallet" style="font-size: 1.2rem; color: #a7f3d0;"></i>
+                        <span style="display:block; font-size: 0.8rem; margin-top:5px; opacity:0.8;">Total Paid</span>
+                        <h2 id="st_paid" style="font-size: 2rem; margin:5px 0;">0</h2>
+                    </div>
+                    <div class="card" style="background: linear-gradient(135deg, #7f1d1d, #ef4444); color:white; margin:0; text-align: center; border:none;">
+                        <i class="fas fa-clock" style="font-size: 1.2rem; color: #fecaca;"></i>
+                        <span style="display:block; font-size: 0.8rem; margin-top:5px; opacity:0.8;">Unpaid</span>
+                        <h2 id="st_unp" style="font-size: 2rem; margin:5px 0;">0</h2>
+                    </div>
+                    <div class="card" style="background: linear-gradient(135deg, #92400e, #f59e0b); color:white; margin:0; text-align: center; border:none;">
+                        <i class="fas fa-id-badge" style="font-size: 1.2rem; color: #fef3c7;"></i>
+                        <span style="display:block; font-size: 0.8rem; margin-top:5px; opacity:0.8;">Delivered</span>
+                        <h2 id="st_del" style="font-size: 2rem; margin:5px 0;">0</h2>
+                    </div>
+                </div>
 
-    <div class="card" style="padding: 40px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px;">
-            <h3 style="margin:0; border-left: 5px solid var(--gold); padding-left: 15px;">System Performance Analytics</h3>
-            <div style="background: #f0f4f8; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: #555; font-weight: bold;">
-                <i class="fas fa-circle" style="color: #10b981; font-size: 0.6rem;"></i> Live System Data
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
+                        <h3 style="margin:0;">System Analytics</h3>
+                        <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-weight: bold;">
+                            <i class="fas fa-bolt"></i> Real-time Sync
+                        </span>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="statsChart"></canvas>
+                    </div>
+                    <div style="margin-top:30px; border-top:1px solid #eee; padding-top:25px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px;">
+                        <button onclick="exportData('All')" class="btn btn-primary" style="background: var(--secondary);"><i class="fas fa-database"></i> Full DB Export</button>
+                        <button onclick="exportData('Paid')" class="btn" style="background: #059669; color:white;"><i class="fas fa-file-invoice"></i> Paid List</button>
+                        <button onclick="exportData('Unpaid')" class="btn btn-gold"><i class="fas fa-file-circle-exclamation"></i> Unpaid List</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div style="height: 350px;">
-            <canvas id="statsChart"></canvas>
-        </div>
-
-        <div style="margin-top:40px; border-top:1px solid #eee; padding-top:30px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
-            <button onclick="exportData('All')" class="btn btn-primary" style="background: var(--secondary);">
-                <i class="fas fa-database"></i> Full Database Export
-            </button>
-            <button onclick="exportData('Paid')" class="btn btn-primary" style="background: #065f46;">
-                <i class="fas fa-file-invoice-dollar"></i> Paid Students List
-            </button>
-            <button onclick="exportData('Unpaid')" class="btn btn-gold">
-                <i class="fas fa-file-circle-exclamation"></i> Unpaid Students List
-            </button>
-        </div>
-    </div>
-</div>
         </main>
+        
+        <footer>
+            Designed by <b>UEC ICT Department</b><br>
+            © 2026 University of East Capital
+        </footer>
     </div>
 
     <script>
-        // ضع رابط الـ API الخاص بك هنا
         const API = 'https://script.google.com/macros/s/AKfycby1sE3AC0hkGgGLu2cbeo1Y72IuerKIeobZGKBIlzg3Ut4k7qHK5fEL13NPeSCdZGqdbA/exec';
         let currentStudent = null;
 
         function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
 
-        // Session Management
         window.onload = () => {
             const s = JSON.parse(localStorage.getItem('uec_s'));
             if(s) { 
                 document.getElementById('loginSection').style.display='none'; 
                 document.getElementById('appSection').style.display='block'; 
+                document.getElementById('user_display').innerText = s.user;
                 applyRole(s.role); 
             }
         };
@@ -268,18 +298,17 @@
             document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
             document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
             document.getElementById('p-'+p).style.display='block';
+            document.getElementById('pageTitle').innerText = p === 'reports' ? 'Dashboard & Analytics' : p;
             const nav = document.getElementById('n-'+p.substring(0,3));
             if(nav) nav.classList.add('active');
             if(p==='reports') loadStats();
         }
 
-        // Logic Functions
         async function saveStudent() {
             const name = document.getElementById('a_name').value;
             const nid = document.getElementById('a_nid').value;
             const id = document.getElementById('a_id').value;
             const mail = document.getElementById('a_mail').value;
-
             if(!id || !name || !nid || !mail) return alert('All starred fields are mandatory!');
             if(name.trim().split(/\s+/).length < 4) return alert('Please enter Full Name (at least 4 names)');
             if(nid.length !== 14 || isNaN(nid)) return alert('National ID must be exactly 14 digits');
@@ -308,7 +337,6 @@
             const d = await res.json();
             showLoader(false);
             if(!d.success) return alert('Student ID not found in database');
-            
             currentStudent = d;
             currentStudent.id = id;
 
@@ -318,28 +346,23 @@
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
                 document.getElementById('f_mail_h').innerText = d.email;
-                document.getElementById('f_method_h').innerText = d.status === 'Paid' ? 'Payment Method: ' + d.type : '';
+                document.getElementById('f_method_h').innerText = d.status === 'Paid' ? 'Paid via: ' + d.type : '';
                 const badge = document.getElementById('f_stat_badge');
-                badge.innerText = d.status === 'Paid' ? 'STATUS: PAID (' + d.amount + ' EGP)' : 'STATUS: NOT PAID';
-                badge.style.background = d.status === 'Paid' ? '#10b981' : '#e74c3c';
+                badge.innerText = d.status === 'Paid' ? 'PAID: ' + d.amount + ' EGP' : 'UNPAID STUDENT';
+                badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
                 badge.className = 'status-badge';
                 document.getElementById('f_amt').value = d.amount || '';
                 toggleFinBtns();
             } else {
-                // إظهار منطقة النتائج
                 document.getElementById('i_res').style.display='block';
-    
-            // ملء بيانات الطالب الجديدة في صفحة الـ ID
                 document.getElementById('i_img').src = d.photo || 'https://via.placeholder.com/150';
                 document.getElementById('i_name_h').innerText = d.name;
                 document.getElementById('i_info_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email;
-                // ملء بيانات الحالة (القديمة)
-                document.getElementById('i_res').style.display='block';
                 document.getElementById('i_s_pay').innerText = d.status;
-                document.getElementById('i_s_pay').style.color = d.status === 'Paid' ? '#10b981' : '#e74c3c';
-                document.getElementById('i_s_prn').innerText = d.printed;
-                document.getElementById('i_s_del').innerText = d.delivered;
+                document.getElementById('i_s_pay').style.color = d.status === 'Paid' ? '#10b981' : '#ef4444';
+                document.getElementById('i_s_prn').innerText = d.printed === 'Yes' ? 'Printed' : 'Pending';
+                document.getElementById('i_s_del').innerText = d.delivered === 'Yes' ? 'Delivered' : 'In Office';
             }
         }
 
@@ -357,7 +380,7 @@
                 status: 'Paid', type: document.getElementById('f_type').value
             })});
             showLoader(false);
-            alert('Payment Record Updated Successfully');
+            alert('Payment Confirmed!');
             search('finance');
         }
 
@@ -367,109 +390,54 @@
                 action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name
             })});
             showLoader(false);
-            alert('Official confirmation email sent to student!');
+            alert('Email sent to student!');
         }
 
         async function notifyAdmission() {
-    if (!currentStudent || !currentStudent.id) return alert('No student selected');
-    
-    showLoader(true);
-    try {
-        const res = await fetch(API, { 
-            method: 'POST', 
-            body: new URLSearchParams({
-                action: 'sendManualAdmissionEmail', 
-                id: currentStudent.id 
-            }) 
-        });
-        const d = await res.json();
-        showLoader(false);
-        
-        if (d.success) {
-            alert('Official email sent to Admission department successfully!');
-        } else {
-            alert('Error: ' + d.message);
+            if (!currentStudent) return;
+            showLoader(true);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id }) });
+            const d = await res.json();
+            showLoader(false);
+            if (d.success) alert('Admission notified successfully!');
         }
-    } catch (e) {
-        showLoader(false);
-        alert('Connection failed');
-    }
-}
 
         async function updateID(field) {
             showLoader(true);
             await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
             showLoader(false);
-            alert('ID ' + field + ' Status Updated');
+            alert('Status updated to: ' + field);
             search('id');
         }
 
         async function loadStats() {
-    showLoader(true);
-    try {
-        const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-        const d = await res.json();
-        showLoader(false);
-        
-        // تحديث الأرقام في الكروت
-        document.getElementById('st_total').innerText = d.registered;
-        document.getElementById('st_paid').innerText = d.paid;
-        document.getElementById('st_unp').innerText = d.unpaid;
-        document.getElementById('st_del').innerText = d.delivered;
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+                const d = await res.json();
+                showLoader(false);
+                document.getElementById('st_total').innerText = d.registered;
+                document.getElementById('st_paid').innerText = d.paid;
+                document.getElementById('st_unp').innerText = d.unpaid;
+                document.getElementById('st_del').innerText = d.delivered;
 
-        // إعداد الشارت الاحترافي
-        const ctx = document.getElementById('statsChart').getContext('2d');
-        
-        // تدمير الشارت القديم إذا وجد لمنع التداخل
-        if (window.myChart) window.myChart.destroy();
-
-        window.myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Registration', 'Payments', 'ID Printing', 'Final Delivery'],
-                datasets: [{
-                    label: 'Students Count',
-                    data: [d.registered, d.paid, d.printed, d.delivered],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)', // Blue
-                        'rgba(16, 185, 129, 0.8)', // Green
-                        'rgba(197, 160, 89, 0.8)', // Gold
-                        'rgba(54, 162, 235, 0.8)'  // Sky Blue
-                    ],
-                    borderColor: ['#1e3a8a', '#065f46', '#C5A059', '#1d4ed8'],
-                    borderWidth: 2,
-                    borderRadius: 8,
-                    barPercentage: 0.6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#0a192f',
-                        titleFont: { size: 14 },
-                        bodyFont: { size: 13 },
-                        padding: 15,
-                        displayColors: false
-                    }
-                },
-                scales: {
-                    y: { 
-                        beginAtZero: true,
-                        grid: { color: '#f0f0f0' },
-                        ticks: { font: { weight: 'bold' } }
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.myChart) window.myChart.destroy();
+                window.myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Registered', 'Payments', 'Printed', 'Delivered'],
+                        datasets: [{
+                            label: 'Students',
+                            data: [d.registered, d.paid, d.printed, d.delivered],
+                            backgroundColor: ['#1e3a8a', '#10b981', '#C5A059', '#3b82f6'],
+                            borderRadius: 6
+                        }]
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { weight: 'bold' } }
-                    }
-                }
-            }
-        });
-    } catch(e) { showLoader(false); console.error(e); }
-}
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            } catch(e) { showLoader(false); }
+        }
 
         async function exportData(filter) {
             showLoader(true);
