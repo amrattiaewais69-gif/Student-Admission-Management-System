@@ -103,6 +103,7 @@
                                 <h2 id="f_name_h" style="margin:0; color: var(--primary);"></h2>
                                 <p id="f_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0;"></p>
                                 <p id="f_mail_h" style="color: #666; margin: 0;"></p>
+                                <p id="f_method_h" style="font-weight:bold; color: var(--primary); margin: 5px 0; font-size: 0.9rem;"></p>
                                 <div id="f_stat_badge"></div>
                             </div>
                         </div>
@@ -258,6 +259,7 @@
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
                 document.getElementById('f_mail_h').innerText = d.email;
+                document.getElementById('f_method_h').innerText = d.status === 'Paid' ? 'Payment Method: ' + d.type : '';
                 const badge = document.getElementById('f_stat_badge');
                 badge.innerText = d.status === 'Paid' ? 'STATUS: PAID (' + d.amount + ' EGP)' : 'STATUS: NOT PAID';
                 badge.style.background = d.status === 'Paid' ? '#10b981' : '#e74c3c';
