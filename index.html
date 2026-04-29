@@ -300,8 +300,30 @@
         }
 
         async function notifyAdmission() {
-            alert('Admission department notified of Online Payment!');
+    if (!currentStudent || !currentStudent.id) return alert('No student selected');
+    
+    showLoader(true);
+    try {
+        const res = await fetch(API, { 
+            method: 'POST', 
+            body: new URLSearchParams({
+                action: 'sendManualAdmissionEmail', 
+                id: currentStudent.id 
+            }) 
+        });
+        const d = await res.json();
+        showLoader(false);
+        
+        if (d.success) {
+            alert('Official email sent to Admission department successfully!');
+        } else {
+            alert('Error: ' + d.message);
         }
+    } catch (e) {
+        showLoader(false);
+        alert('Connection failed');
+    }
+}
 
         async function updateID(field) {
             showLoader(true);
