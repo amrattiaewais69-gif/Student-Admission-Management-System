@@ -172,20 +172,54 @@
             </div>
 
             <div id="p-reports" class="page" style="display:none;">
-                <div class="grid" style="margin-bottom: 30px;">
-                    <div class="card" style="background:var(--primary); color:white; margin:0; text-align: center;">Total Paid<h2 id="st_paid" style="font-size: 2.5rem; margin:10px 0;">0</h2></div>
-                    <div class="card" style="background:var(--gold); color:white; margin:0; text-align: center;">Pending Payment<h2 id="st_unp" style="font-size: 2.5rem; margin:10px 0;">0</h2></div>
-                    <div class="card" style="background:#10b981; color:white; margin:0; text-align: center;">IDs Delivered<h2 id="st_del" style="font-size: 2.5rem; margin:10px 0;">0</h2></div>
-                </div>
-                <div class="card">
-                    <h3 style="margin-bottom: 20px;">Performance Analytics</h3>
-                    <canvas id="statsChart" height="100"></canvas>
-                    <div style="margin-top:40px; border-top:1px solid #eee; padding-top:25px; display:flex; gap:20px;">
-                        <button onclick="exportData('Paid')" class="btn btn-primary" style="flex:1;"><i class="fas fa-file-excel"></i> Export Paid Students List</button>
-                        <button onclick="exportData('Unpaid')" class="btn btn-gold" style="flex:1;"><i class="fas fa-file-excel"></i> Export Unpaid Students List</button>
-                    </div>
-                </div>
+    <div class="grid" style="margin-bottom: 30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="card" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; margin:0; text-align: center; border:none;">
+            <i class="fas fa-users-viewfinder" style="font-size: 1.5rem; opacity: 0.8;"></i>
+            <span>Total Registered</span>
+            <h2 id="st_total" style="font-size: 2.2rem; margin:10px 0;">0</h2>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #065f46, #10b981); color:white; margin:0; text-align: center; border:none;">
+            <i class="fas fa-check-double" style="font-size: 1.5rem; opacity: 0.8;"></i>
+            <span>Total Paid</span>
+            <h2 id="st_paid" style="font-size: 2.2rem; margin:10px 0;">0</h2>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #991b1b, #ef4444); color:white; margin:0; text-align: center; border:none;">
+            <i class="fas fa-hourglass-half" style="font-size: 1.5rem; opacity: 0.8;"></i>
+            <span>Unpaid Students</span>
+            <h2 id="st_unp" style="font-size: 2.2rem; margin:10px 0;">0</h2>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #92400e, #f59e0b); color:white; margin:0; text-align: center; border:none;">
+            <i class="fas fa-truck-fast" style="font-size: 1.5rem; opacity: 0.8;"></i>
+            <span>Delivered IDs</span>
+            <h2 id="st_del" style="font-size: 2.2rem; margin:10px 0;">0</h2>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 40px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px;">
+            <h3 style="margin:0; border-left: 5px solid var(--gold); padding-left: 15px;">System Performance Analytics</h3>
+            <div style="background: #f0f4f8; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: #555; font-weight: bold;">
+                <i class="fas fa-circle" style="color: #10b981; font-size: 0.6rem;"></i> Live System Data
             </div>
+        </div>
+        
+        <div style="height: 350px;">
+            <canvas id="statsChart"></canvas>
+        </div>
+
+        <div style="margin-top:40px; border-top:1px solid #eee; padding-top:30px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+            <button onclick="exportData('All')" class="btn btn-primary" style="background: var(--secondary);">
+                <i class="fas fa-database"></i> Full Database Export
+            </button>
+            <button onclick="exportData('Paid')" class="btn btn-primary" style="background: #065f46;">
+                <i class="fas fa-file-invoice-dollar"></i> Paid Students List
+            </button>
+            <button onclick="exportData('Unpaid')" class="btn btn-gold">
+                <i class="fas fa-file-circle-exclamation"></i> Unpaid Students List
+            </button>
+        </div>
+    </div>
+</div>
         </main>
     </div>
 
@@ -371,26 +405,71 @@
         }
 
         async function loadStats() {
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-            const d = await res.json();
-            document.getElementById('st_paid').innerText = d.paid;
-            document.getElementById('st_unp').innerText = d.unpaid;
-            document.getElementById('st_del').innerText = d.delivered;
-            
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Registered', 'Paid', 'Printed', 'Delivered'],
-                    datasets: [{
-                        label: 'University Statistics',
-                        data: [d.registered, d.paid, d.printed, d.delivered],
-                        backgroundColor: ['#0a192f', '#10b981', '#C5A059', '#3b82f6']
-                    }]
+    showLoader(true);
+    try {
+        const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+        const d = await res.json();
+        showLoader(false);
+        
+        // تحديث الأرقام في الكروت
+        document.getElementById('st_total').innerText = d.registered;
+        document.getElementById('st_paid').innerText = d.paid;
+        document.getElementById('st_unp').innerText = d.unpaid;
+        document.getElementById('st_del').innerText = d.delivered;
+
+        // إعداد الشارت الاحترافي
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        
+        // تدمير الشارت القديم إذا وجد لمنع التداخل
+        if (window.myChart) window.myChart.destroy();
+
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Registration', 'Payments', 'ID Printing', 'Final Delivery'],
+                datasets: [{
+                    label: 'Students Count',
+                    data: [d.registered, d.paid, d.printed, d.delivered],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)', // Blue
+                        'rgba(16, 185, 129, 0.8)', // Green
+                        'rgba(197, 160, 89, 0.8)', // Gold
+                        'rgba(54, 162, 235, 0.8)'  // Sky Blue
+                    ],
+                    borderColor: ['#1e3a8a', '#065f46', '#C5A059', '#1d4ed8'],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0a192f',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 },
+                        padding: 15,
+                        displayColors: false
+                    }
                 },
-                options: { responsive: true, plugins: { legend: { display: false } } }
-            });
-        }
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: '#f0f0f0' },
+                        ticks: { font: { weight: 'bold' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { weight: 'bold' } }
+                    }
+                }
+            }
+        });
+    } catch(e) { showLoader(false); console.error(e); }
+}
 
         async function exportData(filter) {
             showLoader(true);
