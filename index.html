@@ -89,41 +89,56 @@
             </div>
 
             <div id="p-finance" class="page" style="display:none;">
-                <div class="card">
-                    <h3 style="border-left: 4px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">Financial Department</h3>
-                    <div style="display:flex; gap:10px; margin-bottom: 30px;">
-                        <input type="text" id="f_search" placeholder="Search by Student ID...">
-                        <button onclick="search('finance')" class="btn btn-primary" style="width: 150px;"><i class="fas fa-search"></i> Search</button>
-                    </div>
+    <div class="card">
+        <h3 style="border-left: 4px solid var(--gold); padding-left: 15px; margin-bottom: 25px;">Financial Department</h3>
+        
+        <div style="display:flex; gap:10px; margin-bottom: 30px;">
+            <input type="text" id="f_search" placeholder="Search by Student ID...">
+            <button onclick="search('finance')" class="btn btn-primary" style="width: 150px;"><i class="fas fa-search"></i> Search</button>
+        </div>
 
-                    <div id="f_res" style="display:none; border-top: 1px solid #eee; padding-top: 30px;">
-                        <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px;">
-                            <img id="f_img" style="width:130px; height: 150px; object-fit: cover; border-radius:10px; border:3px solid var(--gold);">
-                            <div>
-                                <h2 id="f_name_h" style="margin:0; color: var(--primary);"></h2>
-                                <p id="f_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0;"></p>
-                                <p id="f_mail_h" style="color: #666; margin: 0;"></p>
-                                <p id="f_method_h" style="font-weight:bold; color: var(--primary); margin: 5px 0; font-size: 0.9rem;"></p>
-                                <div id="f_stat_badge"></div>
-                            </div>
-                        </div>
-                        <div class="grid" style="margin-top:30px;">
-                            <div><label>Amount Received (EGP)</label><input type="number" id="f_amt"></div>
-                            <div><label>Payment Method</label>
-                                <select id="f_type" onchange="toggleFinBtns()">
-                                    <option value="Onsite">Cash Onsite</option>
-                                    <option value="Online">Online Transfer</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:15px; margin-top:25px;">
-                            <button onclick="updatePayment()" class="btn btn-primary" style="flex:2;">Confirm Payment</button>
-                            <button id="f_btn_mail_student" onclick="notifyStudent()" class="btn btn-gold" style="flex:1;"><i class="fas fa-paper-plane"></i> Send Student Mail</button>
-                            <button id="f_btn_online_adm" onclick="notifyAdmission()" class="btn btn-primary" style="display:none; flex:1;"><i class="fas fa-university"></i> Notify Admission</button>
-                        </div>
-                    </div>
+        <div id="f_res" style="display:none; border-top: 1px solid #eee; padding-top: 30px;">
+            <div style="display:flex; gap:30px; align-items:center; background: #fcfcfc; padding: 20px; border-radius: 12px;">
+                <img id="f_img" style="width:130px; height: 150px; object-fit: cover; border-radius:10px; border:3px solid var(--gold);">
+                <div>
+                    <h2 id="f_name_h" style="margin:0; color: var(--primary);"></h2>
+                    <p id="f_info_h" style="font-weight:bold; color: var(--gold); margin: 5px 0;"></p>
+                    <p id="f_mail_h" style="color: #666; margin: 0;"></p>
+                    <p id="f_method_h" style="font-weight:bold; color: var(--primary); margin: 5px 0; font-size: 0.9rem;"></p>
+                    <div id="f_stat_badge"></div>
                 </div>
             </div>
+            
+            <div class="grid" style="margin-top:30px;">
+                <div><label>Amount Received (EGP)</label><input type="number" id="f_amt"></div>
+                <div><label>Payment Method</label>
+                    <select id="f_type" onchange="toggleFinBtns()">
+                        <option value="Onsite">Cash Onsite</option>
+                        <option value="Online">Online Transfer</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:15px; margin-top:25px;">
+                <button onclick="updatePayment()" class="btn btn-primary" style="flex:2;">Confirm Payment</button>
+                <button id="f_btn_mail_student" onclick="notifyStudent()" class="btn btn-gold" style="flex:1;"><i class="fas fa-paper-plane"></i> Send Mail</button>
+                <button id="f_btn_online_adm" onclick="notifyAdmission()" class="btn btn-primary" style="display:none; flex:1;"><i class="fas fa-university"></i> Notify Admission</button>
+            </div>
+        </div>
+
+        <div style="margin-top:40px; border-top:2px solid #eee; padding-top:25px;">
+            <h4 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-file-download"></i> Financial Reports Export</h4>
+            <div style="display:flex; gap:15px;">
+                <button onclick="exportData('Paid')" class="btn btn-primary" style="flex:1; background: #10b981;">
+                    <i class="fas fa-file-excel"></i> Export Paid List
+                </button>
+                <button onclick="exportData('Unpaid')" class="btn btn-gold" style="flex:1;">
+                    <i class="fas fa-file-excel"></i> Export Unpaid List
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
             <div id="p-idcard" class="page" style="display:none;">
                 <div class="card">
