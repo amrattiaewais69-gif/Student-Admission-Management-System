@@ -292,6 +292,15 @@
                 document.getElementById('f_amt').value = d.amount || '';
                 toggleFinBtns();
             } else {
+                // إظهار منطقة النتائج
+                document.getElementById('i_res').style.display='block';
+    
+            // ملء بيانات الطالب الجديدة في صفحة الـ ID
+                document.getElementById('i_img').src = d.photo || 'https://via.placeholder.com/150';
+                document.getElementById('i_name_h').innerText = d.name;
+                document.getElementById('i_info_h').innerText = d.faculty;
+                document.getElementById('i_mail_h').innerText = d.email;
+                // ملء بيانات الحالة (القديمة)
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_s_pay').innerText = d.status;
                 document.getElementById('i_s_pay').style.color = d.status === 'Paid' ? '#10b981' : '#e74c3c';
