@@ -95,7 +95,7 @@
                                 <option>Faculty of Mass Communication</option>
                                 <option>Faculty of Medicine</option>
                                 <option>Faculty of Pharmacy</option>
-                                <option>Faculty of Physical Therapy</option>                             
+                                <option>Faculty of Physical Therapy</option>                               
                             </select>
                         </div>
                         <div><label>Email Address*</label><input type="email" id="a_mail"></div>
@@ -168,7 +168,11 @@
                     </div>
                     <div id="i_res" style="display:none; text-align:center;">
                         <img id="i_img" style="width:100px; height:120px; border-radius:8px; object-fit:cover;">
-                        <h3 id="i_name_h"></h3>
+                        <h3 id="i_name_h" style="margin-bottom:5px;"></h3>
+                        <!-- إظهار الكلية والميل -->
+                        <p id="i_fac_h" style="color:var(--gold); margin:2px 0; font-weight:bold;"></p>
+                        <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0; font-size:0.9rem;"></p>
+                        
                         <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
                             <div class="stat-box"><span>Pay</span><b id="i_s_pay"></b></div>
                             <div class="stat-box"><span>Print</span><b id="i_s_prn"></b></div>
@@ -299,6 +303,10 @@
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_img').src = d.photo;
                 document.getElementById('i_name_h').innerText = d.name;
+                // تعبئة البيانات الجديدة في صفحة الكارنيهات
+                document.getElementById('i_fac_h').innerText = d.faculty;
+                document.getElementById('i_mail_h').innerText = d.email || "N/A";
+                
                 document.getElementById('i_s_pay').innerText = d.status;
                 document.getElementById('i_s_prn').innerText = d.printed;
                 document.getElementById('i_s_del').innerText = d.delivered;
@@ -310,7 +318,7 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendStudentEmail', 
                     email: currentStudent.email,
                     name: currentStudent.name
                 })});
@@ -326,7 +334,7 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendManualAdmissionEmail', 
                     id: currentStudent.id
                 })});
                 const d = await res.json();
