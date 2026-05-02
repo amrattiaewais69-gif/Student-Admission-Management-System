@@ -41,7 +41,7 @@
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL</h2>
+            <h2>UEC PORTAL2</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
             <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
@@ -95,7 +95,7 @@
                                 <option>Faculty of Mass Communication</option>
                                 <option>Faculty of Medicine</option>
                                 <option>Faculty of Pharmacy</option>
-                                <option>Faculty of Physical Therapy</option>                             
+                                <option>Faculty of Physical Therapy</option>                               
                             </select>
                         </div>
                         <div><label>Email Address*</label><input type="email" id="a_mail"></div>
@@ -118,13 +118,21 @@
                 </div>
             </div>
 
-            <!-- Page: Finance -->
+            <!-- Page: Finance (تعديل الزر ليظهر دائماً بالأعلى) -->
             <div id="p-finance" class="page" style="display:none;">
                 <div class="card">
-                    <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                        <input type="text" id="f_search" placeholder="Search Student ID...">
-                        <button onclick="search('finance')" class="btn btn-primary">Search</button>
+                    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap:10px;">
+                        <!-- البحث -->
+                        <div style="display:flex; gap:10px; flex: 1;">
+                            <input type="text" id="f_search" placeholder="Search Student ID..." style="margin:0;">
+                            <button onclick="search('finance')" class="btn btn-primary">Search</button>
+                        </div>
+                        <!-- زر التصدير ظاهر دائماً -->
+                        <button onclick="exportFinanceData()" class="btn btn-primary" style="background: #10b981; white-space: nowrap;">
+                            <i class="fas fa-file-excel"></i> Export Paid List
+                        </button>
                     </div>
+                    
                     <div id="f_res" style="display:none;">
                         <div style="display:flex; justify-content: space-between; align-items: start;">
                             <div style="display:flex; gap:20px; align-items:center;">
@@ -136,11 +144,9 @@
                                     <div id="f_stat_badge"></div>
                                 </div>
                             </div>
-                            <!-- Email Actions -->
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
                                 <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
-                                <button onclick="exportFinanceData()" class="btn btn-primary" style="font-size: 0.75rem; background: #10b981;"><i class="fas fa-file-excel"></i> Export Paid List</button>
                             </div>
                         </div>
 
@@ -311,7 +317,7 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendStudentEmail', 
                     email: currentStudent.email,
                     name: currentStudent.name
                 })});
@@ -327,13 +333,39 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendManualAdmissionEmail', 
                     id: currentStudent.id
                 })});
                 const d = await res.json();
                 alert(d.success ? 'Admission department notified!' : 'Error: ' + d.error);
             } catch (e) {
                 alert('Connection Error');
+            }
+            showLoader(false);
+        }
+
+        async function exportFinanceData() {
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+                    action: 'getFilteredData', 
+                    filter: 'Paid' 
+                })});
+                const d = await res.json();
+                if(d.success) {
+                    if(d.data.length <= 1) {
+                        alert("No paid students found yet.");
+                    } else {
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, "Paid_Students");
+                        XLSX.writeFile(wb, "UEC_Paid_Students_Report.xlsx");
+                    }
+                } else {
+                    alert("Error fetching data: " + d.error);
+                }
+            } catch (e) {
+                alert("Connection Error");
             }
             showLoader(false);
         }
