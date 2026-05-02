@@ -308,49 +308,78 @@
 
         // --- Admission & Photo Upload Logic ---
         async function saveStudent() {
-            const id = document.getElementById('a_id').value;
-            const name = document.getElementById('a_name').value;
-            const nid = document.getElementById('a_nid').value;
-            const mail = document.getElementById('a_mail').value;
-            const fileInput = document.getElementById('a_file');
+    // جلب العناصر
+    const elId = document.getElementById('a_id');
+    const elName = document.getElementById('a_name');
+    const elNid = document.getElementById('a_nid');
+    const elMail = document.getElementById('a_mail');
+    const elFac = document.getElementById('a_fac');
+    const elPhone = document.getElementById('a_phone');
+    const fileInput = document.getElementById('a_file');
 
-            if(!id || !name || !nid || !mail) return alert('All starred fields are mandatory!');
-            if(name.trim().split(/\s+/).length < 4) return alert('Enter Full Name (4 names)');
-            if(fileInput.files.length === 0) return alert('Please select a student photo to upload!');
+    // التأكد إن العناصر موجودة أصلاً في الصفحة
+    if (!elId || !elName || !elNid || !elMail) {
+        return alert("Error: Some input fields are missing in HTML ID's");
+    }
 
-            showLoader(true);
-            document.getElementById('uploadStatus').innerText = "Uploading Photo & Saving...";
+    const id = elId.value;
+    const name = elName.value;
+    const nid = elNid.value;
+    const mail = elMail.value;
 
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const base64Data = reader.result.split(',')[1];
-                try {
-                    const res = await fetch(API, { 
-                        method: 'POST', 
-                        body: new URLSearchParams({
-                            action: 'addStudentWithPhoto', 
-                            id:id, name:name, nid:nid, 
-                            faculty:document.getElementById('a_fac').value, 
-                            phone:document.getElementById('a_phone').value, 
-                            email:mail,
-                            filename: id + ".jpg",
-                            fileData: base64Data
-                        }) 
-                    });
-                    const d = await res.json();
-                    showLoader(false);
-                    document.getElementById('uploadStatus').innerText = "";
-                    alert(d.message);
-                    if(d.success) clearAdmissionFields();
-                } catch(e) { 
-                    showLoader(false); 
-                    alert('Server Error during save'); 
-                }
-            };
-            reader.readAsDataURL(file);
+    if(!id || !name || !nid || !mail) return alert('Please fill all required fields (*)');
+    
+    if(fileInput.files.length === 0) return alert('Please select a student photo!');
+
+    showLoader(true);
+    const statusLabel = document.getElementById('uploadStatus');
+    if(statusLabel) statusLabel.innerText = "Processing Photo...";
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = async function() {
+        try {
+            const base64Data = reader.result.split(',')[1];
+            
+            const res = await fetch(API, { 
+                method: 'POST', 
+                body: new URLSearchParams({
+                    action: 'addStudentWithPhoto', 
+                    id: id, 
+                    name: name, 
+                    nid: nid, 
+                    faculty: elFac ? elFac.value : "", 
+                    phone: elPhone ? elPhone.value : "", 
+                    email: mail,
+                    filename: id + ".jpg",
+                    fileData: base64Data
+                }) 
+            });
+
+            const d = await res.json();
+            showLoader(false);
+            if(statusLabel) statusLabel.innerText = "";
+            
+            if(d.success) {
+                alert(d.message);
+                clearAdmissionFields();
+            } else {
+                alert("Server Error: " + d.error);
+            }
+        } catch(e) {
+            showLoader(false);
+            alert('Connection Error: ' + e.message);
         }
+    };
+    
+    reader.onerror = function() {
+        showLoader(false);
+        alert("Error reading file");
+    };
 
+    reader.readAsDataURL(file);
+}
         function clearAdmissionFields() {
             ['a_id','a_name','a_nid','a_mail','a_phone','a_file'].forEach(i => document.getElementById(i).value = '');
             document.getElementById('uploadStatus').innerText = "";
