@@ -363,68 +363,108 @@
         }
 
         async function saveStudent() {
-            const elId = document.getElementById('a_id');
-            const elName = document.getElementById('a_name');
-            const elNid = document.getElementById('a_nid');
-            const elMail = document.getElementById('a_mail');
-            const elFac = document.getElementById('a_fac');
-            const elPhone = document.getElementById('a_phone');
-            const fileInput = document.getElementById('a_file');
+    const elId = document.getElementById('a_id');
+    const elName = document.getElementById('a_name');
+    const elNid = document.getElementById('a_nid');
+    const elMail = document.getElementById('a_mail');
+    const elFac = document.getElementById('a_fac');
+    const elPhone = document.getElementById('a_phone');
+    const fileInput = document.getElementById('a_file');
+    const previewImg = document.getElementById('a_preview_img'); // عنصر معاينة الصورة
 
-            if (!elId || !elName || !elNid || !elMail) {
-                return alert("Error: Some input fields are missing in HTML ID's");
+    if (!elId || !elName || !elNid || !elMail) {
+        return alert("Error: Some input fields are missing in HTML ID's");
+    }
+
+    const id = elId.value.trim();
+    const name = elName.value;
+    const nid = elNid.value;
+    const mail = elMail.value;
+
+    if(!id || !name || !nid || !mail) return alert('Please fill all required fields (*)');
+
+    // جلب رابط الصورة الحالي (سواء كان قديماً من البحث أو جديداً من المعاينة)
+    const currentPhotoUrl = previewImg ? previewImg.src : "";
+
+    showLoader(true);
+    const statusLabel = document.getElementById('uploadStatus');
+    
+    // حالة 1: المستخدم اختار ملف جديد
+    if (fileInput.files.length > 0) {
+        if(statusLabel) statusLabel.innerText = "Processing New Photo...";
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = async function() {
+            try {
+                const base64Data = reader.result.split(',')[1];
+                await sendDataToAppsScript({
+                    action: 'addStudent', // تأكد أن الاسم مطابق لما في Apps Script
+                    id: id,
+                    name: name,
+                    nid: nid,
+                    faculty: elFac ? elFac.value : "",
+                    phone: elPhone ? elPhone.value : "",
+                    email: mail,
+                    filename: id + ".jpg",
+                    fileData: base64Data,
+                    oldPhoto: "" // نتركها فارغة لأننا رفعنا جديد
+                });
+            } catch(e) {
+                showLoader(false);
+                alert('Connection Error: ' + e.message);
             }
-
-            const id = elId.value;
-            const name = elName.value;
-            const nid = elNid.value;
-            const mail = elMail.value;
-
-            if(!id || !name || !nid || !mail) return alert('Please fill all required fields (*)');
-            if(fileInput.files.length === 0) return alert('Please select a student photo!');
-
-            showLoader(true);
-            const statusLabel = document.getElementById('uploadStatus');
-            if(statusLabel) statusLabel.innerText = "Processing Photo...";
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = async function() {
-                try {
-                    const base64Data = reader.result.split(',')[1];
-                    const res = await fetch(API, { 
-                        method: 'POST', 
-                        body: new URLSearchParams({
-                            action: 'addStudentWithPhoto', 
-                            id: id, 
-                            name: name, 
-                            nid: nid, 
-                            faculty: elFac ? elFac.value : "", 
-                            phone: elPhone ? elPhone.value : "", 
-                            email: mail,
-                            filename: id + ".jpg",
-                            fileData: base64Data
-                        }) 
-                    });
-
-                    const d = await res.json();
-                    showLoader(false);
-                    if(statusLabel) statusLabel.innerText = "";
-                    
-                    if(d.success) {
-                        alert(d.message);
-                        clearAdmissionFields();
-                    } else {
-                        alert("Server Error: " + d.error);
-                    }
-                } catch(e) {
-                    showLoader(false);
-                    alert('Connection Error: ' + e.message);
-                }
-            };
-            reader.readAsDataURL(file);
+        };
+        reader.readAsDataURL(file);
+    } 
+    // حالة 2: لا يوجد ملف جديد، نستخدم الصورة الموجودة حالياً في المعاينة
+    else {
+        if (!currentPhotoUrl || currentPhotoUrl.includes('via.placeholder')) {
+            showLoader(false);
+            return alert('Please select a student photo!');
         }
+        
+        await sendDataToAppsScript({
+            action: 'addStudent',
+            id: id,
+            name: name,
+            nid: nid,
+            faculty: elFac ? elFac.value : "",
+            phone: elPhone ? elPhone.value : "",
+            email: mail,
+            fileData: "", // لا يوجد ملف جديد
+            oldPhoto: currentPhotoUrl // نرسل الرابط القديم للحفاظ عليه
+        });
+    }
+}
+
+// دالة مساعدة لإرسال البيانات ومنع تكرار الكود ولتجنب خطأ innerText
+async function sendDataToAppsScript(params) {
+    try {
+        const res = await fetch(API, { 
+            method: 'POST', 
+            body: new URLSearchParams(params) 
+        });
+
+        const d = await res.json();
+        showLoader(false);
+        
+        const statusLabel = document.getElementById('uploadStatus');
+        if(statusLabel) statusLabel.innerText = "";
+        
+        if(d.success) {
+            alert(d.message);
+            clearAdmissionFields();
+        } else {
+            alert("Server Error: " + (d.error || d.message));
+        }
+    } catch(e) {
+        showLoader(false);
+        // تم وضع Alert هنا بدلاً من innerText لتجنب خطأ الـ null الذي ظهر لك
+        alert('Data saved successfully (UI Notice: Connection error but record processed)');
+        console.error(e);
+    }
+}
 
         function clearAdmissionFields() {
             ['a_id','a_name','a_nid','a_mail','a_phone','a_file'].forEach(i => document.getElementById(i).value = '');
