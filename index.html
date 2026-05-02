@@ -40,7 +40,7 @@
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL</h2>
+            <h2>UEC PORTAL2</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
             <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
@@ -136,8 +136,9 @@
                         </div>
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
+                            <div><label>Payment Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>New Amount</label><input type="number" id="f_amt"></div>
-                            <div><label>Method</label><select id="f_type"><option value="Onsite">Onsite</option><option value="Online">Online</option></select></div>
+                            <div><label>New Method</label><select id="f_type"><option value="Onsite">Onsite</option><option value="Online">Online</option></select></div>
                         </div>
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm Payment</button>
                     </div>
@@ -330,6 +331,7 @@
                 document.getElementById('f_info_h').innerText = d.faculty;
                 document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
                 document.getElementById('f_paid_amt').value = d.amount || 0;
+                document.getElementById('f_paid_method').value = d.type || "N/A";
                 const badge = document.getElementById('f_stat_badge');
                 badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
                 badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
