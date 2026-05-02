@@ -345,31 +345,45 @@
         }
 
         async function exportFinanceData() {
-            showLoader(true);
-            try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'getFilteredData', 
-                    filter: 'Paid' 
-                })});
-                const d = await res.json();
-                if(d.success) {
-                    if(d.data.length <= 1) {
-                        alert("No paid students found yet.");
-                    } else {
-                        const ws = XLSX.utils.aoa_to_sheet(d.data);
-                        const wb = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(wb, ws, "Paid_Students");
-                        XLSX.writeFile(wb, "UEC_Paid_Students_Report.xlsx");
-                    }
-                } else {
-                    alert("Error fetching data: " + d.error);
-                }
-            } catch (e) {
-                alert("Connection Error");
-            }
-            showLoader(false);
-        }
+    showLoader(true);
+    try {
+        const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+            action: 'getFilteredData', 
+            filter: 'Paid' 
+        })});
+        const d = await res.json();
+        
+        if(d.success) {
+            if(d.data.length <= 1) {
+                alert("No paid students found yet.");
+            } else {
+                // معالجة البيانات لتنسيق التاريخ
+                const formattedData = d.data.map((row, index) => {
+                    if (index === 0) return row; // تخطي العنوان (Header)
+                    
+                    return row.map(cell => {
+                        // التحقق إذا كانت الخلية تحتوي على صيغة التاريخ المزعجة
+                        if (typeof cell === 'string' && cell.includes('T') && cell.includes('Z')) {
+                            const date = new Date(cell);
+                            return date.toLocaleDateString('en-CA'); // سيخرج بصيغة YYYY-MM-DD
+                        }
+                        return cell;
+                    });
+                });
 
+                const ws = XLSX.utils.aoa_to_sheet(formattedData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Paid_Students");
+                XLSX.writeFile(wb, "UEC_Paid_Students_Report.xlsx");
+            }
+        } else {
+            alert("Error: " + d.error);
+        }
+    } catch (e) {
+        alert("Connection Error");
+    }
+    showLoader(false);
+}
         async function updatePayment() {
             const amt = document.getElementById('f_amt').value;
             if(!amt) return alert('Enter amount');
