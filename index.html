@@ -309,10 +309,10 @@
             if(!currentStudent.email) return alert('Student email not available');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'sendMail', 
+                action: 'sendStudentEmail', 
                 to: currentStudent.email,
                 subject: 'Payment Confirmation - UEC',
-                body: `Dear ${currentStudent.name}, Your payment has been successfully recorded at University of East Capital.`
+                body: `Dear ${currentStudent.name}, Your payment has been successfully recorded at University of East Capital and Your application is now handled with top priority as part of our admissions process.`
             })});
             const d = await res.json();
             showLoader(false);
@@ -323,8 +323,8 @@
             showLoader(true);
             const bodyContent = `New Online Payment Received:\n\nID: ${currentStudent.id}\nName: ${currentStudent.name}\nFaculty: ${currentStudent.faculty}\nNational ID: ${currentStudent.nid}\nEmail: ${currentStudent.email}\nPhone: ${currentStudent.phone}\nStatus: Paid Online`;
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'sendMail', 
-                to: 'admission@uec.edu.eg', // ضع ايميل الادمشن هنا
+                action: 'sendStudentEmail', 
+                to: 'news@uec.edu.eg', // ضع ايميل الادمشن هنا
                 subject: 'Online Payment Alert - ' + currentStudent.id,
                 body: bodyContent
             })});
