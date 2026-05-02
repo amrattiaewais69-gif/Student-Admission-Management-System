@@ -114,58 +114,68 @@
                 </div>
             </div>
 
-            <!-- Page: Admission -->
-            <div id="p-admission" class="page" style="display:none;">
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                        <h3 style="margin:0; border-left: 5px solid var(--gold); padding-left: 15px;">Student Enrollment</h3>
-                        <button onclick="clearAdmissionFields()" class="btn btn-gold" style="font-size: 0.7rem; padding: 8px 15px;">
-                            <i class="fas fa-rotate"></i> Reset Form
-                        </button>
-                    </div>
-                    <div class="grid">
-                        <div><label>Application ID*</label><input type="text" id="a_id"></div>
-                        <div><label>Full Name (4 Names)*</label><input type="text" id="a_name"></div>
-                        <div><label>National ID (14 Digits)*</label><input type="text" id="a_nid" maxlength="14"></div>
-                        <div><label>Faculty*</label>
-                            <select id="a_fac">
-                                <option>Faculty of Arts and Design</option>
-                                <option>Faculty of Business and Economics</option>
-                                <option>Faculty of Computer Science & Information Technology</option>
-                                <option>Faculty of Dentistry</option>
-                                <option>Faculty of Engineering</option>
-                                <option>Faculty of Mass Communication</option>
-                                <option>Faculty of Medicine</option>
-                                <option>Faculty of Pharmacy</option>
-                                <option>Faculty of Physical Therapy</option>                            
-                            </select>
-                        </div>
-                        <div><label>Email Address*</label><input type="email" id="a_mail"></div>
-                        <div><label>Phone Number</label><input type="text" id="a_phone"></div>
-                    </div>
-                    <div style="margin-top:20px; display: flex; gap: 20px; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <label>Student Photo* (Direct Upload)</label>
-                            <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px dashed #ccc;">
-                                <input type="file" id="a_file" accept="image/*" style="border:none; background:none;" onchange="previewImage(this)">
-                                <div id="uploadStatus" style="font-size: 0.85rem; color: var(--gold); font-weight: bold;"></div>
-                            </div>
-                        </div>
-                        <!-- مكان ظهور الصورة -->
-                        <div style="text-align: center;">
-                            <label style="font-size: 0.8rem; display: block; margin-bottom: 5px;">Photo Preview</label>
-                            <div class="photo-preview-container" id="imagePreviewContainer">
-                                <i class="fas fa-user" id="previewPlaceholder" style="font-size: 3rem; color: #ccc;"></i>
-                                <img id="a_preview_img" src="">
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="saveStudent()" class="btn btn-primary" style="margin-top: 30px; width: 250px; height: 45px;">
-                        <i class="fas fa-save"></i> Save Record & Upload
-                    </button>
+            <!-- Page: Admission (Updated with Search) -->
+<div id="p-admission" class="page" style="display:none;">
+    <div class="card">
+        <!-- قسم البحث الجديد -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #eee;">
+            <label style="font-weight: bold; font-size: 0.9rem; color: var(--primary);">Search Application</label>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <input type="text" id="adm_search_id" placeholder="Enter Application ID to recall data..." style="flex: 1; margin-top: 0;">
+                <button onclick="searchStudentAdmission()" class="btn btn-primary" style="width: 150px;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <h3 style="margin:0; border-left: 5px solid var(--gold); padding-left: 15px;">Student Enrollment</h3>
+            <button onclick="clearAdmissionFields()" class="btn btn-gold" style="font-size: 0.7rem; padding: 8px 15px;">
+                <i class="fas fa-rotate"></i> Reset Form
+            </button>
+        </div>
+
+        <div class="grid">
+            <div><label>Application ID*</label><input type="text" id="a_id"></div>
+            <div><label>Full Name (4 Names)*</label><input type="text" id="a_name"></div>
+            <div><label>National ID (14 Digits)*</label><input type="text" id="a_nid" maxlength="14"></div>
+            <div><label>Faculty*</label>
+                <select id="a_fac">
+                    <option>Faculty of Arts and Design</option>
+                    <option>Faculty of Business and Economics</option>
+                    <option>Faculty of Computer Science & Information Technology</option>
+                    <option>Faculty of Dentistry</option>
+                    <option>Faculty of Engineering</option>
+                    <option>Faculty of Mass Communication</option>
+                    <option>Faculty of Medicine</option>
+                    <option>Faculty of Pharmacy</option>
+                    <option>Faculty of Physical Therapy</option>                            
+                </select>
+            </div>
+            <div><label>Email Address*</label><input type="email" id="a_mail"></div>
+            <div><label>Phone Number</label><input type="text" id="a_phone"></div>
+        </div>
+        <!-- قسم الصورة والمعاينة المضاف سابقاً -->
+        <div style="margin-top:20px; display: flex; gap: 20px; align-items: flex-start;">
+            <div style="flex: 1;">
+                <label>Student Photo*</label>
+                <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px dashed #ccc;">
+                    <input type="file" id="a_file" accept="image/*" style="border:none; background:none;" onchange="previewImage(this)">
                 </div>
             </div>
-
+            <div style="text-align: center;">
+                <label style="font-size: 0.8rem; display: block; margin-bottom: 5px;">Photo Preview</label>
+                <div class="photo-preview-container" id="imagePreviewContainer">
+                    <i class="fas fa-user" id="previewPlaceholder" style="font-size: 3rem; color: #ccc;"></i>
+                    <img id="a_preview_img" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                </div>
+            </div>
+        </div>
+        <button onclick="saveStudent()" class="btn btn-primary" style="margin-top: 30px; width: 250px; height: 45px;">
+            <i class="fas fa-save"></i> Save Record & Upload
+        </button>
+    </div>
+</div>
             <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
                 <div class="card">
@@ -423,7 +433,46 @@
             document.getElementById('previewPlaceholder').style.display = 'block';
             document.getElementById('a_id').focus();
         }
+async function searchStudentAdmission() {
+    const searchId = document.getElementById('adm_search_id').value;
+    if(!searchId) return alert('Please enter an Application ID');
 
+    showLoader(true);
+    try {
+        const res = await fetch(API, { 
+            method: 'POST', 
+            body: new URLSearchParams({action: 'getStudent', id: searchId}) 
+        });
+        const d = await res.json();
+        showLoader(false);
+
+        if(d.success) {
+            // ملء الحقول بالبيانات المسترجعة
+            document.getElementById('a_id').value = searchId;
+            document.getElementById('a_name').value = d.name || '';
+            document.getElementById('a_nid').value = d.nid || '';
+            document.getElementById('a_fac').value = d.faculty || '';
+            document.getElementById('a_mail').value = d.email || '';
+            document.getElementById('a_phone').value = d.phone || '';
+            
+            // عرض الصورة إذا كانت موجودة
+            if(d.photo) {
+                const preview = document.getElementById('a_preview_img');
+                const placeholder = document.getElementById('previewPlaceholder');
+                preview.src = d.photo;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+            alert('Data Recalled Successfully');
+        } else {
+            alert('Application ID not found');
+        }
+    } catch(e) {
+        showLoader(false);
+        alert('Error connecting to server');
+    }
+}
+        
         async function search(type) {
             const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
             if(!id) return alert('Enter Student ID');
