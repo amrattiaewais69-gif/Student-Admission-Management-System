@@ -4,128 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>UEC | Professional Management System</title>
+    <title>UEC | Professional System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; --bg-light: #f4f7f6; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-light); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; }
-        .sidebar { width: 260px; background: var(--primary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 100; color: white; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-light); display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: var(--primary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 100; color: white; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #8892b0; transition: 0.3s; border-left: 4px solid transparent; }
-        .nav-item:hover, .nav-item.active { color: var(--gold); background: rgba(197, 160, 89, 0.1); border-left-color: var(--gold); }
-        .main { margin-left: 260px; padding: 40px; flex: 1; }
-        .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--gold); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; background: #fafafa; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
+        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #8892b0; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: var(--gold); background: rgba(197, 160, 89, 0.1); border-left: 4px solid var(--gold); }
+        .main { margin-left: 260px; padding: 40px; width: 100%; box-sizing: border-box; }
+        .card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 4px solid var(--gold); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
-        .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
-        .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; margin-top: 10px; }
-        .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
-        .photo-preview-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
+        .login-overlay { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; }
+        .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 20px; border-radius: 50px; z-index: 2000; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
+    <div id="loader" class="loader">Processing...</div>
 
     <div id="loginSection" class="login-overlay">
-        <div class="card" style="width: 380px; text-align: center;">
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL</h2>
+        <div class="card" style="width: 350px; text-align: center;">
+            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 15px;">
+            <h3>UEC PORTAL</h3>
             <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
-            <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()" class="btn btn-primary" style="margin-top:20px;">Login</button>
         </div>
     </div>
 
-    <div id="appSection" style="display:none;">
+    <div id="appSection" style="display:none; width: 100%;">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="50" style="filter: brightness(0) invert(1);">
-                <h3 style="color: var(--gold); margin: 5px 0;">UEC SYSTEM</h3>
-            </div>
-            <ul style="list-style: none; padding: 0;">
-                <li id="n-adm" class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</li>
-                <li id="n-fin" class="nav-item" onclick="showPage('finance')"><i class="fas fa-file-invoice-dollar"></i> Finance</li>
-                <li id="n-id" class="nav-item" onclick="showPage('idcard')"><i class="fas fa-id-card"></i> ID Cards</li>
-                <li id="n-rep" class="nav-item" onclick="showPage('reports')"><i class="fas fa-chart-line"></i> Dashboard</li>
-                <li class="nav-item" onclick="logout()" style="color: #ff6b6b;"><i class="fas fa-power-off"></i> Logout</li>
-            </ul>
+            <div class="sidebar-header"><h2 style="color: var(--gold); margin:0;">UEC</h2></div>
+            <div class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</div>
+            <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-coins"></i> Finance</div>
+            <div class="nav-item" onclick="showPage('idcard')"><i class="fas fa-id-card"></i> ID Cards</div>
+            <div class="nav-item" onclick="logout()" style="margin-top:20px; color: #ff6b6b;"><i class="fas fa-power-off"></i> Logout</div>
         </aside>
 
         <main class="main">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: #fff; padding: 15px 25px; border-radius: 12px;">
+            <div style="background:white; padding:15px 25px; border-radius:12px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center;">
                 <h2 id="pageTitle" style="margin:0;">Dashboard</h2>
-                <span id="user_display" style="font-weight: bold;">User</span>
+                <span id="user_display" style="font-weight:bold;">User</span>
             </div>
 
             <!-- Page: Admission -->
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 style="margin:0;">Student Enrollment</h3>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="a_search_id" placeholder="Search ID..." style="width: 150px; margin:0;">
-                            <button onclick="searchAdmission()" class="btn btn-primary" style="padding: 10px;"><i class="fas fa-search"></i></button>
-                        </div>
-                    </div>
+                    <h3>New Registration</h3>
                     <div class="grid">
-                        <div><label>ID*</label><input type="text" id="a_id"></div>
+                        <div><label>Student ID*</label><input type="text" id="a_id"></div>
                         <div><label>Full Name*</label><input type="text" id="a_name"></div>
-                        <div><label>National ID*</label><input type="text" id="a_nid"></div>
-                        <div><label>Faculty*</label>
-                            <select id="a_fac">
-                                <option>Faculty of Engineering</option><option>Faculty of Medicine</option>
-                                <option>Faculty of Dentistry</option><option>Faculty of Business</option>
-                                <option>Faculty of Arts</option>
-                            </select>
-                        </div>
-                        <div><label>Email Address*</label><input type="email" id="a_mail"></div>
-                        <div><label>Phone Number</label><input type="text" id="a_phone"></div>
+                        <div><label>Faculty</label><select id="a_fac"><option>Engineering</option><option>Business</option><option>Medicine</option></select></div>
+                        <div><label>Email</label><input type="email" id="a_mail"></div>
+                        <div><label>National ID</label><input type="text" id="a_nid"></div>
+                        <div><label>Phone</label><input type="text" id="a_phone"></div>
                     </div>
-                    <div style="margin-top:20px; display: flex; gap: 20px;">
-                        <div style="flex: 1;"><label>Photo</label><input type="file" id="a_file" accept="image/*" onchange="previewImage(this)"></div>
-                        <div class="photo-preview-container"><i class="fas fa-user" id="previewPlaceholder"></i><img id="a_preview_img" src=""></div>
-                    </div>
-                    <button id="btn_save_new" onclick="saveStudent()" class="btn btn-primary" style="margin-top:20px;">Save New</button>
-                    <button id="btn_update_existing" onclick="updateStudent()" class="btn btn-gold" style="display:none; margin-top:20px;">Update Student</button>
+                    <div style="margin-top:15px;"><label>Photo</label><input type="file" id="a_file" accept="image/*"></div>
+                    <button onclick="saveStudent()" class="btn btn-primary" style="margin-top:20px;">Register Student</button>
                 </div>
             </div>
 
             <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
                 <div class="card">
-                    <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                        <input type="text" id="f_search" placeholder="Search Student ID...">
-                        <button onclick="search('finance')" class="btn btn-primary">Search</button>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="f_search" placeholder="Enter ID to search Finance...">
+                        <button onclick="search('finance')" class="btn btn-primary" style="width:120px; margin:0;">Search</button>
                     </div>
-                    <div id="f_res" style="display:none;">
-                        <div style="display:flex; gap:20px; align-items:center;">
-                            <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
-                            <div>
+                    <div id="f_res" style="display:none; margin-top:25px;">
+                        <div style="display:flex; gap:20px; align-items:start;">
+                            <img id="f_img" style="width:110px; height:130px; object-fit:cover; border-radius:10px; border:2px solid var(--gold);">
+                            <div style="flex:1;">
                                 <h3 id="f_name_h" style="margin:0;"></h3>
-                                <p id="f_fac_h" style="color:var(--gold); margin:5px 0;"></p>
-                                <p id="f_email_h" style="color:#666; margin:0; font-size:0.85rem;"></p>
-                                <div id="f_stat_badge"></div>
+                                <div class="info-row"><span>Status:</span> <span id="f_stat_badge" class="badge"></span></div>
+                                <div class="info-row"><span>Last Method:</span> <b id="f_method_h"></b></div> <!-- عرض نوع الدفع[cite: 1] -->
                             </div>
                         </div>
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Amount</label><input type="number" id="f_amt"></div>
-                            <div><label>Method</label><select id="f_type" onchange="toggleEmailButtons()"><option value="Onsite">Onsite</option><option value="Online">Online</option></select></div>
+                            <div><label>Payment Method</label>
+                                <select id="f_type">
+                                    <option value="On-campus">On-campus</option>
+                                    <option value="Online">Online</option>
+                                </select>
+                            </div>
                         </div>
-                        <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Sheet</button>
-                        
-                        <!-- أزرار الإيميلات المستعادة[cite: 1] -->
-                        <div id="email_actions" style="display:flex; gap:10px; margin-top:15px;">
-                           <button onclick="sendStudentMail()" class="btn btn-gold" style="flex:1;"><i class="fas fa-envelope"></i> Send Mail to Student</button>
-                           <button id="btn_adm_mail" onclick="sendAdmissionMail()" class="btn btn-primary" style="flex:1; display:none;"><i class="fas fa-university"></i> Alert Admission</button>
+                        <button onclick="updatePayment()" class="btn btn-primary">Update Payment & Sheet</button>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button onclick="sendStudentMail()" class="btn btn-gold"><i class="fas fa-envelope"></i> Mail to Student</button>
+                            <button id="btn_adm_mail" onclick="sendAdmissionMail()" class="btn btn-primary"><i class="fas fa-university"></i> Alert Admission</button>
                         </div>
                     </div>
                 </div>
@@ -134,36 +109,26 @@
             <!-- Page: ID Cards -->
             <div id="p-idcard" class="page" style="display:none;">
                 <div class="card">
-                    <div style="display:flex; gap:10px; margin-bottom:20px;">
-                        <input type="text" id="i_search" placeholder="Enter ID...">
-                        <button onclick="search('id')" class="btn btn-primary">Check</button>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="i_search" placeholder="Enter Student ID...">
+                        <button onclick="search('id')" class="btn btn-primary" style="width:120px; margin:0;">Check Status</button>
                     </div>
-                    <div id="i_res" style="display:none; text-align:center;">
-                        <img id="i_img" style="width:100px; height:120px; border-radius:8px; object-fit:cover;">
+                    <div id="i_res" style="display:none; margin-top:25px; text-align:center;">
+                        <img id="i_img" style="width:120px; height:150px; border-radius:10px; border:2px solid var(--gold); margin-bottom:15px;">
                         <h3 id="i_name_h"></h3>
-                        <p id="i_fac_h" style="color:var(--gold);"></p>
-                        <p id="i_email_h"></p>
-                        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
-                            <div style="background:#eee; padding:10px; border-radius:8px;">Payment: <b id="i_s_pay"></b></div>
-                            <div style="background:#eee; padding:10px; border-radius:8px;">Printed: <b id="i_s_prn"></b></div>
+                        <div class="card" style="background:#f8f9fa; border:none; text-align:left;">
+                            <div class="info-row"><span>Payment:</span> <b id="i_s_pay"></b></div>
+                            <div class="info-row"><span>Printed:</span> <b id="i_s_prn"></b></div>
+                            <div class="info-row"><span>Delivered Status:</span> <b id="i_s_del" style="color:blue;"></b></div> <!-- عرض حالة الاستلام[cite: 2] -->
                         </div>
-                        <button onclick="updateID('Printed')" class="btn btn-gold" style="width:100%; margin-bottom:10px;">Mark Printed</button>
-                        <button onclick="updateID('Delivered')" class="btn btn-primary" style="width:100%;">Mark Delivered</button>
+                        <div class="grid">
+                            <button onclick="updateID('Printed')" class="btn btn-gold">Mark Printed</button>
+                            <button onclick="updateID('Delivered')" class="btn btn-primary">Mark Delivered (استلم)</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Page: Reports -->
-            <div id="p-reports" class="page" style="display:none;">
-                <div class="grid">
-                    <div class="card">Total Students<h2 id="st_total">0</h2></div>
-                    <div class="card">Paid<h2 id="st_paid">0</h2></div>
-                    <div class="card">Unpaid<h2 id="st_unp">0</h2></div>
-                </div>
-                <button onclick="exportData('All')" class="btn btn-primary" style="margin-top:20px;">Export Full Excel Report</button>
             </div>
         </main>
-        <footer>© 2026 University of East Capital</footer>
     </div>
 
     <script>
@@ -178,34 +143,25 @@
             const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'login', username:u, password:p}) });
             const d = await r.json(); showLoader(false);
             if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); }
-            else alert('Error');
+            else alert('Invalid Login');
         }
 
         window.onload = () => {
             const s = JSON.parse(localStorage.getItem('uec_s'));
-            if(s) { 
-                document.getElementById('loginSection').style.display='none'; 
-                document.getElementById('appSection').style.display='block'; 
+            if(s) {
+                document.getElementById('loginSection').style.display='none';
+                document.getElementById('appSection').style.display='flex';
                 document.getElementById('user_display').innerText = s.user;
-                applyRole(s.role);
+                showPage('finance');
             }
         };
 
         function logout() { localStorage.removeItem('uec_s'); location.reload(); }
+
         function showPage(p) {
             document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
             document.getElementById('p-'+p).style.display='block';
-            if(p==='reports') loadStats();
-        }
-
-        function applyRole(role) {
-            const navs = ['n-adm','n-fin','n-id','n-rep'];
-            if(role==='Admin') navs.forEach(n => document.getElementById(n).style.display='flex');
-            else {
-               navs.forEach(n => document.getElementById(n).style.display='none');
-               document.getElementById('n-'+role.toLowerCase().substring(0,3)).style.display='flex';
-            }
-            showPage(role==='Admin'?'reports':role.toLowerCase());
+            document.getElementById('pageTitle').innerText = p.toUpperCase();
         }
 
         async function search(type) {
@@ -213,54 +169,53 @@
             showLoader(true);
             const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await r.json(); showLoader(false);
-            if(!d.success) return alert('Not found');
+            if(!d.success) return alert('Student ID Not Found');
             currentStudent = d; currentStudent.id = id;
-            
+
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
                 document.getElementById('f_img').src = d.photo;
                 document.getElementById('f_name_h').innerText = d.name;
-                document.getElementById('f_fac_h').innerText = d.faculty;
-                document.getElementById('f_email_h').innerText = d.email;
+                document.getElementById('f_method_h').innerText = d.type; // يظهر نوع الدفع[cite: 1]
                 document.getElementById('f_stat_badge').innerText = d.status;
                 document.getElementById('f_stat_badge').style.background = d.status==='Paid'?'green':'red';
-                document.getElementById('f_stat_badge').className = 'status-badge';
-                toggleEmailButtons();
+                document.getElementById('btn_adm_mail').style.display = (d.type === 'Online') ? 'block' : 'none';
             } else {
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_img').src = d.photo;
                 document.getElementById('i_name_h').innerText = d.name;
-                document.getElementById('i_fac_h').innerText = d.faculty;
-                document.getElementById('i_email_h').innerText = d.email;
                 document.getElementById('i_s_pay').innerText = d.status;
                 document.getElementById('i_s_prn').innerText = d.printed;
+                document.getElementById('i_s_del').innerText = d.delivered || "No"; // يظهر حالة الاستلام[cite: 2]
             }
-        }
-
-        function toggleEmailButtons() {
-            const method = document.getElementById('f_type').value;
-            document.getElementById('btn_adm_mail').style.display = (method === 'Online') ? 'block' : 'none';
-        }
-
-        async function sendStudentMail() {
-            showLoader(true);
-            const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendStudentEmail', email:currentStudent.email, name:currentStudent.name}) });
-            const d = await r.json(); showLoader(false); alert('Email sent to student!');
-        }
-
-        async function sendAdmissionMail() {
-            showLoader(true);
-            const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendManualAdmissionEmail', id:currentStudent.id}) });
-            const d = await r.json(); showLoader(false); alert('Admission Team Notified!');
         }
 
         async function updatePayment() {
             showLoader(true);
+            const method = document.getElementById('f_type').value;
             await fetch(API, { method: 'POST', body: new URLSearchParams({
                 action: 'updatePayment', id: currentStudent.id, amount: document.getElementById('f_amt').value,
-                status: 'Paid', type: document.getElementById('f_type').value
+                status: 'Paid', type: method
             })});
-            showLoader(false); alert('Payment Sheet Updated!'); search('finance');
+            showLoader(false); alert('Payment Updated Successfully!'); search('finance');
+        }
+
+        async function updateID(field) {
+            showLoader(true);
+            await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updateIDStatus', id: currentStudent.id, field: field })});
+            showLoader(false); alert(field + ' Status Updated!'); search('id');
+        }
+
+        async function sendStudentMail() {
+            showLoader(true);
+            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendStudentEmail', email:currentStudent.email, name:currentStudent.name}) });
+            showLoader(false); alert('Mail Sent to Student!');
+        }
+
+        async function sendAdmissionMail() {
+            showLoader(true);
+            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendManualAdmissionEmail', id:currentStudent.id}) });
+            showLoader(false); alert('Admission Team Notified!');
         }
 
         async function saveStudent() {
@@ -278,35 +233,6 @@
                 const d = await r.json(); showLoader(false); alert(d.message); if(d.success) location.reload();
             };
             reader.readAsDataURL(fileInput.files[0]);
-        }
-
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => { 
-                   document.getElementById('a_preview_img').src = e.target.result;
-                   document.getElementById('a_preview_img').style.display = 'block';
-                   document.getElementById('previewPlaceholder').style.display = 'none';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        async function loadStats() {
-            const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-            const d = await r.json();
-            document.getElementById('st_total').innerText = d.registered;
-            document.getElementById('st_paid').innerText = d.paid;
-            document.getElementById('st_unp').innerText = d.unpaid;
-        }
-
-        async function exportData(f) {
-            showLoader(true);
-            const r = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
-            const d = await r.json(); showLoader(false);
-            const ws = XLSX.utils.aoa_to_sheet(d.data), wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Students");
-            XLSX.writeFile(wb, "UEC_Report.xlsx");
         }
     </script>
 </body>
