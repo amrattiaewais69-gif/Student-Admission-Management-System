@@ -36,7 +36,7 @@
 
     <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
 
-    <!-- Login -->
+    <!-- Login Section -->
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <!-- App -->
+    <!-- App Section -->
     <div id="appSection" style="display:none;">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -73,9 +73,9 @@
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 style="margin:0;">Student Enrollment</h3>
+                        <h3 style="margin:0;">Enrollment & Editing</h3>
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="a_search_id" placeholder="Search ID to Edit..." style="width: 150px; margin:0;">
+                            <input type="text" id="a_search_id" placeholder="ID to Search/Edit..." style="width: 150px; margin:0;">
                             <button onclick="searchAdmission()" class="btn btn-primary" style="padding: 10px;"><i class="fas fa-search"></i></button>
                             <button onclick="resetAdmissionUI()" class="btn btn-gold" style="padding: 10px;"><i class="fas fa-rotate"></i></button>
                         </div>
@@ -112,7 +112,7 @@
                     </div>
                     <div style="margin-top:30px; display:flex; gap:10px;">
                         <button id="btn_save_new" onclick="saveStudent()" class="btn btn-primary" style="width: 200px;"><i class="fas fa-save"></i> Save New</button>
-                        <button id="btn_update_existing" onclick="updateStudent()" class="btn btn-gold" style="display:none; width: 200px;"><i class="fas fa-user-check"></i> Update</button>
+                        <button id="btn_update_existing" onclick="updateStudent()" class="btn btn-gold" style="display:none; width: 200px;"><i class="fas fa-user-check"></i> Update Student</button>
                     </div>
                 </div>
             </div>
@@ -126,10 +126,11 @@
                     </div>
                     <div id="f_res" style="display:none;">
                         <div style="display:flex; gap:20px; align-items:center;">
-                            <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
+                            <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px; border: 1px solid #ddd;">
                             <div>
                                 <h3 id="f_name_h" style="margin:0;"></h3>
-                                <p id="f_info_h" style="color:var(--gold); margin:5px 0;"></p>
+                                <p id="f_fac_h" style="color:var(--gold); margin:5px 0; font-weight:bold;"></p>
+                                <p id="f_email_h" style="color:#666; margin:0 0 10px 0; font-size:0.85rem;"></p>
                                 <div id="f_stat_badge"></div>
                             </div>
                         </div>
@@ -150,15 +151,18 @@
                         <button onclick="search('id')" class="btn btn-primary">Check</button>
                     </div>
                     <div id="i_res" style="display:none; text-align:center;">
-                        <img id="i_img" style="width:100px; height:120px; border-radius:8px; object-fit:cover;">
-                        <h3 id="i_name_h"></h3>
+                        <img id="i_img" style="width:100px; height:120px; border-radius:8px; object-fit:cover; border: 2px solid var(--gold);">
+                        <h3 id="i_name_h" style="margin:10px 0 5px 0;"></h3>
+                        <p id="i_fac_h" style="color:var(--gold); margin:0; font-weight:bold;"></p>
+                        <p id="i_email_h" style="color:#666; margin:5px 0 15px 0; font-size:0.85rem;"></p>
+                        
                         <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
-                            <div class="stat-box"><span>Pay</span><b id="i_s_pay"></b></div>
-                            <div class="stat-box"><span>Print</span><b id="i_s_prn"></b></div>
+                            <div class="stat-box"><span>Payment</span><b id="i_s_pay"></b></div>
+                            <div class="stat-box"><span>Printed</span><b id="i_s_prn"></b></div>
                             <div class="stat-box"><span>Deliv</span><b id="i_s_del"></b></div>
                         </div>
-                        <button onclick="updateID('Printed')" class="btn btn-gold">Mark Printed</button>
-                        <button onclick="updateID('Delivered')" class="btn btn-primary">Mark Delivered</button>
+                        <button onclick="updateID('Printed')" class="btn btn-gold" style="width:100%; margin-bottom:10px;">Mark Printed</button>
+                        <button onclick="updateID('Delivered')" class="btn btn-primary" style="width:100%;">Mark Delivered</button>
                     </div>
                 </div>
             </div>
@@ -171,10 +175,10 @@
                     <div class="card" style="text-align:center; border-top-color:#ef4444;"><span>Unpaid</span><h2 id="st_unp">0</h2></div>
                 </div>
                 <div class="card"><canvas id="statsChart" style="height:300px;"></canvas></div>
-                <button onclick="exportData('All')" class="btn btn-primary">Export Full Database</button>
+                <button onclick="exportData('All')" class="btn btn-primary">Export Full Database (Excel)</button>
             </div>
         </main>
-        <footer>© 2026 University of East Capital</footer>
+        <footer>© 2026 University of East Capital | All Rights Reserved</footer>
     </div>
 
     <script>
@@ -201,14 +205,16 @@
             const d = await res.json();
             showLoader(false);
             if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); }
-            else alert('Error');
+            else alert('Invalid Login Credentials');
         }
 
         function logout() { localStorage.removeItem('uec_s'); location.reload(); }
 
         function showPage(p) {
             document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
+            document.querySelectorAll('.nav-item').forEach(nv=>nv.classList.remove('active'));
             document.getElementById('p-'+p).style.display='block';
+            document.getElementById('pageTitle').innerText = p.charAt(0).toUpperCase() + p.slice(1);
             if(p==='reports') loadStats();
         }
 
@@ -232,12 +238,12 @@
 
         async function searchAdmission() {
             const id = document.getElementById('a_search_id').value;
-            if(!id) return alert('Enter ID');
+            if(!id) return alert('Please enter an ID');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await res.json();
             showLoader(false);
-            if(!d.success) return alert('Not found');
+            if(!d.success) return alert('Student not found');
             
             document.getElementById('a_id').value = id;
             document.getElementById('a_id').disabled = true;
@@ -294,7 +300,7 @@
         async function saveStudent() {
             const id = document.getElementById('a_id').value;
             const fileInput = document.getElementById('a_file');
-            if(!id || fileInput.files.length === 0) return alert('ID and Photo required');
+            if(!id || fileInput.files.length === 0) return alert('ID and Student Photo are mandatory');
             showLoader(true);
             const reader = new FileReader();
             reader.onload = async () => {
@@ -314,18 +320,21 @@
         }
 
         async function search(type) {
-            const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
+            const idInput = document.getElementById(type==='finance'?'f_search':'i_search');
+            if(!idInput.value) return alert('Enter Student ID');
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:idInput.value}) });
             const d = await res.json();
             showLoader(false);
-            if(!d.success) return alert('Not found');
-            currentStudent = d; currentStudent.id = id;
+            if(!d.success) return alert('Student not found');
+            currentStudent = d; currentStudent.id = idInput.value;
+
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
                 document.getElementById('f_img').src = d.photo;
                 document.getElementById('f_name_h').innerText = d.name;
-                document.getElementById('f_info_h').innerText = d.faculty;
+                document.getElementById('f_fac_h').innerText = d.faculty; // عرض الكلية
+                document.getElementById('f_email_h').innerText = d.email;   // عرض الإيميل
                 const badge = document.getElementById('f_stat_badge');
                 badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
                 badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
@@ -333,7 +342,9 @@
             } else {
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_img').src = d.photo;
-                document.getElementById('i_name_h').innerText = d.name;
+                document.getElementById('i_name_h').innerText = d.name;     // عرض الاسم
+                document.getElementById('i_fac_h').innerText = d.faculty;   // عرض الكلية
+                document.getElementById('i_email_h').innerText = d.email;   // عرض الإيميل
                 document.getElementById('i_s_pay').innerText = d.status;
                 document.getElementById('i_s_prn').innerText = d.printed;
                 document.getElementById('i_s_del').innerText = d.delivered;
@@ -341,18 +352,19 @@
         }
 
         async function updatePayment() {
+            if(!document.getElementById('f_amt').value) return alert('Enter amount');
             showLoader(true);
             await fetch(API, { method: 'POST', body: new URLSearchParams({
                 action: 'updatePayment', id: currentStudent.id, amount: document.getElementById('f_amt').value,
                 status: 'Paid', type: document.getElementById('f_type').value
             })});
-            showLoader(false); alert('Success'); search('finance');
+            showLoader(false); alert('Payment Confirmed'); search('finance');
         }
 
         async function updateID(field) {
             showLoader(true);
             await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
-            showLoader(false); alert('Updated'); search('id');
+            showLoader(false); alert('ID Status Updated'); search('id');
         }
 
         async function loadStats() {
@@ -364,12 +376,14 @@
         }
 
         async function exportData(f) {
+            showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
             const d = await res.json();
+            showLoader(false);
             const ws = XLSX.utils.aoa_to_sheet(d.data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Report");
-            XLSX.writeFile(wb, "Report.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Students_Report");
+            XLSX.writeFile(wb, "UEC_Database_Report.xlsx");
         }
     </script>
 </body>
