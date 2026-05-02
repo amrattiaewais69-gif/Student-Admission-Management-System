@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; --bg-light: #f4f7f6; }
+        :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; --bg-light: #f4f7f6; --success: #10b981; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-light); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; }
         .sidebar { width: 260px; background: var(--primary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 100; color: white; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -24,12 +24,21 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
         .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        
+        /* التنسيق الجديد للأزرار في صفحة الكارنيهات */
+        .btn-action-group { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
+        .btn-print { background: #f39c12; color: white; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); flex: 1; max-width: 200px; }
+        .btn-print:hover { background: #e67e22; transform: translateY(-2px); }
+        .btn-deliver { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); flex: 1; max-width: 200px; }
+        .btn-deliver:hover { background: #059669; transform: translateY(-2px); }
+        
         .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
         .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
         .photo-preview-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; margin-top: 10px; }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #eee; }
+        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #eee; transition: 0.3s; }
+        .stat-box:hover { border-color: var(--gold); background: #fff; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
     </style>
 </head>
@@ -136,7 +145,6 @@
                                     <div id="f_stat_badge"></div>
                                 </div>
                             </div>
-                            <!-- Email Actions -->
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
                                 <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
@@ -167,19 +175,21 @@
                         <button onclick="search('id')" class="btn btn-primary">Check</button>
                     </div>
                     <div id="i_res" style="display:none; text-align:center;">
-                        <img id="i_img" style="width:100px; height:120px; border-radius:8px; object-fit:cover;">
+                        <img id="i_img" style="width:110px; height:130px; border-radius:10px; object-fit:cover; border: 3px solid var(--gold);">
                         <h3 id="i_name_h" style="margin-bottom:5px;"></h3>
-                        <!-- إظهار الكلية والميل -->
                         <p id="i_fac_h" style="color:var(--gold); margin:2px 0; font-weight:bold;"></p>
                         <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0; font-size:0.9rem;"></p>
                         
                         <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
-                            <div class="stat-box"><span>Pay</span><b id="i_s_pay"></b></div>
-                            <div class="stat-box"><span>Print</span><b id="i_s_prn"></b></div>
-                            <div class="stat-box"><span>Deliv</span><b id="i_s_del"></b></div>
+                            <div class="stat-box"><span>Payment</span><br><b id="i_s_pay"></b></div>
+                            <div class="stat-box"><span>Printing</span><br><b id="i_s_prn"></b></div>
+                            <div class="stat-box"><span>Delivery</span><br><b id="i_s_del"></b></div>
                         </div>
-                        <button onclick="updateID('Printed')" class="btn btn-gold">Mark Printed</button>
-                        <button onclick="updateID('Delivered')" class="btn btn-primary">Mark Delivered</button>
+                        
+                        <div class="btn-action-group">
+                            <button onclick="updateID('Printed')" class="btn btn-print"><i class="fas fa-print"></i> Mark Printed</button>
+                            <button onclick="updateID('Delivered')" class="btn btn-deliver"><i class="fas fa-hand-holding-heart"></i> Mark Delivered</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -303,10 +313,8 @@
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_img').src = d.photo;
                 document.getElementById('i_name_h').innerText = d.name;
-                // تعبئة البيانات الجديدة في صفحة الكارنيهات
                 document.getElementById('i_fac_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email || "N/A";
-                
                 document.getElementById('i_s_pay').innerText = d.status;
                 document.getElementById('i_s_prn').innerText = d.printed;
                 document.getElementById('i_s_del').innerText = d.delivered;
@@ -318,15 +326,11 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', 
-                    email: currentStudent.email,
-                    name: currentStudent.name
+                    action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name
                 })});
                 const d = await res.json();
                 alert(d.success ? 'Email sent to student successfully!' : 'Error: ' + d.error);
-            } catch (e) {
-                alert('Connection Error');
-            }
+            } catch (e) { alert('Connection Error'); }
             showLoader(false);
         }
 
@@ -334,14 +338,11 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', 
-                    id: currentStudent.id
+                    action: 'sendManualAdmissionEmail', id: currentStudent.id
                 })});
                 const d = await res.json();
                 alert(d.success ? 'Admission department notified!' : 'Error: ' + d.error);
-            } catch (e) {
-                alert('Connection Error');
-            }
+            } catch (e) { alert('Connection Error'); }
             showLoader(false);
         }
 
@@ -417,7 +418,7 @@
         async function updateID(field) {
             showLoader(true);
             await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
-            showLoader(false); alert('Updated'); search('id');
+            showLoader(false); alert('Updated Successfully'); search('id');
         }
 
         async function loadStats() {
