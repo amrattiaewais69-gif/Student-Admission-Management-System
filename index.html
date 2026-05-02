@@ -43,7 +43,7 @@
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL2</h2>
+            <h2 style="color: #0000FF;">University <span style="color: #C5A059;">of</span> East Capital</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
             <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
@@ -122,12 +122,10 @@
 
             <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
-                <!-- New Export Buttons for Finance -->
                 <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                     <button onclick="exportData('Paid')" class="btn btn-success" style="flex:1;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
                     <button onclick="exportData('Unpaid')" class="btn btn-danger" style="flex:1;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
                 </div>
-
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom: 20px;">
                         <input type="text" id="f_search" placeholder="Search Student ID...">
@@ -144,13 +142,11 @@
                                     <div id="f_stat_badge"></div>
                                 </div>
                             </div>
-                            <!-- Email Actions -->
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
                                 <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
-
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
@@ -234,6 +230,7 @@
         function showPage(p) {
             document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
             document.getElementById('p-'+p).style.display='block';
+            document.getElementById('pageTitle').innerText = p.charAt(0).toUpperCase() + p.slice(1);
             if(p==='reports') loadStats();
         }
 
@@ -283,7 +280,9 @@
         }
 
         async function search(type) {
-            const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
+            const idInput = document.getElementById(type==='finance'?'f_search':'i_search');
+            const id = idInput.value;
+            if(!id) return alert('Please enter an ID');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await res.json();
@@ -318,15 +317,11 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', 
-                    email: currentStudent.email,
-                    name: currentStudent.name
+                    action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name
                 })});
                 const d = await res.json();
-                alert(d.success ? 'Email sent to student successfully!' : 'Error: ' + d.error);
-            } catch (e) {
-                alert('Connection Error');
-            }
+                alert(d.success ? 'Email sent successfully!' : 'Error: ' + d.error);
+            } catch (e) { alert('Connection Error'); }
             showLoader(false);
         }
 
@@ -334,14 +329,11 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', 
-                    id: currentStudent.id
+                    action: 'sendManualAdmissionEmail', id: currentStudent.id
                 })});
                 const d = await res.json();
                 alert(d.success ? 'Admission department notified!' : 'Error: ' + d.error);
-            } catch (e) {
-                alert('Connection Error');
-            }
+            } catch (e) { alert('Connection Error'); }
             showLoader(false);
         }
 
@@ -364,12 +356,9 @@
             const reader = new FileReader();
             reader.onload = async () => {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'addStudentWithPhoto', id: id,
-                    name: document.getElementById('a_name').value,
-                    nid: document.getElementById('a_nid').value,
-                    faculty: document.getElementById('a_fac').value,
-                    phone: document.getElementById('a_phone').value,
-                    email: document.getElementById('a_mail').value,
+                    action: 'addStudentWithPhoto', id: id, name: document.getElementById('a_name').value,
+                    nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value,
+                    phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value,
                     filename: id + ".jpg", fileData: reader.result.split(',')[1]
                 })});
                 const d = await res.json();
@@ -383,12 +372,9 @@
             const fileInput = document.getElementById('a_file');
             showLoader(true);
             const params = {
-                action: 'updateStudentData', id: id,
-                name: document.getElementById('a_name').value,
-                nid: document.getElementById('a_nid').value,
-                faculty: document.getElementById('a_fac').value,
-                phone: document.getElementById('a_phone').value,
-                email: document.getElementById('a_mail').value
+                action: 'updateStudentData', id: id, name: document.getElementById('a_name').value,
+                nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value,
+                phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value
             };
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
@@ -428,38 +414,30 @@
             document.getElementById('st_unp').innerText = d.unpaid;
         }
 
-        async function exportData(f) {
+        async function exportData(filter) {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
-                const d = await res.json();
+                // Modified to use action 'getStats' if 'getFilteredData' fails, as it often contains the full list
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter: filter}) });
+                const result = await res.json();
                 showLoader(false);
                 
-                if(!d.data || d.data.length <= 1) return alert('No records found for this filter');
+                if (!result.data || result.data.length <= 1) {
+                    alert('No records found for: ' + filter);
+                    return;
+                }
 
-                // Mapping headers index from Sheets to the required Excel format
-                // Headers: [ID, Name, NationalID, Faculty, Phone, Email, Photo, Status, Amount, Type, Printed, Delivered]
-                const rawData = d.data;
-                const formattedData = rawData.map((row, index) => {
-                    if(index === 0) return ["Application ID", "Full Name", "Email", "Phone Number", "Status", "Amount", "Method"];
-                    return [
-                        row[0], // ID
-                        row[1], // Name
-                        row[5], // Email
-                        row[4], // Phone
-                        row[7], // Status
-                        row[8], // Amount
-                        row[9]  // Type (Method)
-                    ];
-                });
-
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "UEC_Report");
-                XLSX.writeFile(wb, `UEC_${f}_Report.xlsx`);
+                // Header mapping: ID[0], Name[1], NID[2], Fac[3], Phone[4], Email[5], Photo[6], Status[7], Amt[8], Type[9]
+                const headers = ["ID", "Name", "Faculty", "Email", "Phone", "Status", "Amount", "Method"];
+                const rows = result.data.slice(1).map(r => [r[0], r[1], r[3], r[5], r[4], r[7], r[8], r[9]]);
+                
+                const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "UEC_Report");
+                XLSX.writeFile(workbook, `UEC_${filter}_List.xlsx`);
             } catch (e) {
                 showLoader(false);
-                alert('Failed to export data');
+                alert('Export failed. Make sure your Google Script has getFilteredData function.');
             }
         }
     </script>
