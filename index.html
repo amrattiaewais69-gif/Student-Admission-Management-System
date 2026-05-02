@@ -24,6 +24,8 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
         .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
         .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
         .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
@@ -41,7 +43,7 @@
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL</h2>
+            <h2>UEC PORTAL2</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
             <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
@@ -95,7 +97,7 @@
                                 <option>Faculty of Mass Communication</option>
                                 <option>Faculty of Medicine</option>
                                 <option>Faculty of Pharmacy</option>
-                                <option>Faculty of Physical Therapy</option>                             
+                                <option>Faculty of Physical Therapy</option>                               
                             </select>
                         </div>
                         <div><label>Email Address*</label><input type="email" id="a_mail"></div>
@@ -120,6 +122,12 @@
 
             <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
+                <!-- New Export Buttons for Finance -->
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <button onclick="exportData('Paid')" class="btn btn-success" style="flex:1;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
+                    <button onclick="exportData('Unpaid')" class="btn btn-danger" style="flex:1;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
+                </div>
+
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom: 20px;">
                         <input type="text" id="f_search" placeholder="Search Student ID...">
@@ -310,7 +318,7 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendStudentEmail', 
                     email: currentStudent.email,
                     name: currentStudent.name
                 })});
@@ -326,7 +334,7 @@
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    action: 'sendManualAdmissionEmail', 
                     id: currentStudent.id
                 })});
                 const d = await res.json();
@@ -421,12 +429,38 @@
         }
 
         async function exportData(f) {
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
-            const d = await res.json();
-            const ws = XLSX.utils.aoa_to_sheet(d.data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Report");
-            XLSX.writeFile(wb, "UEC_Report.xlsx");
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
+                const d = await res.json();
+                showLoader(false);
+                
+                if(!d.data || d.data.length <= 1) return alert('No records found for this filter');
+
+                // Mapping headers index from Sheets to the required Excel format
+                // Headers: [ID, Name, NationalID, Faculty, Phone, Email, Photo, Status, Amount, Type, Printed, Delivered]
+                const rawData = d.data;
+                const formattedData = rawData.map((row, index) => {
+                    if(index === 0) return ["Application ID", "Full Name", "Email", "Phone Number", "Status", "Amount", "Method"];
+                    return [
+                        row[0], // ID
+                        row[1], // Name
+                        row[5], // Email
+                        row[4], // Phone
+                        row[7], // Status
+                        row[8], // Amount
+                        row[9]  // Type (Method)
+                    ];
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(formattedData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "UEC_Report");
+                XLSX.writeFile(wb, `UEC_${f}_Report.xlsx`);
+            } catch (e) {
+                showLoader(false);
+                alert('Failed to export data');
+            }
         }
     </script>
 </body>
