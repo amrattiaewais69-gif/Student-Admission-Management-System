@@ -308,29 +308,33 @@
         async function sendStudentEmail() {
             if(!currentStudent.email) return alert('Student email not available');
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'sendStudentEmail', 
-                to: currentStudent.email,
-                subject: 'Payment Confirmation - UEC',
-                body: `Dear ${currentStudent.name}, Your payment has been successfully recorded at University of East Capital and Your application is now handled with top priority as part of our admissions process.`
-            })});
-            const d = await res.json();
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+                    action: 'sendStudentEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    email: currentStudent.email,
+                    name: currentStudent.name
+                })});
+                const d = await res.json();
+                alert(d.success ? 'Email sent to student successfully!' : 'Error: ' + d.error);
+            } catch (e) {
+                alert('Connection Error');
+            }
             showLoader(false);
-            alert(d.message || 'Email sent to student');
         }
 
         async function sendManualAdmissionEmail() {
             showLoader(true);
-            const bodyContent = `New Online Payment Received:\n\nID: ${currentStudent.id}\nName: ${currentStudent.name}\nFaculty: ${currentStudent.faculty}\nNational ID: ${currentStudent.nid}\nEmail: ${currentStudent.email}\nPhone: ${currentStudent.phone}\nStatus: Paid Online`;
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'sendStudentEmail', 
-                to: 'news@uec.edu.eg', // ضع ايميل الادمشن هنا
-                subject: 'Online Payment Alert - ' + currentStudent.id,
-                body: bodyContent
-            })});
-            const d = await res.json();
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+                    action: 'sendManualAdmissionEmail', // تغيير الاسم ليتطابق مع السكريبت
+                    id: currentStudent.id
+                })});
+                const d = await res.json();
+                alert(d.success ? 'Admission department notified!' : 'Error: ' + d.error);
+            } catch (e) {
+                alert('Connection Error');
+            }
             showLoader(false);
-            alert(d.message || 'Admission department notified');
         }
 
         async function updatePayment() {
