@@ -138,8 +138,8 @@
                             </div>
                             <!-- Email Actions -->
                             <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <button onclick="sendMailToStudent()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
-                                <button id="btn_mail_adm" onclick="sendMailToAdmission()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
+                                <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
+                                <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
 
@@ -305,7 +305,7 @@
             }
         }
 
-        async function sendMailToStudent() {
+        async function sendStudentEmail() {
             if(!currentStudent.email) return alert('Student email not available');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
@@ -319,7 +319,7 @@
             alert(d.message || 'Email sent to student');
         }
 
-        async function sendMailToAdmission() {
+        async function sendManualAdmissionEmail() {
             showLoader(true);
             const bodyContent = `New Online Payment Received:\n\nID: ${currentStudent.id}\nName: ${currentStudent.name}\nFaculty: ${currentStudent.faculty}\nNational ID: ${currentStudent.nid}\nEmail: ${currentStudent.email}\nPhone: ${currentStudent.phone}\nStatus: Paid Online`;
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
