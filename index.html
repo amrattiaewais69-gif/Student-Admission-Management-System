@@ -23,6 +23,7 @@
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
         .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
         .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
@@ -40,7 +41,7 @@
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 380px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
-            <h2>UEC PORTAL2</h2>
+            <h2>UEC PORTAL</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
             <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
@@ -75,7 +76,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                         <h3 style="margin:0;">Student Enrollment</h3>
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="a_search_id" placeholder="Search ID to Edit..." style="width: 150px; margin:0;">
+                            <input type="text" id="a_search_id" placeholder="Search ID..." style="width: 150px; margin:0;">
                             <button onclick="searchAdmission()" class="btn btn-primary" style="padding: 10px;"><i class="fas fa-search"></i></button>
                             <button onclick="resetAdmissionUI()" class="btn btn-gold" style="padding: 10px;"><i class="fas fa-rotate"></i></button>
                         </div>
@@ -125,22 +126,35 @@
                         <button onclick="search('finance')" class="btn btn-primary">Search</button>
                     </div>
                     <div id="f_res" style="display:none;">
-                        <div style="display:flex; gap:20px; align-items:center;">
-                            <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
-                            <div>
-                                <h3 id="f_name_h" style="margin:0;"></h3>
-                                <p id="f_info_h" style="color:var(--gold); margin:5px 0;"></p>
-                                <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold;"></p>
-                                <div id="f_stat_badge"></div>
+                        <div style="display:flex; justify-content: space-between; align-items: start;">
+                            <div style="display:flex; gap:20px; align-items:center;">
+                                <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
+                                <div>
+                                    <h3 id="f_name_h" style="margin:0;"></h3>
+                                    <p id="f_info_h" style="color:var(--gold); margin:5px 0;"></p>
+                                    <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold;"></p>
+                                    <div id="f_stat_badge"></div>
+                                </div>
+                            </div>
+                            <!-- Email Actions -->
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <button onclick="sendMailToStudent()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
+                                <button id="btn_mail_adm" onclick="sendMailToAdmission()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
+
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
-                            <div><label>Payment Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
+                            <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>New Amount</label><input type="number" id="f_amt"></div>
-                            <div><label>New Method</label><select id="f_type"><option value="Onsite">Onsite</option><option value="Online">Online</option></select></div>
+                            <div><label>Payment Method</label>
+                                <select id="f_type" onchange="toggleAdmButton(this.value)">
+                                    <option value="Onsite">Onsite</option>
+                                    <option value="Online">Online</option>
+                                </select>
+                            </div>
                         </div>
-                        <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm Payment</button>
+                        <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
                     </div>
                 </div>
             </div>
@@ -204,7 +218,7 @@
             const d = await res.json();
             showLoader(false);
             if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); }
-            else alert('Error');
+            else alert('Invalid Login');
         }
 
         function logout() { localStorage.removeItem('uec_s'); location.reload(); }
@@ -233,6 +247,10 @@
             }
         }
 
+        function toggleAdmButton(val) {
+            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
+        }
+
         async function searchAdmission() {
             const id = document.getElementById('a_search_id').value;
             if(!id) return alert('Enter ID');
@@ -256,42 +274,74 @@
             document.getElementById('btn_update_existing').style.display = 'flex';
         }
 
-        async function updateStudent() {
-            const id = document.getElementById('a_id').value;
-            const fileInput = document.getElementById('a_file');
+        async function search(type) {
+            const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
             showLoader(true);
-            const params = {
-                action: 'updateStudentData', id: id,
-                name: document.getElementById('a_name').value,
-                nid: document.getElementById('a_nid').value,
-                faculty: document.getElementById('a_fac').value,
-                phone: document.getElementById('a_phone').value,
-                email: document.getElementById('a_mail').value
-            };
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = async () => {
-                    params.fileData = reader.result.split(',')[1];
-                    params.filename = id + ".jpg";
-                    const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
-                    const resJson = await r.json();
-                    showLoader(false); alert(resJson.message); resetAdmissionUI();
-                };
-                reader.readAsDataURL(fileInput.files[0]);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
+            const d = await res.json();
+            showLoader(false);
+            if(!d.success) return alert('Student Not found');
+            currentStudent = d; currentStudent.id = id;
+            if(type==='finance') {
+                document.getElementById('f_res').style.display='block';
+                document.getElementById('f_img').src = d.photo;
+                document.getElementById('f_name_h').innerText = d.name;
+                document.getElementById('f_info_h').innerText = d.faculty;
+                document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
+                document.getElementById('f_paid_amt').value = d.amount || 0;
+                document.getElementById('f_paid_method').value = d.type || "N/A";
+                const badge = document.getElementById('f_stat_badge');
+                badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
+                badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
+                badge.className = 'status-badge';
+                toggleAdmButton(document.getElementById('f_type').value);
             } else {
-                const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
-                const resJson = await r.json();
-                showLoader(false); alert(resJson.message); resetAdmissionUI();
+                document.getElementById('i_res').style.display='block';
+                document.getElementById('i_img').src = d.photo;
+                document.getElementById('i_name_h').innerText = d.name;
+                document.getElementById('i_s_pay').innerText = d.status;
+                document.getElementById('i_s_prn').innerText = d.printed;
+                document.getElementById('i_s_del').innerText = d.delivered;
             }
         }
 
-        function resetAdmissionUI() {
-            document.getElementById('a_id').disabled = false;
-            document.getElementById('btn_save_new').style.display = 'flex';
-            document.getElementById('btn_update_existing').style.display = 'none';
-            ['a_id','a_name','a_nid','a_mail','a_phone','a_file','a_search_id'].forEach(i=>document.getElementById(i).value='');
-            document.getElementById('a_preview_img').style.display='none';
-            document.getElementById('previewPlaceholder').style.display='block';
+        async function sendMailToStudent() {
+            if(!currentStudent.email) return alert('Student email not available');
+            showLoader(true);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+                action: 'sendMail', 
+                to: currentStudent.email,
+                subject: 'Payment Confirmation - UEC',
+                body: `Dear ${currentStudent.name}, Your payment has been successfully recorded at University of East Capital.`
+            })});
+            const d = await res.json();
+            showLoader(false);
+            alert(d.message || 'Email sent to student');
+        }
+
+        async function sendMailToAdmission() {
+            showLoader(true);
+            const bodyContent = `New Online Payment Received:\n\nID: ${currentStudent.id}\nName: ${currentStudent.name}\nFaculty: ${currentStudent.faculty}\nNational ID: ${currentStudent.nid}\nEmail: ${currentStudent.email}\nPhone: ${currentStudent.phone}\nStatus: Paid Online`;
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
+                action: 'sendMail', 
+                to: 'admission@uec.edu.eg', // ضع ايميل الادمشن هنا
+                subject: 'Online Payment Alert - ' + currentStudent.id,
+                body: bodyContent
+            })});
+            const d = await res.json();
+            showLoader(false);
+            alert(d.message || 'Admission department notified');
+        }
+
+        async function updatePayment() {
+            const amt = document.getElementById('f_amt').value;
+            if(!amt) return alert('Enter amount');
+            showLoader(true);
+            await fetch(API, { method: 'POST', body: new URLSearchParams({
+                action: 'updatePayment', id: currentStudent.id, amount: amt,
+                status: 'Paid', type: document.getElementById('f_type').value
+            })});
+            showLoader(false); alert('Payment Success'); search('finance');
         }
 
         async function saveStudent() {
@@ -316,43 +366,40 @@
             reader.readAsDataURL(fileInput.files[0]);
         }
 
-        async function search(type) {
-            const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
+        async function updateStudent() {
+            const id = document.getElementById('a_id').value;
+            const fileInput = document.getElementById('a_file');
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
-            const d = await res.json();
-            showLoader(false);
-            if(!d.success) return alert('Not found');
-            currentStudent = d; currentStudent.id = id;
-            if(type==='finance') {
-                document.getElementById('f_res').style.display='block';
-                document.getElementById('f_img').src = d.photo;
-                document.getElementById('f_name_h').innerText = d.name;
-                document.getElementById('f_info_h').innerText = d.faculty;
-                document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
-                document.getElementById('f_paid_amt').value = d.amount || 0;
-                document.getElementById('f_paid_method').value = d.type || "N/A";
-                const badge = document.getElementById('f_stat_badge');
-                badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
-                badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
-                badge.className = 'status-badge';
+            const params = {
+                action: 'updateStudentData', id: id,
+                name: document.getElementById('a_name').value,
+                nid: document.getElementById('a_nid').value,
+                faculty: document.getElementById('a_fac').value,
+                phone: document.getElementById('a_phone').value,
+                email: document.getElementById('a_mail').value
+            };
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    params.fileData = reader.result.split(',')[1];
+                    params.filename = id + ".jpg";
+                    const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                    showLoader(false); alert((await r.json()).message); resetAdmissionUI();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
             } else {
-                document.getElementById('i_res').style.display='block';
-                document.getElementById('i_img').src = d.photo;
-                document.getElementById('i_name_h').innerText = d.name;
-                document.getElementById('i_s_pay').innerText = d.status;
-                document.getElementById('i_s_prn').innerText = d.printed;
-                document.getElementById('i_s_del').innerText = d.delivered;
+                const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                showLoader(false); alert((await r.json()).message); resetAdmissionUI();
             }
         }
 
-        async function updatePayment() {
-            showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'updatePayment', id: currentStudent.id, amount: document.getElementById('f_amt').value,
-                status: 'Paid', type: document.getElementById('f_type').value
-            })});
-            showLoader(false); alert('Success'); search('finance');
+        function resetAdmissionUI() {
+            document.getElementById('a_id').disabled = false;
+            document.getElementById('btn_save_new').style.display = 'flex';
+            document.getElementById('btn_update_existing').style.display = 'none';
+            ['a_id','a_name','a_nid','a_mail','a_phone','a_file','a_search_id'].forEach(i=>document.getElementById(i).value='');
+            document.getElementById('a_preview_img').style.display='none';
+            document.getElementById('previewPlaceholder').style.display='block';
         }
 
         async function updateID(field) {
@@ -375,7 +422,7 @@
             const ws = XLSX.utils.aoa_to_sheet(d.data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Report");
-            XLSX.writeFile(wb, "Report.xlsx");
+            XLSX.writeFile(wb, "UEC_Report.xlsx");
         }
     </script>
 </body>
