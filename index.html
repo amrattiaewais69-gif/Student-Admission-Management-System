@@ -35,6 +35,11 @@
         .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #eee; transition: 0.3s; }
         .card-stat-title { font-size: 0.85rem; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; display: block; }
         .card-stat-value { font-size: 2rem; margin: 0; font-weight: 700; }
+        
+        /* التنسيقات المضافة لمنطقة الأزرار الجديدة */
+        .export-header { font-weight: 700; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
     </style>
 </head>
@@ -74,6 +79,7 @@
                 <span id="user_display" style="font-weight: bold;">User</span>
             </div>
 
+            <!-- Page: Admission -->
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -121,6 +127,7 @@
                 </div>
             </div>
 
+            <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom: 20px;">
@@ -159,6 +166,7 @@
                 </div>
             </div>
 
+            <!-- Page: ID Cards -->
             <div id="p-idcard" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -183,6 +191,7 @@
                 </div>
             </div>
 
+            <!-- Page: Reports (Modified Layout) -->
             <div id="p-reports" class="page" style="display:none;">
                 <div class="grid">
                     <div class="card" style="text-align:center;"><span class="card-stat-title">Total Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
@@ -191,24 +200,27 @@
                     <div class="card" style="text-align:center; border-top-color:var(--warning);"><span class="card-stat-title">ID Printed</span><h2 id="st_printed" class="card-stat-value" style="color:var(--warning);">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:#7f8c8d;"><span class="card-stat-title">ID Not Printed</span><h2 id="st_not_printed" class="card-stat-value" style="color:#7f8c8d;">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:var(--info);"><span class="card-stat-title">ID Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
-                    <!-- البوكس الجديد المضاف سابقاً -->
                     <div class="card" style="text-align:center; border-top-color:#9b59b6;"><span class="card-stat-title">ID Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
-                
-                <!-- أزرار الإكسيل الجديدة المدمجة -->
-                <div class="card" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-                    <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white; flex:1; min-width:200px;">
-                        <i class="fas fa-file-excel"></i> Export Paid Students
-                    </button>
-                    <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white; flex:1; min-width:200px;">
-                        <i class="fas fa-file-excel"></i> Export Unpaid Students
-                    </button>
-                    <button onclick="exportData('All')" class="btn btn-primary" style="flex:1; min-width:200px;">
-                        <i class="fas fa-database"></i> Full Database Export
-                    </button>
-                </div>
 
-                <div class="card"><canvas id="statsChart" style="height:300px;"></canvas></div>
+                <!-- 1. الشارت أولاً كما هو مطلوب -->
+                <div class="card"><canvas id="statsChart" style="height:350px;"></canvas></div>
+
+                <!-- 2. قسم أزرار الإكسيل تحت الشارت بتنسيق احترافي -->
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        </button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
+                            <i class="fas fa-file-excel"></i> Export Unpaid Students
+                        </button>
+                        <button onclick="exportData('All')" class="btn btn-primary">
+                            <i class="fas fa-database"></i> Full Database Export
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
         <footer>© 2026 University of East Capital</footer>
@@ -447,7 +459,6 @@
             showLoader(false);
         }
 
-        // الدالة الجديدة لتصدير الحالات المالية
         async function exportFinanceData(statusType) {
             showLoader(true);
             try {
