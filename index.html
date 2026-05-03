@@ -24,32 +24,24 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: white; }
         .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
-        
         .btn-action-group { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
         .btn-print { background: #f39c12; color: white; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); flex: 1; max-width: 200px; }
-        .btn-print:hover { background: #e67e22; transform: translateY(-2px); }
         .btn-deliver { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); flex: 1; max-width: 200px; }
-        .btn-deliver:hover { background: #059669; transform: translateY(-2px); }
-        
         .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
         .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
         .photo-preview-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; margin-top: 10px; }
         .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #eee; transition: 0.3s; }
-        .stat-box:hover { border-color: var(--gold); background: #fff; }
-        footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
-
-        /* الألوان الجديدة للصناديق الإحصائية */
         .card-stat-title { font-size: 0.85rem; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; display: block; }
         .card-stat-value { font-size: 2rem; margin: 0; font-weight: 700; }
+        footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
     <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
 
-    <!-- Login -->
     <div id="loginSection" class="login-overlay">
         <div class="card" style="width: 430px; text-align: center;">
             <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80" style="margin-bottom: 10px;">
@@ -61,7 +53,6 @@
         </div>
     </div>
 
-    <!-- App -->
     <div id="appSection" style="display:none;">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -83,7 +74,6 @@
                 <span id="user_display" style="font-weight: bold;">User</span>
             </div>
 
-            <!-- Page: Admission -->
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -131,7 +121,6 @@
                 </div>
             </div>
 
-            <!-- Page: Finance -->
             <div id="p-finance" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom: 20px;">
@@ -154,7 +143,6 @@
                                 <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
-
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
@@ -171,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Page: ID Cards -->
             <div id="p-idcard" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -183,13 +170,11 @@
                         <h3 id="i_name_h" style="margin-bottom:5px;"></h3>
                         <p id="i_fac_h" style="color:var(--gold); margin:2px 0; font-weight:bold;"></p>
                         <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0; font-size:0.9rem;"></p>
-                        
                         <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
                             <div class="stat-box"><span>Payment</span><br><b id="i_s_pay"></b></div>
                             <div class="stat-box"><span>Printing</span><br><b id="i_s_prn"></b></div>
                             <div class="stat-box"><span>Delivery</span><br><b id="i_s_del"></b></div>
                         </div>
-                        
                         <div class="btn-action-group">
                             <button onclick="updateID('Printed')" class="btn btn-print"><i class="fas fa-print"></i> Mark Printed</button>
                             <button onclick="updateID('Delivered')" class="btn btn-deliver"><i class="fas fa-hand-holding-heart"></i> Mark Delivered</button>
@@ -198,7 +183,6 @@
                 </div>
             </div>
 
-            <!-- Page: Reports (Updated with New Boxes) -->
             <div id="p-reports" class="page" style="display:none;">
                 <div class="grid">
                     <div class="card" style="text-align:center;"><span class="card-stat-title">Total Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
@@ -207,9 +191,24 @@
                     <div class="card" style="text-align:center; border-top-color:var(--warning);"><span class="card-stat-title">ID Printed</span><h2 id="st_printed" class="card-stat-value" style="color:var(--warning);">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:#7f8c8d;"><span class="card-stat-title">ID Not Printed</span><h2 id="st_not_printed" class="card-stat-value" style="color:#7f8c8d;">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:var(--info);"><span class="card-stat-title">ID Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
+                    <!-- البوكس الجديد المضاف سابقاً -->
+                    <div class="card" style="text-align:center; border-top-color:#9b59b6;"><span class="card-stat-title">ID Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
+                
+                <!-- أزرار الإكسيل الجديدة المدمجة -->
+                <div class="card" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                    <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white; flex:1; min-width:200px;">
+                        <i class="fas fa-file-excel"></i> Export Paid Students
+                    </button>
+                    <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white; flex:1; min-width:200px;">
+                        <i class="fas fa-file-excel"></i> Export Unpaid Students
+                    </button>
+                    <button onclick="exportData('All')" class="btn btn-primary" style="flex:1; min-width:200px;">
+                        <i class="fas fa-database"></i> Full Database Export
+                    </button>
+                </div>
+
                 <div class="card"><canvas id="statsChart" style="height:300px;"></canvas></div>
-                <button onclick="exportData('All')" class="btn btn-primary">Export Full Database</button>
             </div>
         </main>
         <footer>© 2026 University of East Capital</footer>
@@ -218,6 +217,7 @@
     <script>
         const API = 'https://script.google.com/macros/s/AKfycbwadOthwImhldvCRp_-IRoXA-3PX79HMLksAg-N04ZCyEyJAzi8RAIz0MIC3NgsHvDd/exec';
         let currentStudent = null;
+        let statsChart = null;
 
         function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
 
@@ -280,7 +280,6 @@
             const d = await res.json();
             showLoader(false);
             if(!d.success) return alert('Not found');
-            
             document.getElementById('a_id').value = id;
             document.getElementById('a_id').disabled = true;
             document.getElementById('a_name').value = d.name;
@@ -331,36 +330,23 @@
         async function sendStudentEmail() {
             if(!currentStudent.email) return alert('Student email not available');
             showLoader(true);
-            try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name
-                })});
-                const d = await res.json();
-                alert(d.success ? 'Email sent to student successfully!' : 'Error: ' + d.error);
-            } catch (e) { alert('Connection Error'); }
-            showLoader(false);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
+            const d = await res.json();
+            showLoader(false); alert(d.success ? 'Email sent!' : 'Error: ' + d.error);
         }
 
         async function sendManualAdmissionEmail() {
             showLoader(true);
-            try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'sendManualAdmissionEmail', id: currentStudent.id
-                })});
-                const d = await res.json();
-                alert(d.success ? 'Admission department notified!' : 'Error: ' + d.error);
-            } catch (e) { alert('Connection Error'); }
-            showLoader(false);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
+            const d = await res.json();
+            showLoader(false); alert(d.success ? 'Admission notified!' : 'Error: ' + d.error);
         }
 
         async function updatePayment() {
             const amt = document.getElementById('f_amt').value;
             if(!amt) return alert('Enter amount');
             showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({
-                action: 'updatePayment', id: currentStudent.id, amount: amt,
-                status: 'Paid', type: document.getElementById('f_type').value
-            })});
+            await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: document.getElementById('f_type').value})});
             showLoader(false); alert('Payment Success'); search('finance');
         }
 
@@ -371,15 +357,7 @@
             showLoader(true);
             const reader = new FileReader();
             reader.onload = async () => {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                    action: 'addStudentWithPhoto', id: id,
-                    name: document.getElementById('a_name').value,
-                    nid: document.getElementById('a_nid').value,
-                    faculty: document.getElementById('a_fac').value,
-                    phone: document.getElementById('a_phone').value,
-                    email: document.getElementById('a_mail').value,
-                    filename: id + ".jpg", fileData: reader.result.split(',')[1]
-                })});
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: document.getElementById('a_name').value, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value, filename: id + ".jpg", fileData: reader.result.split(',')[1]})});
                 const d = await res.json();
                 showLoader(false); alert(d.message); if(d.success) resetAdmissionUI();
             };
@@ -390,19 +368,11 @@
             const id = document.getElementById('a_id').value;
             const fileInput = document.getElementById('a_file');
             showLoader(true);
-            const params = {
-                action: 'updateStudentData', id: id,
-                name: document.getElementById('a_name').value,
-                nid: document.getElementById('a_nid').value,
-                faculty: document.getElementById('a_fac').value,
-                phone: document.getElementById('a_phone').value,
-                email: document.getElementById('a_mail').value
-            };
+            const params = {action: 'updateStudentData', id: id, name: document.getElementById('a_name').value, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value};
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = async () => {
-                    params.fileData = reader.result.split(',')[1];
-                    params.filename = id + ".jpg";
+                    params.fileData = reader.result.split(',')[1]; params.filename = id + ".jpg";
                     const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
                     showLoader(false); alert((await r.json()).message); resetAdmissionUI();
                 };
@@ -428,101 +398,73 @@
             showLoader(false); alert('Updated Successfully'); search('id');
         }
 
-        let statsChart = null; // متغير لحفظ الشارت ومنع التكرار
-
         async function loadStats() {
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
                 const d = await res.json();
-                
-                // تحديث أرقام الصناديق
                 document.getElementById('st_total').innerText = d.registered;
                 document.getElementById('st_paid').innerText = d.paid;
                 document.getElementById('st_unp').innerText = d.unpaid;
-                document.getElementById('st_printed').innerText = d.printed || 0;
-                document.getElementById('st_not_printed').innerText = (d.registered - (d.printed || 0));
-                document.getElementById('st_delivered').innerText = d.delivered || 0;
-
-                // تشغيل الشارت
+                document.getElementById('st_printed').innerText = d.printed;
+                document.getElementById('st_not_printed').innerText = (d.registered - d.printed);
+                document.getElementById('st_delivered').innerText = d.delivered;
+                document.getElementById('st_not_delivered').innerText = (d.printed - d.delivered);
                 renderChart(d);
-            } catch (e) {
-                console.error("Chart Error:", e);
-            }
+            } catch (e) { console.error("Stats Error"); }
             showLoader(false);
         }
 
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
-            
             if (statsChart) { statsChart.destroy(); }
-
-            // حساب القيم المتبقية
             const notPrinted = data.registered - (data.printed || 0);
             const notDelivered = (data.printed || 0) - (data.delivered || 0);
-
             statsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Registered', 'Paid', 'Unpaid', 'ID Printed', 'ID Not Printed', 'ID Delivered', 'ID Not Delivered'],
                     datasets: [{
-                        label: 'Student Status Overview',
-                        data: [
-                            data.registered, 
-                            data.paid, 
-                            data.unpaid, 
-                            data.printed || 0, 
-                            notPrinted,
-                            data.delivered || 0,
-                            notDelivered
-                        ],
-                        backgroundColor: [
-                            '#0a192f', // Total (Navy)
-                            '#10b981', // Paid (Green)
-                            '#ef4444', // Unpaid (Red)
-                            '#f39c12', // Printed (Orange)
-                            '#7f8c8d', // Not Printed (Grey)
-                            '#3498db', // Delivered (Blue)
-                            '#9b59b6'  // Not Delivered (Purple)
-                        ],
+                        data: [data.registered, data.paid, data.unpaid, data.printed, notPrinted, data.delivered, notDelivered],
+                        backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'],
                         borderRadius: 6
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` Total: ${context.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: '#eee' },
-                            ticks: { precision: 0 }
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { font: { size: 10 } }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
         async function exportData(f) {
+            showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
             const d = await res.json();
-            const ws = XLSX.utils.aoa_to_sheet(d.data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Report");
-            XLSX.writeFile(wb, "UEC_Report.xlsx");
+            if(d.success) {
+                const ws = XLSX.utils.aoa_to_sheet(d.data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Database");
+                XLSX.writeFile(wb, "UEC_Full_Database.xlsx");
+            }
+            showLoader(false);
+        }
+
+        // الدالة الجديدة لتصدير الحالات المالية
+        async function exportFinanceData(statusType) {
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
+                const d = await res.json();
+                if(d.success) {
+                    if(d.data.length <= 1) {
+                        alert(`No ${statusType} students found.`);
+                    } else {
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Students.xlsx`);
+                    }
+                } else { alert("Error: " + d.error); }
+            } catch (e) { alert("Connection Error"); }
+            showLoader(false);
         }
     </script>
 </body>
