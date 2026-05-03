@@ -81,7 +81,7 @@
                 <span id="user_display" style="font-weight: bold;">User</span>
             </div>
 
-            <!-- Page: Admission -->
+            <!-- Page: Admission (Hidden by default) -->
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -210,8 +210,9 @@
                 <div class="card">
                     <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
                     <div class="export-btn-grid">
-                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
-                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        <!-- تم إضافة الأزرار الجديدة هنا -->
+                        <button onclick="exportDetailedPaidData()" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students List
                         </button>
                         <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
                             <i class="fas fa-file-excel"></i> Export Unpaid Students
@@ -460,6 +461,29 @@
             showLoader(false);
         }
 
+        // دالة تصدير ملف الطلبة الذين سددوا المصاريف بالتفاصيل المطلوبة
+        async function exportDetailedPaidData() {
+            showLoader(true);
+            try {
+                // نطلب البيانات المفلترة للناجحين (Paid) من السيرفر
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: 'Paid'})});
+                const d = await res.json();
+                
+                if(d.success) {
+                    // السيرفر يقوم بفلترة الأعمدة تلقائياً (الاسم، الأيدي، التليفون، الكلية، الميل، المبلغ، المكان)
+                    const ws = XLSX.utils.aoa_to_sheet(d.data);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Paid_Students");
+                    XLSX.writeFile(wb, "UEC_Paid_Students_Detailed.xlsx");
+                } else {
+                    alert("Error: " + d.error);
+                }
+            } catch (e) {
+                alert("Connection error occurred.");
+            }
+            showLoader(false);
+        }
+
         async function exportFinanceData(statusType) {
             showLoader(true);
             try {
@@ -469,13 +493,10 @@
                     if(d.data.length <= 1) {
                         alert(`No ${statusType} students found.`);
                     } else {
-                        // تعديل محلي في المصفوفة قبل التصدير للتأكد من المسميات
-                        let dataToExport = d.data;
-                        // ملاحظة: تأكد أن ملف الـ Apps Script يرسل الأعمدة بالترتيب (ID, Name, Faculty, Email, Status, Amount, PaymentMethod, PaymentDate)
-                        const ws = XLSX.utils.aoa_to_sheet(dataToExport);
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
-                        XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Report.xlsx`);
                     }
                 } else { alert("Error: " + d.error); }
             } catch (e) { alert("Connection Error"); }
