@@ -207,6 +207,7 @@
                     <div class="card" style="text-align:center; border-top-color:var(--warning);"><span class="card-stat-title">ID Printed</span><h2 id="st_printed" class="card-stat-value" style="color:var(--warning);">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:#7f8c8d;"><span class="card-stat-title">ID Not Printed</span><h2 id="st_not_printed" class="card-stat-value" style="color:#7f8c8d;">0</h2></div>
                     <div class="card" style="text-align:center; border-top-color:var(--info);"><span class="card-stat-title">ID Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
+                    <div class="card" style="text-align:center; border-top-color:#9b59b6;"><span class="card-stat-title">ID Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
                 <div class="card"><canvas id="statsChart" style="height:300px;"></canvas></div>
                 <button onclick="exportData('All')" class="btn btn-primary">Export Full Database</button>
@@ -431,26 +432,31 @@
         let statsChart = null; // متغير لحفظ الشارت ومنع التكرار
 
         async function loadStats() {
-            showLoader(true);
-            try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-                const d = await res.json();
-                
-                // تحديث أرقام الصناديق
-                document.getElementById('st_total').innerText = d.registered;
-                document.getElementById('st_paid').innerText = d.paid;
-                document.getElementById('st_unp').innerText = d.unpaid;
-                document.getElementById('st_printed').innerText = d.printed || 0;
-                document.getElementById('st_not_printed').innerText = (d.registered - (d.printed || 0));
-                document.getElementById('st_delivered').innerText = d.delivered || 0;
+    showLoader(true);
+    try {
+        const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+        const d = await res.json();
+        
+        const printed = d.printed || 0;
+        const delivered = d.delivered || 0;
+        const registered = d.registered || 0;
 
-                // تشغيل الشارت
-                renderChart(d);
-            } catch (e) {
-                console.error("Chart Error:", e);
-            }
-            showLoader(false);
-        }
+        // تحديث الأرقام في الصناديق
+        document.getElementById('st_total').innerText = registered;
+        document.getElementById('st_paid').innerText = d.paid;
+        document.getElementById('st_unp').innerText = d.unpaid;
+        document.getElementById('st_printed').innerText = printed;
+        document.getElementById('st_not_printed').innerText = (registered - printed);
+        document.getElementById('st_delivered').innerText = delivered;
+        // حساب اللي اطبع ولسه مستلمش
+        document.getElementById('st_not_delivered').innerText = (printed - delivered);
+
+        renderChart(d);
+    } catch (e) {
+        console.error("Stats Error:", e);
+    }
+    showLoader(false);
+}}
 
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
