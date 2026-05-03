@@ -455,39 +455,66 @@
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
             
-            // إذا كان الشارت موجوداً مسبقاً، قم بمسحه لإعادة رسمه بالبيانات الجديدة
             if (statsChart) { statsChart.destroy(); }
+
+            // حساب القيم المتبقية
+            const notPrinted = data.registered - (data.printed || 0);
+            const notDelivered = (data.printed || 0) - (data.delivered || 0);
 
             statsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Registered', 'Paid', 'ID Printed', 'ID Delivered'],
+                    labels: ['Registered', 'Paid', 'Unpaid', 'ID Printed', 'ID Not Printed', 'ID Delivered', 'ID Not Delivered'],
                     datasets: [{
-                        label: 'University Statistics',
-                        data: [data.registered, data.paid, data.printed || 0, data.delivered || 0],
-                        backgroundColor: [
-                            '#0a192f', // Primary
-                            '#10b981', // Success
-                            '#f39c12', // Warning
-                            '#3498db'  // Info
+                        label: 'Student Status Overview',
+                        data: [
+                            data.registered, 
+                            data.paid, 
+                            data.unpaid, 
+                            data.printed || 0, 
+                            notPrinted,
+                            data.delivered || 0,
+                            notDelivered
                         ],
-                        borderRadius: 8
+                        backgroundColor: [
+                            '#0a192f', // Total (Navy)
+                            '#10b981', // Paid (Green)
+                            '#ef4444', // Unpaid (Red)
+                            '#f39c12', // Printed (Orange)
+                            '#7f8c8d', // Not Printed (Grey)
+                            '#3498db', // Delivered (Blue)
+                            '#9b59b6'  // Not Delivered (Purple)
+                        ],
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Total: ${context.raw}`;
+                                }
+                            }
+                        }
                     },
                     scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false } }
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: '#eee' },
+                            ticks: { precision: 0 }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
                     }
                 }
             });
         }
-
         async function exportData(f) {
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
             const d = await res.json();
