@@ -210,12 +210,14 @@
                 <div class="card">
                     <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
                     <div class="export-btn-grid">
+                        <!-- الأزرار الجديدة المطلوبة -->
                         <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
                             <i class="fas fa-file-excel"></i> Export Paid Students
                         </button>
                         <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
                             <i class="fas fa-file-excel"></i> Export Unpaid Students
                         </button>
+                        <!-- الزر الأصلي للقاعدة بالكامل -->
                         <button onclick="exportData('All')" class="btn btn-primary">
                             <i class="fas fa-database"></i> Full Database Export
                         </button>
@@ -460,6 +462,7 @@
             showLoader(false);
         }
 
+        // دالة التصدير الجديدة للبيانات المفلترة
         async function exportFinanceData(statusType) {
             showLoader(true);
             try {
@@ -469,10 +472,7 @@
                     if(d.data.length <= 1) {
                         alert(`No ${statusType} students found.`);
                     } else {
-                        // تعديل محلي في المصفوفة قبل التصدير للتأكد من المسميات
-                        let dataToExport = d.data;
-                        // ملاحظة: تأكد أن ملف الـ Apps Script يرسل الأعمدة بالترتيب (ID, Name, Faculty, Email, Status, Amount, PaymentMethod, PaymentDate)
-                        const ws = XLSX.utils.aoa_to_sheet(dataToExport);
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
                         XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
