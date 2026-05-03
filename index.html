@@ -428,16 +428,64 @@
             showLoader(false); alert('Updated Successfully'); search('id');
         }
 
+        let statsChart = null; // متغير لحفظ الشارت ومنع التكرار
+
         async function loadStats() {
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-            const d = await res.json();
-            document.getElementById('st_total').innerText = d.registered;
-            document.getElementById('st_paid').innerText = d.paid;
-            document.getElementById('st_unp').innerText = d.unpaid;
-            // تحديث الصناديق الجديدة من بيانات السيرفر
-            document.getElementById('st_printed').innerText = d.printed || 0;
-            document.getElementById('st_not_printed').innerText = (d.registered - (d.printed || 0));
-            document.getElementById('st_delivered').innerText = d.delivered || 0;
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+                const d = await res.json();
+                
+                // تحديث أرقام الصناديق
+                document.getElementById('st_total').innerText = d.registered;
+                document.getElementById('st_paid').innerText = d.paid;
+                document.getElementById('st_unp').innerText = d.unpaid;
+                document.getElementById('st_printed').innerText = d.printed || 0;
+                document.getElementById('st_not_printed').innerText = (d.registered - (d.printed || 0));
+                document.getElementById('st_delivered').innerText = d.delivered || 0;
+
+                // تشغيل الشارت
+                renderChart(d);
+            } catch (e) {
+                console.error("Chart Error:", e);
+            }
+            showLoader(false);
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            
+            // إذا كان الشارت موجوداً مسبقاً، قم بمسحه لإعادة رسمه بالبيانات الجديدة
+            if (statsChart) { statsChart.destroy(); }
+
+            statsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Registered', 'Paid', 'ID Printed', 'ID Delivered'],
+                    datasets: [{
+                        label: 'University Statistics',
+                        data: [data.registered, data.paid, data.printed || 0, data.delivered || 0],
+                        backgroundColor: [
+                            '#0a192f', // Primary
+                            '#10b981', // Success
+                            '#f39c12', // Warning
+                            '#3498db'  // Info
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
         async function exportData(f) {
@@ -447,7 +495,6 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Report");
             XLSX.writeFile(wb, "UEC_Report.xlsx");
-        }
-    </script>
+        }    </script>
 </body>
 </html>
