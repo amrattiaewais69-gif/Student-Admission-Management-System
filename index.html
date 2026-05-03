@@ -20,7 +20,6 @@
         .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--gold); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         
-        /* التعديل الجديد لجعل البوكسات في صف واحد بشكل احترافي */
         .stats-row { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
         .stat-card { background: var(--white); border-radius: 12px; padding: 15px 10px; flex: 1; min-width: 130px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); transition: transform 0.3s, box-shadow 0.3s; }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
@@ -194,7 +193,7 @@
                 </div>
             </div>
 
-            <!-- Page: Reports (Updated for row-based stats) -->
+            <!-- Page: Reports (Row-based stats) -->
             <div id="p-reports" class="page" style="display:none;">
                 <div class="stats-row">
                     <div class="stat-card" style="border-top-color: var(--primary);"><span class="card-stat-title">Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
@@ -469,10 +468,13 @@
                     if(d.data.length <= 1) {
                         alert(`No ${statusType} students found.`);
                     } else {
-                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        // تعديل محلي في المصفوفة قبل التصدير للتأكد من المسميات
+                        let dataToExport = d.data;
+                        // ملاحظة: تأكد أن ملف الـ Apps Script يرسل الأعمدة بالترتيب (ID, Name, Faculty, Email, Status, Amount, PaymentMethod, PaymentDate)
+                        const ws = XLSX.utils.aoa_to_sheet(dataToExport);
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
-                        XLSX.writeFile(wb, `UEC_${statusType}_Students.xlsx`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
                     }
                 } else { alert("Error: " + d.error); }
             } catch (e) { alert("Connection Error"); }
