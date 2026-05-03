@@ -81,7 +81,7 @@
                 <span id="user_display" style="font-weight: bold;">User</span>
             </div>
 
-            <!-- Page: Admission (Hidden by default) -->
+            <!-- Page: Admission -->
             <div id="p-admission" class="page" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -166,6 +166,19 @@
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
                     </div>
                 </div>
+
+                <!-- تم إضافة قسم أزرار التقارير هنا أيضاً لصفحة الحسابات -->
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Quick Finance Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        </button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
+                            <i class="fas fa-file-excel"></i> Export Unpaid Students
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Page: ID Cards -->
@@ -193,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- Page: Reports (Row-based stats) -->
+            <!-- Page: Reports -->
             <div id="p-reports" class="page" style="display:none;">
                 <div class="stats-row">
                     <div class="stat-card" style="border-top-color: var(--primary);"><span class="card-stat-title">Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
@@ -210,9 +223,8 @@
                 <div class="card">
                     <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
                     <div class="export-btn-grid">
-                        <!-- تم إضافة الأزرار الجديدة هنا -->
-                        <button onclick="exportDetailedPaidData()" class="btn" style="background:var(--success); color:white;">
-                            <i class="fas fa-file-excel"></i> Export Paid Students List
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
                         </button>
                         <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
                             <i class="fas fa-file-excel"></i> Export Unpaid Students
@@ -457,29 +469,6 @@
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Database");
                 XLSX.writeFile(wb, "UEC_Full_Database.xlsx");
-            }
-            showLoader(false);
-        }
-
-        // دالة تصدير ملف الطلبة الذين سددوا المصاريف بالتفاصيل المطلوبة
-        async function exportDetailedPaidData() {
-            showLoader(true);
-            try {
-                // نطلب البيانات المفلترة للناجحين (Paid) من السيرفر
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: 'Paid'})});
-                const d = await res.json();
-                
-                if(d.success) {
-                    // السيرفر يقوم بفلترة الأعمدة تلقائياً (الاسم، الأيدي، التليفون، الكلية، الميل، المبلغ، المكان)
-                    const ws = XLSX.utils.aoa_to_sheet(d.data);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, "Paid_Students");
-                    XLSX.writeFile(wb, "UEC_Paid_Students_Detailed.xlsx");
-                } else {
-                    alert("Error: " + d.error);
-                }
-            } catch (e) {
-                alert("Connection error occurred.");
             }
             showLoader(false);
         }
