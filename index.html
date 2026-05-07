@@ -170,10 +170,14 @@
                             <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>New Amount</label><input type="number" id="f_amt"></div>
                             <div><label>Payment Method</label>
-                                <select id="f_type" onchange="toggleAdmButton(this.value)">
+                                <select id="f_type" onchange="handlePaymentTypeChange(this.value)">
                                     <option value="Onsite">Onsite</option>
                                     <option value="Online">Online</option>
                                 </select>
+                            </div>
+                            <div id="online_date_container" style="display:none;">
+                                <label>Actual Transfer Date (Online Only)*</label>
+                                <input type="date" id="f_transfer_date">
                             </div>
                         </div>
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
@@ -308,6 +312,17 @@
             document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
         }
 
+        function handlePaymentTypeChange(val) {
+            toggleAdmButton(val);
+            const dateContainer = document.getElementById('online_date_container');
+            if (val === 'Online') {
+                dateContainer.style.display = 'block';
+                document.getElementById('f_transfer_date').valueAsDate = new Date();
+            } else {
+                dateContainer.style.display = 'none';
+            }
+        }
+
         async function searchAdmission() {
             const id = document.getElementById('a_search_id').value;
             if(!id) return alert('Enter ID');
@@ -350,7 +365,7 @@
                 badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
                 badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
                 badge.className = 'status-badge';
-                toggleAdmButton(document.getElementById('f_type').value);
+                handlePaymentTypeChange(document.getElementById('f_type').value);
             } else {
                 document.getElementById('i_res').style.display='block';
                 document.getElementById('i_img').src = d.photo;
@@ -380,10 +395,27 @@
 
         async function updatePayment() {
             const amt = document.getElementById('f_amt').value;
+            const type = document.getElementById('f_type').value;
+            const transferDate = document.getElementById('f_transfer_date').value;
+
             if(!amt) return alert('Enter amount');
+            if(type === 'Online' && !transferDate) return alert('Please select the transfer date');
+
             showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: document.getElementById('f_type').value})});
-            showLoader(false); alert('Payment Success'); search('finance');
+            await fetch(API, { 
+                method: 'POST', 
+                body: new URLSearchParams({
+                    action: 'updatePayment', 
+                    id: currentStudent.id, 
+                    amount: amt, 
+                    status: 'Paid', 
+                    type: type,
+                    transferDate: transferDate
+                })
+            });
+            showLoader(false); 
+            alert('Payment Success'); 
+            search('finance');
         }
 
         async function saveStudent() {
