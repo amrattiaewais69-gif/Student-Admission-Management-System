@@ -381,9 +381,10 @@
                 document.getElementById('i_fac_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email || "N/A";
                 document.getElementById('i_s_pay').innerText = d.status;
-                document.getElementById('i_s_prn').innerText = d.printed;
-                document.getElementById('i_s_del').innerText = d.delivered;
+                document.getElementById('i_s_prn').innerText = (d.printed && d.printed.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
+                document.getElementById('i_s_del').innerText = (d.delivered && d.delivered.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
             }
+
         }
 
         async function sendOfficialEmailFromForm() {
