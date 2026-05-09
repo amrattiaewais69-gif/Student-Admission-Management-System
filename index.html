@@ -508,23 +508,32 @@
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
                 const d = await res.json();
+                
                 document.getElementById('st_total').innerText = d.registered;
                 document.getElementById('st_paid').innerText = d.paid;
                 document.getElementById('st_unp').innerText = d.unpaid;
                 document.getElementById('st_printed').innerText = d.printed;
+                
+                // تصحيح: من لم يطبع = الإجمالي - من طبعوا
                 document.getElementById('st_not_printed').innerText = (d.registered - d.printed);
+                
                 document.getElementById('st_delivered').innerText = d.delivered;
-                document.getElementById('st_not_delivered').innerText = (d.printed - d.delivered);
+                
+                // تصحيح: من لم يستلم = الإجمالي - من استلموا (لإظهار الفجوة الكاملة)
+                document.getElementById('st_not_delivered').innerText = (d.registered - d.delivered);
+                
                 renderChart(d);
             } catch (e) { console.error("Stats Error"); }
             showLoader(false);
         }
-
+        
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (statsChart) { statsChart.destroy(); }
+            
             const notPrinted = data.registered - (data.printed || 0);
-            const notDelivered = (data.printed || 0) - (data.delivered || 0);
+            const notDelivered = data.registered - (data.delivered || 0); // التعديل هنا
+            
             statsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -535,7 +544,12 @@
                         borderRadius: 6
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
             });
         }
 
