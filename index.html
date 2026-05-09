@@ -136,8 +136,8 @@
                 <h3><i class="fas fa-download"></i> System Reports</h3>
                 <div style="display:flex; gap:15px; margin-top:20px;">
                     <button onclick="exportFullData('All')" class="btn-primary"><i class="fas fa-file-excel"></i> Full Database</button>
-                    <button onclick="exportFullData('Onsite')" class="btn-primary" style="background:var(--success);"><i class="fas fa-cash-register"></i> Onsite List</button>
-                    <button onclick="exportFullData('Online')" class="btn-primary" style="background:var(--info);"><i class="fas fa-credit-card"></i> Online List</button>
+                    <button onclick="exportFinanceData('Onsite')" class="btn-primary" style="background:var(--success);"><i class="fas fa-cash-register"></i> Onsite List</button>
+                    <button onclick="exportFinanceData('Online')" class="btn-primary" style="background:var(--info);"><i class="fas fa-credit-card"></i> Online List</button>
                 </div>
             </div>
         </div>
@@ -253,7 +253,7 @@
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbyv5wWlP_5M-Xf9EwZInZqLhIom0jUOnYIu87M3fN9-U4yVpB6yT3OByY58W50fF3fC/exec";
+        const API = "https://script.google.com/macros/s/AKfycby1sE3AC0hkGgGLu2cbeo1Y72IuerKIeobZGKBIlzg3Ut4k7qHK5fEL13NPeSCdZGqdbA/exec";
         let currentUser = null;
         let isArabic = false;
 
@@ -311,14 +311,16 @@
         }
 
         async function loadStats() {
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-            const d = await res.json();
-            if(d.success) {
-                document.getElementById('stat-total').innerText = d.stats.total;
-                document.getElementById('stat-onsite').innerText = d.stats.onsite;
-                document.getElementById('stat-online').innerText = d.stats.online;
-                document.getElementById('stat-pending').innerText = d.stats.pending;
-            }
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+                const d = await res.json();
+                if(d.success) {
+                    document.getElementById('stat-total').innerText = d.stats.total;
+                    document.getElementById('stat-onsite').innerText = d.stats.onsite;
+                    document.getElementById('stat-online').innerText = d.stats.online;
+                    document.getElementById('stat-pending').innerText = d.stats.pending;
+                }
+            } catch(e) {}
         }
 
         async function handleAdmission(e) {
@@ -336,7 +338,6 @@
                 photoName: ""
             };
 
-            // التعديل هنا لضمان عدم حدوث خطأ عند إرسال البيانات بدون صورة
             if (photoFile) {
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -367,16 +368,18 @@
             const id = document.getElementById('financeSearchId').value;
             if(!id) return;
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id: id}) });
-            const d = await res.json();
-            if(d.success) {
-                document.getElementById('financeDetails').style.display = 'block';
-                document.getElementById('f-name').innerText = d.student.name;
-                document.getElementById('f-faculty').innerText = d.student.faculty;
-                const status = document.getElementById('f-status');
-                status.innerText = d.payment.status;
-                status.className = 'status-badge ' + (d.payment.status === 'Paid' ? 'status-paid' : 'status-pending');
-            } else { alert("Student not found"); }
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id: id}) });
+                const d = await res.json();
+                if(d.success) {
+                    document.getElementById('financeDetails').style.display = 'block';
+                    document.getElementById('f-name').innerText = d.student.name;
+                    document.getElementById('f-faculty').innerText = d.student.faculty;
+                    const status = document.getElementById('f-status');
+                    status.innerText = d.payment.status;
+                    status.className = 'status-badge ' + (d.payment.status === 'Paid' ? 'status-paid' : 'status-pending');
+                } else { alert("Student not found"); }
+            } catch(e) { alert("Error fetching student"); }
             showLoader(false);
         }
 
@@ -391,55 +394,83 @@
                 transferDate: document.getElementById('p-date').value,
                 amount: document.getElementById('p-amount').value
             };
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams(p) });
-            const d = await res.json();
-            if(d.success) {
-                alert("Payment Confirmed Successfully!");
-                searchFinance();
-                if(p.type === 'Online') {
-                    fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendManualAdmissionEmail', id: p.id}) });
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams(p) });
+                const d = await res.json();
+                if(d.success) {
+                    alert("Payment Confirmed Successfully!");
+                    searchFinance();
+                    if(p.type === 'Online') {
+                        fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendManualAdmissionEmail', id: p.id}) });
+                    }
                 }
-            }
+            } catch(e) { alert("Error updating payment"); }
             showLoader(false);
         }
 
         async function searchID() {
             const id = document.getElementById('idSearchId').value;
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id: id}) });
-            const d = await res.json();
-            if(d.success) {
-                document.getElementById('idCardResult').style.display = 'block';
-                document.getElementById('idCard').style.display = 'block';
-                document.getElementById('id-name-display').innerText = d.student.name;
-                document.getElementById('id-faculty-display').innerText = d.student.faculty;
-                document.getElementById('id-val-display').innerText = d.student.id;
-                document.getElementById('id-img').src = d.student.photoUrl;
-                
-                document.getElementById('btn-mark-printed').style.background = d.idStatus.printed === 'Yes' ? '#666' : '#10b981';
-                document.getElementById('btn-mark-delivered').style.background = d.idStatus.delivered === 'Yes' ? '#666' : '#3498db';
-            } else { alert("Student not found or payment not confirmed"); }
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id: id}) });
+                const d = await res.json();
+                if(d.success) {
+                    document.getElementById('idCardResult').style.display = 'block';
+                    document.getElementById('idCard').style.display = 'block';
+                    document.getElementById('id-name-display').innerText = d.student.name;
+                    document.getElementById('id-faculty-display').innerText = d.student.faculty;
+                    document.getElementById('id-val-display').innerText = d.student.id;
+                    document.getElementById('id-img').src = d.student.photoUrl;
+                    
+                    document.getElementById('btn-mark-printed').style.background = d.idStatus.printed === 'Yes' ? '#666' : '#10b981';
+                    document.getElementById('btn-mark-delivered').style.background = d.idStatus.delivered === 'Yes' ? '#666' : '#3498db';
+                } else { alert("Student not found or payment not confirmed"); }
+            } catch(e) { alert("Error searching student"); }
             showLoader(false);
         }
 
-        async function updateIDStatus(id, field) {
+        async function updateIDStatus(field) {
+            const id = document.getElementById('id-val-display').innerText;
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id: id, field: field}) });
-            const d = await res.json();
-            if(d.success) { alert("Status Updated!"); searchID(); }
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id: id, field: field}) });
+                const d = await res.json();
+                if(d.success) { alert("Status Updated!"); searchID(); }
+            } catch(e) { alert("Error updating ID status"); }
             showLoader(false);
         }
 
         async function exportFullData(f) {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
-            const d = await res.json();
-            if(d.success) {
-                const ws = XLSX.utils.aoa_to_sheet(d.data);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Database");
-                XLSX.writeFile(wb, "UEC_Full_Database.xlsx");
-            }
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
+                const d = await res.json();
+                if(d.success) {
+                    const ws = XLSX.utils.aoa_to_sheet(d.data);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Database");
+                    XLSX.writeFile(wb, "UEC_Full_Database.xlsx");
+                }
+            } catch(e) { alert("Export error"); }
+            showLoader(false);
+        }
+
+        async function exportFinanceData(statusType) {
+            showLoader(true);
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
+                const d = await res.json();
+                if(d.success) {
+                    if(d.data.length <= 1) {
+                        alert(`No ${statusType} students found.`);
+                    } else {
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
+                    }
+                } else { alert("Error: " + d.error); }
+            } catch(err) { alert("Finance Export Error: " + err); }
             showLoader(false);
         }
 
