@@ -499,10 +499,33 @@
         }
 
         async function updateID(field) {
-            showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
-            showLoader(false); alert('Updated Successfully'); search('id');
+    showLoader(true);
+    try {
+        const res = await fetch(API, { 
+            method: 'POST', 
+            body: new URLSearchParams({
+                action: 'updateIDStatus', 
+                id: currentStudent.id, 
+                field: field
+            }) 
+        });
+        
+        const result = await res.json();
+        showLoader(false); 
+        
+        // هنا التعديل المهم: بنشوف الـ success اللي راجعة من الـ Apps Script
+        if (result.success) {
+            alert(result.message || 'Updated Successfully');
+            search('id'); // بنحدث البيانات عشان نشوف الـ Yes ظهرت ولا لا
+        } else {
+            // لو الطالب مش دافع، الكود هيدخل هنا ويطلع رسالة التحذير
+            alert(result.message); 
         }
+    } catch (e) {
+        showLoader(false);
+        alert("حدث خطأ في الاتصال بالسيرفر");
+    }
+}
 
         async function loadStats() {
             showLoader(true);
