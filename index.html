@@ -467,7 +467,7 @@
     // 2. التحقق من أن الاسم رباعي (4 كلمات على الأقل)
     const nameParts = name.split(/\s+/); // تقسيم الاسم بناءً على المسافات
     if (nameParts.length < 4) {
-        return alert('يجب إدخال الاسم رباعياً على الأقل');
+        return alert('Please enter full name (at least four names).');
     }
 
     if (!id || fileInput.files.length === 0) return alert('ID and Photo required');
