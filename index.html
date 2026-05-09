@@ -340,7 +340,6 @@
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
             
-            // تعديل الرابط لضمان العرض
             document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
             
             document.getElementById('a_preview_img').style.display = 'block';
@@ -358,7 +357,6 @@
             if(!d.success) return alert('Student Not found');
             currentStudent = d; currentStudent.id = id;
             
-            // تحويل الرابط لصيغة Thumbnail لضمان العرض السريع والمستقر
             const safePhotoUrl = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
             
             if(type==='finance') {
@@ -380,9 +378,11 @@
                 document.getElementById('i_name_h').innerText = d.name;
                 document.getElementById('i_fac_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email || "N/A";
-                document.getElementById('i_s_pay').innerText = d.status;
-                document.getElementById('i_s_prn').innerText = d.printed;
-                document.getElementById('i_s_del').innerText = d.delivered;
+                document.getElementById('i_s_pay').innerText = d.status || "Pending";
+                
+                // حل مشكلة الـ undefined وعرض Yes/No بشكل صحيح
+                document.getElementById('i_s_prn').innerText = (d.printed && d.printed.toString().toLowerCase() === 'yes') ? 'Yes' : 'No';
+                document.getElementById('i_s_del').innerText = (d.delivered && d.delivered.toString().toLowerCase() === 'yes') ? 'Yes' : 'No';
             }
         }
 
@@ -519,20 +519,20 @@
                 
                 document.getElementById('st_delivered').innerText = d.delivered;
                 
-                // تصحيح: من لم يستلم = الإجمالي - من استلموا (لإظهار الفجوة الكاملة)
+                // تصحيح: من لم يستلم = الإجمالي - من استلموا فعلياً
                 document.getElementById('st_not_delivered').innerText = (d.registered - d.delivered);
                 
                 renderChart(d);
             } catch (e) { console.error("Stats Error"); }
             showLoader(false);
         }
-        
+
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (statsChart) { statsChart.destroy(); }
             
             const notPrinted = data.registered - (data.printed || 0);
-            const notDelivered = data.registered - (data.delivered || 0); // التعديل هنا
+            const notDelivered = data.registered - (data.delivered || 0);
             
             statsChart = new Chart(ctx, {
                 type: 'bar',
@@ -560,8 +560,8 @@
             if(d.success) {
                 const ws = XLSX.utils.aoa_to_sheet(d.data);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Database");
-                XLSX.writeFile(wb, "UEC_Full_Database.xlsx");
+                XLSX.utils.book_append_sheet(wb, ws, \"Database\");
+                XLSX.writeFile(wb, \"UEC_Full_Database.xlsx\");
             }
             showLoader(false);
         }
@@ -580,8 +580,8 @@
                         XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
                         XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
                     }
-                } else { alert("Error: " + d.error); }
-            } catch (e) { alert("Connection Error"); }
+                } else { alert(\"Error: \" + d.error); }
+            } catch (e) { alert(\"Connection Error\"); }
             showLoader(false);
         }
     </script>
