@@ -19,11 +19,13 @@
         .main { margin-left: 260px; padding: 40px; flex: 1; }
         .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--gold); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        
         .stats-row { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
         .stat-card { background: var(--white); border-radius: 12px; padding: 15px 10px; flex: 1; min-width: 130px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); transition: transform 0.3s, box-shadow 0.3s; }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .stat-card .card-stat-title { font-size: 0.7rem; color: #666; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: block; white-space: nowrap; }
         .stat-card .card-stat-value { font-size: 1.4rem; margin: 0; font-weight: 700; }
+        
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; background: #fafafa; }
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
         .btn-primary { background: var(--primary); color: white; }
@@ -62,7 +64,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70" style="filter: brightness(0) invert(1);">
-                <h4 style="color: var(--gold); margin: 5px 0;">UEC Admission System</h4>
+                <h4 style="color: var(--gold); margin: 5px 0;">UEC Admission System</h3>
             </div>
             <ul style="list-style: none; padding: 0;">
                 <li id="n-adm" class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</li>
@@ -122,15 +124,22 @@
                     <div style="margin-top:30px; display:flex; gap:10px;">
                         <button id="btn_save_new" onclick="saveStudent()" class="btn btn-primary" style="width: 200px;"><i class="fas fa-save"></i> Save New</button>
                         <button id="btn_update_existing" onclick="updateStudent()" class="btn btn-gold" style="display:none; width: 200px;"><i class="fas fa-user-check"></i> Update</button>
-                        <button onclick="sendOfficialEmailFromForm()" class="btn" style="background: var(--info); color: white; width: 200px;"><i class="fas fa-envelope-open-text"></i> Send Email</button>
+                        <button id="btn_send_email" onclick="sendOfficialEmailFromForm()" class="btn" style="background: var(--info); color: white; width: 200px;"><i class="fas fa-envelope-open-text"></i> Send Email</button>
                     </div>
                 </div>
+
                 <div class="card">
                     <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export Admission Reports</div>
                     <div class="export-btn-grid">
-                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
-                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
-                        <button onclick="exportData('All')" class="btn btn-primary"><i class="fas fa-database"></i> Full Database Export</button>
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        </button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
+                            <i class="fas fa-file-excel"></i> Export Unpaid Students
+                        </button>
+                        <button onclick="exportData('All')" class="btn btn-primary">
+                            <i class="fas fa-database"></i> Full Database Export
+                        </button>
                     </div>
                 </div>
             </div>
@@ -175,6 +184,18 @@
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Quick Finance Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        </button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
+                            <i class="fas fa-file-excel"></i> Export Unpaid Students
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div id="p-idcard" class="page" style="display:none;">
@@ -211,11 +232,28 @@
                     <div class="stat-card" style="border-top-color: var(--info);"><span class="card-stat-title">Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
                     <div class="stat-card" style="border-top-color: #9b59b6;"><span class="card-stat-title">Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
+
                 <div class="card"><canvas id="statsChart" style="height:350px;"></canvas></div>
+
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
+                            <i class="fas fa-file-excel"></i> Export Paid Students
+                        </button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
+                            <i class="fas fa-file-excel"></i> Export Unpaid Students
+                        </button>
+                        <button onclick="exportData('All')" class="btn btn-primary">
+                            <i class="fas fa-database"></i> Full Database Export
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
         <footer>© 2026 University of East Capital</footer>
     </div>
+
 
     <script>
         const API = 'https://script.google.com/macros/s/AKfycbwadOthwImhldvCRp_-IRoXA-3PX79HMLksAg-N04ZCyEyJAzi8RAIz0MIC3NgsHvDd/exec';
@@ -250,9 +288,6 @@
         function showPage(p) {
             document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
             document.getElementById('p-'+p).style.display='block';
-            document.querySelectorAll('.nav-item').forEach(ni=>ni.classList.remove('active'));
-            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase().includes(p.substring(0,3)));
-            if(activeNav) activeNav.classList.add('active');
             if(p==='reports') loadStats();
         }
 
@@ -260,10 +295,8 @@
             const navs = ['n-adm','n-fin','n-id','n-rep'];
             navs.forEach(n => document.getElementById(n).style.display='none');
             if(role==='Admin') navs.forEach(n => document.getElementById(n).style.display='flex');
-            else if(role==='Finance') document.getElementById('n-fin').style.display='flex';
-            else if(role==='Admission') document.getElementById('n-adm').style.display='flex';
-            else if(role==='ID') document.getElementById('n-id').style.display='flex';
-            showPage(role==='Admin'?'reports':(role==='ID'?'idcard':role.toLowerCase()));
+            else document.getElementById('n-'+role.toLowerCase().substring(0,3)).style.display='flex';
+            showPage(role==='Admin'?'reports':role.toLowerCase());
         }
 
         function previewImage(input) {
@@ -273,6 +306,21 @@
                 const reader = new FileReader();
                 reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; placeholder.style.display = 'none'; }
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleAdmButton(val) {
+            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
+        }
+
+        function handlePaymentTypeChange(val) {
+            toggleAdmButton(val);
+            const dateContainer = document.getElementById('online_date_container');
+            if (val === 'Online') {
+                dateContainer.style.display = 'block';
+                document.getElementById('f_transfer_date').valueAsDate = new Date();
+            } else {
+                dateContainer.style.display = 'none';
             }
         }
 
@@ -291,7 +339,10 @@
             document.getElementById('a_fac').value = d.faculty;
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
+            
+            // تعديل الرابط لضمان العرض
             document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
+            
             document.getElementById('a_preview_img').style.display = 'block';
             document.getElementById('previewPlaceholder').style.display = 'none';
             document.getElementById('btn_save_new').style.display = 'none';
@@ -300,13 +351,14 @@
 
         async function search(type) {
             const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
-            if(!id) return alert('Enter ID');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await res.json();
             showLoader(false);
             if(!d.success) return alert('Student Not found');
             currentStudent = d; currentStudent.id = id;
+            
+            // تحويل الرابط لصيغة Thumbnail لضمان العرض السريع والمستقر
             const safePhotoUrl = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
             
             if(type==='finance') {
@@ -328,32 +380,79 @@
                 document.getElementById('i_name_h').innerText = d.name;
                 document.getElementById('i_fac_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email || "N/A";
-                document.getElementById('i_s_pay').innerText = d.status || "Pending";
-                // الإصلاح الدقيق هنا:
-                document.getElementById('i_s_prn').innerText = (d.printed && d.printed.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
-                document.getElementById('i_s_del').innerText = (d.delivered && d.delivered.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
+                document.getElementById('i_s_pay').innerText = d.status;
+                document.getElementById('i_s_prn').innerText = d.printed;
+                document.getElementById('i_s_del').innerText = d.delivered;
             }
+        }
+
+        async function sendOfficialEmailFromForm() {
+            const email = document.getElementById('a_mail').value;
+            const id = document.getElementById('a_id').value;
+            if(!email || !id) return alert('Please enter Student ID and Email first!');
+            if(!confirm('Are you sure you want to send the official payment confirmation email?')) return;
+            
+            showLoader(true);
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'sendOfficialPaymentEmail',
+                        email: email,
+                        id: id
+                    })
+                });
+                const d = await res.json();
+                showLoader(false);
+                if(d.success) {
+                    alert('Official confirmation email has been sent successfully!');
+                } else {
+                    alert('Error: ' + d.error);
+                }
+            } catch(e) {
+                showLoader(false);
+                alert('System Error: ' + e.message);
+            }
+        }
+
+        async function sendStudentEmail() {
+            if(!currentStudent.email) return alert('Student email not available');
+            showLoader(true);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
+            const d = await res.json();
+            showLoader(false); alert(d.success ? 'Email sent!' : 'Error: ' + d.error);
+        }
+
+        async function sendManualAdmissionEmail() {
+            showLoader(true);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
+            const d = await res.json();
+            showLoader(false); alert(d.success ? 'Admission notified!' : 'Error: ' + d.error);
         }
 
         async function updatePayment() {
             const amt = document.getElementById('f_amt').value;
             const type = document.getElementById('f_type').value;
             const transferDate = document.getElementById('f_transfer_date').value;
-            if(!amt) return alert('Enter amount');
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: type, transferDate: type==='Online'?transferDate:''}) });
-            showLoader(false); 
-            const dr = await res.json();
-            alert(dr.message); 
-            search('finance');
-        }
 
-        async function updateID(field) {
+            if(!amt) return alert('Enter amount');
+            if(type === 'Online' && !transferDate) return alert('Please select the transfer date');
+
             showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
+            await fetch(API, { 
+                method: 'POST', 
+                body: new URLSearchParams({
+                    action: 'updatePayment', 
+                    id: currentStudent.id, 
+                    amount: amt, 
+                    status: 'Paid', 
+                    type: type,
+                    transferDate: transferDate
+                })
+            });
             showLoader(false); 
-            alert('Updated Successfully'); 
-            search('id');
+            alert('Payment Success'); 
+            search('finance');
         }
 
         async function saveStudent() {
@@ -364,7 +463,8 @@
             const reader = new FileReader();
             reader.onload = async () => {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: document.getElementById('a_name').value, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value, filename: id + ".jpg", fileData: reader.result.split(',')[1]})});
-                showLoader(false); alert((await res.json()).message); resetAdmissionUI();
+                const d = await res.json();
+                showLoader(false); alert(d.message); if(d.success) resetAdmissionUI();
             };
             reader.readAsDataURL(fileInput.files[0]);
         }
@@ -397,49 +497,60 @@
             document.getElementById('previewPlaceholder').style.display='block';
         }
 
+        async function updateID(field) {
+            showLoader(true);
+            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
+            showLoader(false); alert('Updated Successfully'); search('id');
+        }
+
         async function loadStats() {
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
                 const d = await res.json();
+                
                 document.getElementById('st_total').innerText = d.registered;
                 document.getElementById('st_paid').innerText = d.paid;
                 document.getElementById('st_unp').innerText = d.unpaid;
                 document.getElementById('st_printed').innerText = d.printed;
+                
+                // تصحيح: من لم يطبع = الإجمالي - من طبعوا
                 document.getElementById('st_not_printed').innerText = (d.registered - d.printed);
+                
                 document.getElementById('st_delivered').innerText = d.delivered;
+                
+                // تصحيح: من لم يستلم = الإجمالي - من استلموا (لإظهار الفجوة الكاملة)
                 document.getElementById('st_not_delivered').innerText = (d.registered - d.delivered);
+                
                 renderChart(d);
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error("Stats Error"); }
             showLoader(false);
         }
-
+        
         function renderChart(data) {
             const ctx = document.getElementById('statsChart').getContext('2d');
-            if (statsChart) statsChart.destroy();
+            if (statsChart) { statsChart.destroy(); }
+            
+            const notPrinted = data.registered - (data.printed || 0);
+            const notDelivered = data.registered - (data.delivered || 0); // التعديل هنا
+            
             statsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Registered', 'Paid', 'Unpaid', 'Printed', 'Not Printed', 'Delivered', 'Not Delivered'],
+                    labels: ['Registered', 'Paid', 'Unpaid', 'ID Printed', 'ID Not Printed', 'ID Delivered', 'ID Not Delivered'],
                     datasets: [{
-                        data: [data.registered, data.paid, data.unpaid, data.printed, data.registered-data.printed, data.delivered, data.registered-data.delivered],
+                        data: [data.registered, data.paid, data.unpaid, data.printed, notPrinted, data.delivered, notDelivered],
                         backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'],
                         borderRadius: 6
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
             });
-        }
-
-        function handlePaymentTypeChange(val) {
-            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
-            const dateContainer = document.getElementById('online_date_container');
-            if (val === 'Online') {
-                dateContainer.style.display = 'block';
-                document.getElementById('f_transfer_date').valueAsDate = new Date();
-            } else {
-                dateContainer.style.display = 'none';
-            }
         }
 
         async function exportData(f) {
@@ -461,37 +572,17 @@
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
                 const d = await res.json();
                 if(d.success) {
-                    const ws = XLSX.utils.aoa_to_sheet(d.data);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
-                    XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
+                    if(d.data.length <= 1) {
+                        alert(`No ${statusType} students found.`);
+                    } else {
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
+                    }
                 } else { alert("Error: " + d.error); }
-            } catch(e) { alert("Export failed"); }
+            } catch (e) { alert("Connection Error"); }
             showLoader(false);
-        }
-
-        async function sendOfficialEmailFromForm() {
-            const email = document.getElementById('a_mail').value;
-            const id = document.getElementById('a_id').value;
-            if(!email || !id) return alert('Email & ID Required');
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendOfficialPaymentEmail', email: email, id: id})});
-            const d = await res.json();
-            showLoader(false); alert(d.success ? 'Official Email Sent Successfully' : 'Error sending email');
-        }
-
-        async function sendStudentEmail() {
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
-            const d = await res.json();
-            showLoader(false); alert(d.success ? 'Payment Confirmation Sent' : 'Error');
-        }
-
-        async function sendManualAdmissionEmail() {
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
-            const d = await res.json();
-            showLoader(false); alert(d.success ? 'Admission Notified Successfully' : 'Error');
         }
     </script>
 </body>
