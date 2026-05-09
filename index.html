@@ -339,7 +339,10 @@
             document.getElementById('a_fac').value = d.faculty;
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
-            document.getElementById('a_preview_img').src = d.photo;
+            
+            // تعديل الرابط لضمان العرض
+            document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
+            
             document.getElementById('a_preview_img').style.display = 'block';
             document.getElementById('previewPlaceholder').style.display = 'none';
             document.getElementById('btn_save_new').style.display = 'none';
@@ -354,9 +357,13 @@
             showLoader(false);
             if(!d.success) return alert('Student Not found');
             currentStudent = d; currentStudent.id = id;
+            
+            // تحويل الرابط لصيغة Thumbnail لضمان العرض السريع والمستقر
+            const safePhotoUrl = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
+            
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
-                document.getElementById('f_img').src = d.photo;
+                document.getElementById('f_img').src = safePhotoUrl;
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
                 document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
@@ -369,7 +376,7 @@
                 handlePaymentTypeChange(document.getElementById('f_type').value);
             } else {
                 document.getElementById('i_res').style.display='block';
-                document.getElementById('i_img').src = d.photo;
+                document.getElementById('i_img').src = safePhotoUrl;
                 document.getElementById('i_name_h').innerText = d.name;
                 document.getElementById('i_fac_h').innerText = d.faculty;
                 document.getElementById('i_mail_h').innerText = d.email || "N/A";
@@ -379,7 +386,6 @@
             }
         }
 
-        // الدالة الجديدة الخاصة بإرسال الإيميل من صفحة الادمشن
         async function sendOfficialEmailFromForm() {
             const email = document.getElementById('a_mail').value;
             const id = document.getElementById('a_id').value;
