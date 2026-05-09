@@ -489,14 +489,36 @@
                 fileData: reader.result.split(',')[1]
             })
         });
-        showLoader(false); 
         const result = await res.json();
-        alert(result.message); 
-        resetAdmissionUI();
-        
+                showLoader(false); 
+
+                // هنا يتم التعامل مع الرد سواء نجاح أو تكرار رقم بطاقة
+                if (result.success) {
+                    alert(result.message); 
+                    resetAdmissionUI();
+                } else {
+                    alert(result.message); // ستظهر هنا رسالة "رقم البطاقة مكرر"
+                }
+            } catch (e) {
+                showLoader(false);
+                alert("حدث خطأ أثناء الحفظ");
+            }
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+
+    // باقي الدوال (search, logout, etc.) تظل كما هي بالأسفل...
+    function logout() { localStorage.removeItem('uec_s'); location.reload(); }
+    
+    window.onload = () => {
+        const s = JSON.parse(localStorage.getItem('uec_s'));
+        if(s) { 
+            document.getElementById('loginSection').style.display='none'; 
+            document.getElementById('appSection').style.display='block'; 
+            document.getElementById('user_display').innerText = s.user;
+            applyRole(s.role);
+        }
     };
-    reader.readAsDataURL(fileInput.files[0]);
-}
 
         async function updateStudent() {
             const id = document.getElementById('a_id').value;
