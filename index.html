@@ -507,18 +507,7 @@
         reader.readAsDataURL(fileInput.files[0]);
     }
 
-    // باقي الدوال (search, logout, etc.) تظل كما هي بالأسفل...
-    function logout() { localStorage.removeItem('uec_s'); location.reload(); }
-    
-    window.onload = () => {
-        const s = JSON.parse(localStorage.getItem('uec_s'));
-        if(s) { 
-            document.getElementById('loginSection').style.display='none'; 
-            document.getElementById('appSection').style.display='block'; 
-            document.getElementById('user_display').innerText = s.user;
-            applyRole(s.role);
-        }
-    };
+ };
 
         async function updateStudent() {
             const id = document.getElementById('a_id').value;
