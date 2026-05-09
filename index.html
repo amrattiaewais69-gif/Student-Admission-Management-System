@@ -183,9 +183,14 @@
                         <div class="photo-preview" id="new_preview"><i class="fas fa-camera"></i></div>
                     </div>
                 </div>
-                <button class="btn-gold" style="margin-top: 20px;" onclick="saveStudent()">
-                    Save Student Profile <i class="fas fa-save"></i>
-                </button>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button class="btn-gold" onclick="saveStudent()">
+                        Save Student Profile <i class="fas fa-save"></i>
+                    </button>
+                    <button class="btn-info" onclick="sendOfficialEmailFromForm()">
+                        Send Official Email <i class="fas fa-envelope-open-text"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="card">
@@ -334,7 +339,7 @@
     </footer>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbwadOthwImhldvCRp_-IRoXA-3PX79HMLksAg-N04ZCyEyJAzi8RAIz0MIC3NgsHvDd/exec"; // Replace with your URL
+        const API = "https://script.google.com/macros/s/AKfycbz_pWJ8j88_nEa59H3k7Gj0V9qS8q_x9_Z9_Z9_Z9/exec"; // Replace with your URL
         let currentUser = null;
         let studentsData = [];
         let paymentsData = [];
@@ -423,6 +428,43 @@
             }
         }
 
+        /**
+         * دالة إرسال الميل من بيانات الفورم مباشرة
+         */
+        function sendOfficialEmailFromForm() {
+            const email = document.getElementById('st_email').value;
+            const id = document.getElementById('st_id').value;
+            if(!email || !id) return alert("Please enter Student ID and Email first!");
+            sendOfficialEmail(email, id);
+        }
+
+        /**
+         * دالة إرسال الميل الرسمي للطالب
+         */
+        async function sendOfficialEmail(email, id) {
+            if(!confirm("Are you sure you want to send the official payment confirmation email?")) return;
+            showLoader(true);
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'sendOfficialPaymentEmail',
+                        email: email,
+                        id: id
+                    })
+                });
+                const d = await res.json();
+                if(d.success) {
+                    alert("Official confirmation email has been sent successfully!");
+                } else {
+                    alert("Error: " + d.error);
+                }
+            } catch(e) {
+                alert("System Error: " + e.message);
+            }
+            showLoader(false);
+        }
+
         async function refreshData() {
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:'All'}) });
@@ -451,40 +493,11 @@
                             <div class="action-btns">
                                 <button class="btn-primary" onclick="openEditModal('${st.id}')"><i class="fas fa-edit"></i></button>
                                 <button class="btn-info" onclick="sendWelcomeEmail('${st.email}', '${st.name}')" title="Welcome Email"><i class="fas fa-envelope"></i></button>
-                                <button class="btn-info" style="background: var(--gold); color: var(--primary);" onclick="sendOfficialEmail('${st.email}', '${st.id}')" title="Send Official Payment Email"><i class="fas fa-envelope-open-text"></i></button>
                             </div>
                         </td>
                     </tr>
                 `;
             });
-        }
-
-        /**
-         * دالة إرسال الميل الرسمي للطالب
-         */
-        async function sendOfficialEmail(email, id) {
-            if(!confirm("Are you sure you want to send the official payment confirmation email to this student?")) return;
-            
-            showLoader(true);
-            try {
-                const res = await fetch(API, {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        action: 'sendOfficialPaymentEmail',
-                        email: email,
-                        id: id
-                    })
-                });
-                const d = await res.json();
-                if(d.success) {
-                    alert("Official confirmation email has been sent successfully!");
-                } else {
-                    alert("Error: " + d.error);
-                }
-            } catch(e) {
-                alert("System Error: " + e.message);
-            }
-            showLoader(false);
         }
 
         async function sendWelcomeEmail(email, name) {
