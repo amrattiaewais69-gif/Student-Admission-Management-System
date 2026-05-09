@@ -11,500 +11,326 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #0a192f; --secondary: #172a45; --gold: #C5A059; --text: #ccd6f6; --white: #ffffff; --bg-light: #f4f7f6; --success: #10b981; --warning: #f39c12; --info: #3498db; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-light); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; }
-        .sidebar { width: 260px; background: var(--primary); height: 100vh; position: fixed; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 100; color: white; }
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #8892b0; transition: 0.3s; border-left: 4px solid transparent; }
-        .nav-item:hover, .nav-item.active { color: var(--gold); background: rgba(197, 160, 89, 0.1); border-left-color: var(--gold); }
-        .main { margin-left: 260px; padding: 40px; flex: 1; }
-        .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--gold); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        
-        .stats-row { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
-        .stat-card { background: var(--white); border-radius: 12px; padding: 15px 10px; flex: 1; min-width: 130px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); transition: transform 0.3s, box-shadow 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .stat-card .card-stat-title { font-size: 0.7rem; color: #666; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: block; white-space: nowrap; }
-        .stat-card .card-stat-value { font-size: 1.4rem; margin: 0; font-weight: 700; }
-        
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; background: #fafafa; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-gold { background: var(--gold); color: white; }
-        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
-        .btn-action-group { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
-        .btn-print { background: #f39c12; color: white; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); flex: 1; max-width: 200px; }
-        .btn-deliver { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); flex: 1; max-width: 200px; }
-        .login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, var(--secondary), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .loader { display: none; position: fixed; top: 20px; right: 20px; background: var(--gold); color: white; padding: 10px 25px; border-radius: 50px; z-index: 2000; font-weight: bold; }
-        .photo-preview-container { width: 120px; height: 150px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; background: #eee; overflow: hidden; }
-        .photo-preview-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; margin-top: 10px; }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #eee; transition: 0.3s; }
-        .export-header { font-weight: 700; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
-        footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-light); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; color: var(--gold); flex-direction: column; }
+        .spinner { border: 4px solid rgba(197, 160, 89, 0.3); border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        header { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--gold); box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000; }
+        header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .logout-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s; font-weight: 600; }
+        .logout-btn:hover { background: var(--gold); color: var(--primary); }
+        .nav-tabs { display: flex; justify-content: center; background: var(--secondary); padding: 0 5%; gap: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .tab-btn { background: none; border: none; color: var(--text); padding: 15px 25px; cursor: pointer; font-weight: 500; font-size: 0.9rem; transition: 0.3s; position: relative; opacity: 0.7; }
+        .tab-btn.active { color: var(--gold); opacity: 1; border-bottom: 3px solid var(--gold); }
+        .container { flex: 1; padding: 40px 5%; max-width: 1400px; margin: 0 auto; width: 90%; }
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: var(--white); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card h2 { color: var(--primary); margin-top: 0; font-weight: 600; font-size: 1.4rem; border-bottom: 2px solid var(--bg-light); padding-bottom: 15px; margin-bottom: 25px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--secondary); }
+        input, select { width: 100%; padding: 12px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1); }
+        .btn { background: var(--primary); color: var(--gold); border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn:hover { background: var(--secondary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-info { background: var(--info); color: white; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-card { padding: 25px; border-radius: 12px; color: white; text-align: center; }
+        .stat-card i { font-size: 2rem; margin-bottom: 10px; opacity: 0.8; }
+        .stat-card h3 { margin: 5px 0; font-size: 1.8rem; }
+        .stat-card p { margin: 0; font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .id-card-view { display: flex; background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #ddd; max-width: 500px; margin: 0 auto; height: 300px; position: relative; }
+        .id-left { width: 35%; background: var(--primary); display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--gold); }
+        .id-photo { width: 120px; height: 140px; border: 3px solid var(--gold); border-radius: 10px; object-fit: cover; background: #eee; margin-bottom: 15px; }
+        .id-right { width: 65%; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .id-field { margin-bottom: 12px; }
+        .id-label { font-size: 0.7rem; color: #777; text-transform: uppercase; }
+        .id-value { font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-top: 10px; }
+        .status-paid { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef9c3; color: #854d0e; }
+        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .login-card { background: var(--white); padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        .login-card img { width: 120px; margin-bottom: 20px; }
+        .search-container { position: relative; margin-bottom: 30px; }
+        .search-container input { padding-left: 45px; height: 55px; font-size: 1.1rem; border-radius: 12px; }
+        .search-container i { position: absolute; left: 18px; top: 18px; color: var(--gold); font-size: 1.2rem; }
+        .chart-container { height: 300px; position: relative; }
+        footer { background: var(--primary); color: var(--gold); text-align: center; padding: 20px; font-size: 0.8rem; margin-top: auto; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
+    <div id="loader" class="loader"><div class="spinner"></div><p id="loaderText">Processing Request...</p></div>
 
-    <div id="loginSection" class="login-overlay">
-        <div class="card" style="width: 440px; text-align: center;">
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="110" style="margin-bottom: 10px;">
-            <h2>🎓 University of East Capital</h2>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px;">Admission Management Portal</p>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password" style="margin-top:10px;">
-            <button onclick="login()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h1 style="color: var(--primary); margin-bottom: 30px;">UEC LOGIN</h1>
+            <div class="form-group"><input type="text" id="username" placeholder="Username"></div>
+            <div class="form-group"><input type="password" id="password" placeholder="Password"></div>
+            <button class="btn" onclick="handleLogin()">Sign In <i class="fas fa-sign-in-alt"></i></button>
         </div>
     </div>
 
-    <div id="appSection" style="display:none;">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70" style="filter: brightness(0) invert(1);">
-                <h4 style="color: var(--gold); margin: 5px 0;">UEC Admission System</h3>
-            </div>
-            <ul style="list-style: none; padding: 0;">
-                <li id="n-adm" class="nav-item" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</li>
-                <li id="n-fin" class="nav-item" onclick="showPage('finance')"><i class="fas fa-file-invoice-dollar"></i> Finance</li>
-                <li id="n-id" class="nav-item" onclick="showPage('idcard')"><i class="fas fa-id-card"></i> ID Cards</li>
-                <li id="n-rep" class="nav-item" onclick="showPage('reports')"><i class="fas fa-chart-line"></i> Dashboard</li>
-                <li class="nav-item" onclick="logout()" style="color: #ff6b6b;"><i class="fas fa-power-off"></i> Logout</li>
-            </ul>
-        </aside>
+    <header><h1>University of East Capital</h1><div class="user-info"><span id="userDisplay"></span><button class="logout-btn" onclick="logout()">Logout</button></div></header>
 
-        <main class="main">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: #fff; padding: 15px 25px; border-radius: 12px;">
-                <h2 id="pageTitle" style="margin:0;">Dashboard</h2>
-                <span id="user_display" style="font-weight: bold;">User</span>
-            </div>
+    <nav class="nav-tabs">
+        <button class="tab-btn" id="tab-dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" id="tab-admission" onclick="showPage('admission')"><i class="fas fa-user-plus"></i> Admission</button>
+        <button class="tab-btn" id="tab-finance" onclick="showPage('finance')"><i class="fas fa-money-bill-wave"></i> Finance</button>
+        <button class="tab-btn" id="tab-idcards" onclick="showPage('idcards')"><i class="fas fa-id-card"></i> ID Cards</button>
+    </nav>
 
-            <div id="p-admission" class="page" style="display:none;">
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 style="margin:0;">Student Enrollment</h3>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="a_search_id" placeholder="Search ID..." style="width: 150px; margin:0;">
-                            <button onclick="searchAdmission()" class="btn btn-primary" style="padding: 10px;"><i class="fas fa-search"></i></button>
-                            <button onclick="resetAdmissionUI()" class="btn btn-gold" style="padding: 10px;"><i class="fas fa-rotate"></i></button>
-                        </div>
-                    </div>
-                    <div class="grid">
-                        <div><label>Application ID*</label><input type="text" id="a_id"></div>
-                        <div><label>Full Name*</label><input type="text" id="a_name"></div>
-                        <div><label>National ID*</label><input type="text" id="a_nid" maxlength="14"></div>
-                        <div><label>Faculty*</label>
-                            <select id="a_fac">
-                                <option>Faculty of Arts and Design</option>
-                                <option>Faculty of Business and Economics</option>
-                                <option>Faculty of Computer Science & Information Technology</option>
-                                <option>Faculty of Dentistry</option>
-                                <option>Faculty of Engineering</option>
-                                <option>Faculty of Mass Communication</option>
-                                <option>Faculty of Medicine</option>
-                                <option>Faculty of Pharmacy</option>
-                                <option>Faculty of Physical Therapy</option>                                
-                            </select>
-                        </div>
-                        <div><label>Email Address*</label><input type="email" id="a_mail"></div>
-                        <div><label>Phone Number</label><input type="text" id="a_phone"></div>
-                    </div>
-                    <div style="margin-top:20px; display: flex; gap: 20px;">
-                        <div style="flex: 1;">
-                            <label>Student Photo</label>
-                            <input type="file" id="a_file" accept="image/*" onchange="previewImage(this)">
-                        </div>
-                        <div class="photo-preview-container">
-                            <i class="fas fa-user" id="previewPlaceholder" style="font-size: 2rem; color: #ccc;"></i>
-                            <img id="a_preview_img" src="">
-                        </div>
-                    </div>
-                    <div style="margin-top:30px; display:flex; gap:10px;">
-                        <button id="btn_save_new" onclick="saveStudent()" class="btn btn-primary" style="width: 200px;"><i class="fas fa-save"></i> Save New</button>
-                        <button id="btn_update_existing" onclick="updateStudent()" class="btn btn-gold" style="display:none; width: 200px;"><i class="fas fa-user-check"></i> Update</button>
-                    </div>
+    <div class="container">
+        
+        <div id="dashboard" class="page">
+            <div class="stats-grid">
+                <div class="stat-card" style="background: var(--primary);"><i class="fas fa-users"></i><h3 id="stat-registered">0</h3><p>Total Registered</p></div>
+                <div class="stat-card" style="background: var(--success);"><i class="fas fa-check-circle"></i><h3 id="stat-paid">0</h3><p>Payments Confirmed</p></div>
+                <div class="stat-card" style="background: var(--warning);"><i class="fas fa-clock"></i><h3 id="stat-pending">0</h3><p>Pending Payments</p></div>
+                <div class="stat-card" style="background: var(--info);"><i class="fas fa-print"></i><h3 id="stat-printed">0</h3><p>IDs Printed</p></div>
+            </div>
+            <div class="grid-2" style="margin-top: 30px;">
+                <div class="card"><h2>Registration Trends</h2><div class="chart-container"><canvas id="regChart"></canvas></div></div>
+                <div class="card"><h2>Administrative Tools</h2><div class="stats-grid" style="grid-template-columns: 1fr;"><button class="btn" onclick="exportFullData()"><i class="fas fa-file-excel"></i> Export Full Database</button></div></div>
+            </div>
+        </div>
+
+        <div id="admission" class="page">
+            <div class="card">
+                <h2>New Student Registration</h2>
+                <div class="grid-2">
+                    <div class="form-group"><label>Student ID</label><input type="text" id="adm-id" placeholder="Ex: 2024001"></div>
+                    <div class="form-group"><label>Full Name</label><input type="text" id="adm-name" placeholder="As per National ID"></div>
+                    <div class="form-group"><label>Faculty</label><select id="adm-faculty"><option>Faculty of Pharmacy</option><option>Faculty of Engineering</option><option>Faculty of Computer Science & Information Technology</option><option>Faculty of Business Administration</option><option>Faculty of Arts and Design</option><option>Faculty of Mass Communication</option><option>Faculty of Oral and Dental Medicine</option></select></div>
+                    <div class="form-group"><label>Phone Number</label><input type="text" id="adm-phone" placeholder="01xxxxxxxxx"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" id="adm-email" placeholder="example@uec.edu.eg"></div>
+                    <div class="form-group"><label>National ID</label><input type="text" id="adm-nid" placeholder="14-digit number"></div>
+                    <div class="form-group"><label>Student Photo (Optional)</label><input type="file" id="adm-photo" accept="image/*"></div>
                 </div>
+                <button class="btn" style="max-width: 300px; margin-top: 20px;" onclick="registerStudent()">Register Student <i class="fas fa-save"></i></button>
+            </div>
+        </div>
 
+        <div id="finance" class="page">
+            <div class="search-container"><i class="fas fa-search"></i><input type="text" id="fin-search" placeholder="Search by Student ID..." onchange="searchFinance()"></div>
+            <div id="fin-result" style="display:none;">
                 <div class="card">
-                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export Admission Reports</div>
-                    <div class="export-btn-grid">
-                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
-                            <i class="fas fa-file-excel"></i> Export Paid Students
-                        </button>
-                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
-                            <i class="fas fa-file-excel"></i> Export Unpaid Students
-                        </button>
-                        <button onclick="exportData('All')" class="btn btn-primary">
-                            <i class="fas fa-database"></i> Full Database Export
-                        </button>
+                    <h2>Payment Management</h2>
+                    <div class="grid-2">
+                        <div><p><strong>Name:</strong> <span id="fin-name"></span></p><p><strong>Faculty:</strong> <span id="fin-faculty"></span></p><p><strong>Current Status:</strong> <span id="fin-status-badge"></span></p></div>
+                        <div class="form-group"><label>Update Status</label><select id="fin-new-status"><option value="Paid">Paid</option><option value="Pending">Pending</option></select></div>
+                        <div class="form-group"><label>Payment Method</label><select id="fin-method"><option value="Onsite">Onsite (Cash/POS)</option><option value="Online">Online Transfer</option></select></div>
+                        <div class="form-group"><label>Amount Paid</label><input type="number" id="fin-amount" value="0"></div>
                     </div>
+                    <button class="btn" onclick="updatePayment()" style="max-width: 200px; margin-top: 20px;">Save Payment <i class="fas fa-check"></i></button>
                 </div>
             </div>
+            <div class="grid-2">
+                <button class="btn btn-warning" onclick="exportFinanceData('Unpaid')">Download Unpaid List (Excel)</button>
+                <button class="btn btn-info" onclick="exportFinanceData('Paid')">Download Paid Report (Excel)</button>
+            </div>
+        </div>
 
-            <div id="p-finance" class="page" style="display:none;">
-                <div class="card">
-                    <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                        <input type="text" id="f_search" placeholder="Search Student ID...">
-                        <button onclick="search('finance')" class="btn btn-primary">Search</button>
-                    </div>
-                    <div id="f_res" style="display:none;">
-                        <div style="display:flex; justify-content: space-between; align-items: start;">
-                            <div style="display:flex; gap:20px; align-items:center;">
-                                <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
-                                <div>
-                                    <h3 id="f_name_h" style="margin:0;"></h3>
-                                    <p id="f_info_h" style="color:var(--gold); margin:5px 0;"></p>
-                                    <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold;"></p>
-                                    <div id="f_stat_badge"></div>
-                                </div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
-                                <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
-                            </div>
-                        </div>
-                        <div class="grid" style="margin-top:20px;">
-                            <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
-                            <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
-                            <div><label>New Amount</label><input type="number" id="f_amt"></div>
-                            <div><label>Payment Method</label>
-                                <select id="f_type" onchange="handlePaymentTypeChange(this.value)">
-                                    <option value="Onsite">Onsite</option>
-                                    <option value="Online">Online</option>
-                                </select>
-                            </div>
-                            <div id="online_date_container" style="display:none;">
-                                <label>Actual Transfer Date (Online Only)*</label>
-                                <input type="date" id="f_transfer_date">
-                            </div>
-                        </div>
-                        <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
+        <div id="idcards" class="page">
+            <div class="search-container"><i class="fas fa-search"></i><input type="text" id="id-search" placeholder="Scan or Type ID..." onchange="searchID()"></div>
+            <div id="id-result" style="display:none;">
+                <div class="id-card-view">
+                    <div class="id-left"><img id="id-photo-view" src="" class="id-photo" alt="Student"><div style="font-size: 0.8rem; font-weight: bold;" id="id-id-view"></div></div>
+                    <div class="id-right">
+                        <div class="id-field"><div class="id-label">Name</div><div class="id-value" id="id-name-view"></div></div>
+                        <div class="id-field"><div class="id-label">Faculty</div><div class="id-value" id="id-faculty-view" style="font-size: 0.8rem;"></div></div>
+                        <div id="id-print-status" class="status-badge"></div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Quick Finance Reports</div>
-                    <div class="export-btn-grid">
-                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
-                            <i class="fas fa-file-excel"></i> Export Paid Students
-                        </button>
-                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
-                            <i class="fas fa-file-excel"></i> Export Unpaid Students
-                        </button>
-                    </div>
+                <div class="grid-2" style="max-width: 500px; margin: 30px auto;">
+                    <button class="btn" onclick="markAction('Printed')"><i class="fas fa-print"></i> Mark Printed</button>
+                    <button class="btn btn-info" onclick="markAction('Delivered')"><i class="fas fa-hand-holding"></i> Mark Delivered</button>
                 </div>
             </div>
+        </div>
 
-            <div id="p-idcard" class="page" style="display:none;">
-                <div class="card">
-                    <div style="display:flex; gap:10px; margin-bottom:20px;">
-                        <input type="text" id="i_search" placeholder="Enter ID...">
-                        <button onclick="search('id')" class="btn btn-primary">Check</button>
-                    </div>
-                    <div id="i_res" style="display:none; text-align:center;">
-                        <img id="i_img" style="width:110px; height:130px; border-radius:10px; object-fit:cover; border: 3px solid var(--gold);">
-                        <h3 id="i_name_h" style="margin-bottom:5px;"></h3>
-                        <p id="i_fac_h" style="color:var(--gold); margin:2px 0; font-weight:bold;"></p>
-                        <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0; font-size:0.9rem;"></p>
-                        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
-                            <div class="stat-box"><span>Payment</span><br><b id="i_s_pay"></b></div>
-                            <div class="stat-box"><span>Printing</span><br><b id="i_s_prn"></b></div>
-                            <div class="stat-box"><span>Delivery</span><br><b id="i_s_del"></b></div>
-                        </div>
-                        <div class="btn-action-group">
-                            <button onclick="updateID('Printed')" class="btn btn-print"><i class="fas fa-print"></i> Mark Printed</button>
-                            <button onclick="updateID('Delivered')" class="btn btn-deliver"><i class="fas fa-hand-holding-heart"></i> Mark Delivered</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="p-reports" class="page" style="display:none;">
-                <div class="stats-row">
-                    <div class="stat-card" style="border-top-color: var(--primary);"><span class="card-stat-title">Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
-                    <div class="stat-card" style="border-top-color: var(--success);"><span class="card-stat-title">Paid</span><h2 id="st_paid" class="card-stat-value" style="color:var(--success);">0</h2></div>
-                    <div class="stat-card" style="border-top-color: #ef4444;"><span class="card-stat-title">Unpaid</span><h2 id="st_unp" class="card-stat-value" style="color:#ef4444;">0</h2></div>
-                    <div class="stat-card" style="border-top-color: var(--warning);"><span class="card-stat-title">Printed</span><h2 id="st_printed" class="card-stat-value" style="color:var(--warning);">0</h2></div>
-                    <div class="stat-card" style="border-top-color: #7f8c8d;"><span class="card-stat-title">Not Printed</span><h2 id="st_not_printed" class="card-stat-value" style="color:#7f8c8d;">0</h2></div>
-                    <div class="stat-card" style="border-top-color: var(--info);"><span class="card-stat-title">Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
-                    <div class="stat-card" style="border-top-color: #9b59b6;"><span class="card-stat-title">Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
-                </div>
-
-                <div class="card"><canvas id="statsChart" style="height:350px;"></canvas></div>
-
-                <div class="card">
-                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
-                    <div class="export-btn-grid">
-                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;">
-                            <i class="fas fa-file-excel"></i> Export Paid Students
-                        </button>
-                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;">
-                            <i class="fas fa-file-excel"></i> Export Unpaid Students
-                        </button>
-                        <button onclick="exportData('All')" class="btn btn-primary">
-                            <i class="fas fa-database"></i> Full Database Export
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <footer>© 2026 University of East Capital</footer>
     </div>
 
+    <footer>&copy; 2024 University of East Capital | IT Administration System</footer>
 
     <script>
-        const API = 'https://script.google.com/macros/s/AKfycbwadOthwImhldvCRp_-IRoXA-3PX79HMLksAg-N04ZCyEyJAzi8RAIz0MIC3NgsHvDd/exec';
-        let currentStudent = null;
-        let statsChart = null;
+        const API = "https://script.google.com/macros/s/AKfycbz_YhC_80m0uV_4r3-3C0B1B38f1C-8uE5zY9PzY2B/exec"; // Replace with your actual App Script URL
+        let currentUser = null;
 
-        function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
+        function showLoader(show, text = "Processing...") {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('loader').style.display = show ? 'flex' : 'none';
+        }
 
-        window.onload = () => {
-            const s = JSON.parse(localStorage.getItem('uec_s'));
-            if(s) { 
-                document.getElementById('loginSection').style.display='none'; 
-                document.getElementById('appSection').style.display='block'; 
-                document.getElementById('user_display').innerText = s.user;
-                applyRole(s.role);
-            }
-        };
-
-        async function login() {
+        async function handleLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'login', username:u, password:p}) });
-            const d = await res.json();
+            if(!u || !p) return alert("Please fill all fields");
+            
+            showLoader(true, "Authenticating...");
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'login', username:u, password:p}) });
+                const d = await res.json();
+                if(d.success) {
+                    currentUser = d;
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('userDisplay').innerText = `Welcome, ${u} (${d.role})`;
+                    setupPermissions(d.role);
+                    showPage('dashboard');
+                    loadStats();
+                } else { alert("Invalid Credentials"); }
+            } catch (e) { alert("Connection Error"); }
             showLoader(false);
-            if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); }
-            else alert('Invalid Login');
         }
 
-        function logout() { localStorage.removeItem('uec_s'); location.reload(); }
-
-        function showPage(p) {
-            document.querySelectorAll('.page').forEach(pg=>pg.style.display='none');
-            document.getElementById('p-'+p).style.display='block';
-            if(p==='reports') loadStats();
+        function setupPermissions(role) {
+            const tabs = ['dashboard', 'admission', 'finance', 'idcards'];
+            tabs.forEach(t => document.getElementById(`tab-${t}`).style.display = 'none');
+            
+            if(role === 'Admin') tabs.forEach(t => document.getElementById(`tab-${t}`).style.display = 'block');
+            if(role === 'Admission') ['dashboard', 'admission'].forEach(t => document.getElementById(`tab-${t}`).style.display = 'block');
+            if(role === 'Finance') ['dashboard', 'finance'].forEach(t => document.getElementById(`tab-${t}`).style.display = 'block');
+            if(role === 'ID') ['dashboard', 'idcards'].forEach(t => document.getElementById(`tab-${t}`).style.display = 'block');
         }
 
-        function applyRole(role) {
-            const navs = ['n-adm','n-fin','n-id','n-rep'];
-            navs.forEach(n => document.getElementById(n).style.display='none');
-            if(role==='Admin') navs.forEach(n => document.getElementById(n).style.display='flex');
-            else document.getElementById('n-'+role.toLowerCase().substring(0,3)).style.display='flex';
-            showPage(role==='Admin'?'reports':role.toLowerCase());
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById(`tab-${id}`).classList.add('active');
         }
 
-        function previewImage(input) {
-            const preview = document.getElementById('a_preview_img');
-            const placeholder = document.getElementById('previewPlaceholder');
-            if (input.files && input.files[0]) {
+        async function registerStudent() {
+            const id = document.getElementById('adm-id').value;
+            const name = document.getElementById('adm-name').value;
+            const faculty = document.getElementById('adm-faculty').value;
+            const phone = document.getElementById('adm-phone').value;
+            const email = document.getElementById('adm-email').value;
+            const nid = document.getElementById('adm-nid').value;
+            const photoInput = document.getElementById('adm-photo');
+
+            if(!id || !name || !faculty || !phone || !email || !nid) return alert("Please fill all mandatory fields");
+
+            showLoader(true, "Uploading Data...");
+            
+            let fileData = "";
+            let filename = "";
+
+            // التحقق إذا كان المستخدم اختار صورة أم لا
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
                 const reader = new FileReader();
-                reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; placeholder.style.display = 'none'; }
-                reader.readAsDataURL(input.files[0]);
+                const promise = new Promise(resolve => {
+                    reader.onload = () => {
+                        fileData = reader.result.split(',')[1];
+                        filename = file.name;
+                        resolve();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                await promise;
             }
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'addStudentWithPhoto', id, name, faculty, phone, email, nid, fileData, filename
+                });
+                const res = await fetch(API, { method: 'POST', body: params });
+                const d = await res.json();
+                if(d.success) {
+                    alert("Student Registered Successfully!");
+                    document.querySelectorAll('#admission input').forEach(i => i.value = '');
+                    loadStats();
+                } else { alert("Registration Failed: " + d.message); }
+            } catch (e) { alert("Error: " + e); }
+            showLoader(false);
         }
 
-        function toggleAdmButton(val) {
-            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
-        }
-
-        function handlePaymentTypeChange(val) {
-            toggleAdmButton(val);
-            const dateContainer = document.getElementById('online_date_container');
-            if (val === 'Online') {
-                dateContainer.style.display = 'block';
-                document.getElementById('f_transfer_date').valueAsDate = new Date();
-            } else {
-                dateContainer.style.display = 'none';
-            }
-        }
-
-        async function searchAdmission() {
-            const id = document.getElementById('a_search_id').value;
-            if(!id) return alert('Enter ID');
-            showLoader(true);
+        async function searchFinance() {
+            const id = document.getElementById('fin-search').value;
+            showLoader(true, "Searching Finance Records...");
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await res.json();
+            if(d.success) {
+                document.getElementById('fin-result').style.display = 'block';
+                document.getElementById('fin-name').innerText = d.name;
+                document.getElementById('fin-faculty').innerText = d.faculty;
+                const badge = document.getElementById('fin-status-badge');
+                badge.innerText = d.status;
+                badge.className = `status-badge status-${d.status.toLowerCase()}`;
+                document.getElementById('fin-amount').value = d.amount || 0;
+            } else { alert("Student not found"); }
             showLoader(false);
-            if(!d.success) return alert('Not found');
-            document.getElementById('a_id').value = id;
-            document.getElementById('a_id').disabled = true;
-            document.getElementById('a_name').value = d.name;
-            document.getElementById('a_nid').value = d.nid || '';
-            document.getElementById('a_fac').value = d.faculty;
-            document.getElementById('a_mail').value = d.email;
-            document.getElementById('a_phone').value = d.phone;
-            document.getElementById('a_preview_img').src = d.photo;
-            document.getElementById('a_preview_img').style.display = 'block';
-            document.getElementById('previewPlaceholder').style.display = 'none';
-            document.getElementById('btn_save_new').style.display = 'none';
-            document.getElementById('btn_update_existing').style.display = 'flex';
-        }
-
-        async function search(type) {
-            const id = document.getElementById(type==='finance'?'f_search':'i_search').value;
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
-            const d = await res.json();
-            showLoader(false);
-            if(!d.success) return alert('Student Not found');
-            currentStudent = d; currentStudent.id = id;
-            if(type==='finance') {
-                document.getElementById('f_res').style.display='block';
-                document.getElementById('f_img').src = d.photo;
-                document.getElementById('f_name_h').innerText = d.name;
-                document.getElementById('f_info_h').innerText = d.faculty;
-                document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
-                document.getElementById('f_paid_amt').value = d.amount || 0;
-                document.getElementById('f_paid_method').value = d.type || "N/A";
-                const badge = document.getElementById('f_stat_badge');
-                badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
-                badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
-                badge.className = 'status-badge';
-                handlePaymentTypeChange(document.getElementById('f_type').value);
-            } else {
-                document.getElementById('i_res').style.display='block';
-                document.getElementById('i_img').src = d.photo;
-                document.getElementById('i_name_h').innerText = d.name;
-                document.getElementById('i_fac_h').innerText = d.faculty;
-                document.getElementById('i_mail_h').innerText = d.email || "N/A";
-                document.getElementById('i_s_pay').innerText = d.status;
-                document.getElementById('i_s_prn').innerText = d.printed;
-                document.getElementById('i_s_del').innerText = d.delivered;
-            }
-        }
-
-        async function sendStudentEmail() {
-            if(!currentStudent.email) return alert('Student email not available');
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
-            const d = await res.json();
-            showLoader(false); alert(d.success ? 'Email sent!' : 'Error: ' + d.error);
-        }
-
-        async function sendManualAdmissionEmail() {
-            showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
-            const d = await res.json();
-            showLoader(false); alert(d.success ? 'Admission notified!' : 'Error: ' + d.error);
         }
 
         async function updatePayment() {
-            const amt = document.getElementById('f_amt').value;
-            const type = document.getElementById('f_type').value;
-            const transferDate = document.getElementById('f_transfer_date').value;
-
-            if(!amt) return alert('Enter amount');
-            if(type === 'Online' && !transferDate) return alert('Please select the transfer date');
-
-            showLoader(true);
-            await fetch(API, { 
-                method: 'POST', 
-                body: new URLSearchParams({
-                    action: 'updatePayment', 
-                    id: currentStudent.id, 
-                    amount: amt, 
-                    status: 'Paid', 
-                    type: type,
-                    transferDate: transferDate
-                })
-            });
-            showLoader(false); 
-            alert('Payment Success'); 
-            search('finance');
-        }
-
-        async function saveStudent() {
-            const id = document.getElementById('a_id').value;
-            const fileInput = document.getElementById('a_file');
-            if(!id || fileInput.files.length === 0) return alert('ID and Photo required');
-            showLoader(true);
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: document.getElementById('a_name').value, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value, filename: id + ".jpg", fileData: reader.result.split(',')[1]})});
-                const d = await res.json();
-                showLoader(false); alert(d.message); if(d.success) resetAdmissionUI();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        }
-
-        async function updateStudent() {
-            const id = document.getElementById('a_id').value;
-            const fileInput = document.getElementById('a_file');
-            showLoader(true);
-            const params = {action: 'updateStudentData', id: id, name: document.getElementById('a_name').value, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value};
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = async () => {
-                    params.fileData = reader.result.split(',')[1]; params.filename = id + ".jpg";
-                    const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
-                    showLoader(false); alert((await r.json()).message); resetAdmissionUI();
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
-                showLoader(false); alert((await r.json()).message); resetAdmissionUI();
-            }
-        }
-
-        function resetAdmissionUI() {
-            document.getElementById('a_id').disabled = false;
-            document.getElementById('btn_save_new').style.display = 'flex';
-            document.getElementById('btn_update_existing').style.display = 'none';
-            ['a_id','a_name','a_nid','a_mail','a_phone','a_file','a_search_id'].forEach(i=>document.getElementById(i).value='');
-            document.getElementById('a_preview_img').style.display='none';
-            document.getElementById('previewPlaceholder').style.display='block';
-        }
-
-        async function updateID(field) {
-            showLoader(true);
-            await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id:currentStudent.id, field:field}) });
-            showLoader(false); alert('Updated Successfully'); search('id');
-        }
-
-        async function loadStats() {
-            showLoader(true);
-            try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-                const d = await res.json();
-                document.getElementById('st_total').innerText = d.registered;
-                document.getElementById('st_paid').innerText = d.paid;
-                document.getElementById('st_unp').innerText = d.unpaid;
-                document.getElementById('st_printed').innerText = d.printed;
-                document.getElementById('st_not_printed').innerText = (d.registered - d.printed);
-                document.getElementById('st_delivered').innerText = d.delivered;
-                document.getElementById('st_not_delivered').innerText = (d.printed - d.delivered);
-                renderChart(d);
-            } catch (e) { console.error("Stats Error"); }
+            const id = document.getElementById('fin-search').value;
+            const status = document.getElementById('fin-new-status').value;
+            const method = document.getElementById('fin-method').value;
+            const amount = document.getElementById('fin-amount').value;
+            
+            showLoader(true, "Updating Payment...");
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updatePayment', id, status, type:method, amount}) });
+            const d = await res.json();
+            if(d.success) { alert("Payment Updated!"); searchFinance(); loadStats(); }
             showLoader(false);
         }
 
-        function renderChart(data) {
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            if (statsChart) { statsChart.destroy(); }
-            const notPrinted = data.registered - (data.printed || 0);
-            const notDelivered = (data.printed || 0) - (data.delivered || 0);
-            statsChart = new Chart(ctx, {
+        async function searchID() {
+            const id = document.getElementById('id-search').value;
+            showLoader(true, "Loading ID...");
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
+            const d = await res.json();
+            if(d.success) {
+                document.getElementById('id-result').style.display = 'block';
+                document.getElementById('id-name-view').innerText = d.name;
+                document.getElementById('id-id-view').innerText = `ID: ${id}`;
+                document.getElementById('id-faculty-view').innerText = d.faculty;
+                document.getElementById('id-photo-view').src = d.photo || 'https://via.placeholder.com/150';
+                const pStatus = document.getElementById('id-print-status');
+                pStatus.innerText = d.printed === 'Yes' ? 'PRINTED' : 'NOT PRINTED';
+                pStatus.className = `status-badge status-${d.printed === 'Yes' ? 'paid' : 'pending'}`;
+            } else { alert("ID Not Found"); }
+            showLoader(false);
+        }
+
+        async function markAction(type) {
+            const id = document.getElementById('id-search').value;
+            showLoader(true, "Updating ID Status...");
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id, field:type}) });
+            const d = await res.json();
+            if(d.success) { alert(`${type} Status Recorded!`); searchID(); loadStats(); }
+            showLoader(false);
+        }
+
+        async function loadStats() {
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+            const d = await res.json();
+            document.getElementById('stat-registered').innerText = d.registered;
+            document.getElementById('stat-paid').innerText = d.paid;
+            document.getElementById('stat-pending').innerText = d.unpaid;
+            document.getElementById('stat-printed').innerText = d.printed;
+            renderChart(d.registered, d.paid);
+        }
+
+        function renderChart(reg, paid) {
+            const ctx = document.getElementById('regChart').getContext('2d');
+            if(window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: ['Registered', 'Paid', 'Unpaid', 'ID Printed', 'ID Not Printed', 'ID Delivered', 'ID Not Delivered'],
-                    datasets: [{
-                        data: [data.registered, data.paid, data.unpaid, data.printed, notPrinted, data.delivered, notDelivered],
-                        backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'],
-                        borderRadius: 6
-                    }]
-                },
+                data: { labels: ['Registered', 'Payments Confirmed'], datasets: [{ data: [reg, paid], backgroundColor: ['#0a192f', '#10b981'] }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        async function exportData(f) {
+        async function exportFullData() {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:'All'}) });
             const d = await res.json();
             if(d.success) {
                 const ws = XLSX.utils.aoa_to_sheet(d.data);
@@ -530,9 +356,11 @@
                         XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
                     }
                 } else { alert("Error: " + d.error); }
-            } catch (e) { alert("Connection Error"); }
+            } catch (e) { alert("Connection error"); }
             showLoader(false);
         }
+
+        function logout() { location.reload(); }
     </script>
 </body>
 </html>
