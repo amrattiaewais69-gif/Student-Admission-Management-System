@@ -336,6 +336,7 @@
                 photoName: ""
             };
 
+            // التعديل هنا لضمان عدم حدوث خطأ عند إرسال البيانات بدون صورة
             if (photoFile) {
                 const reader = new FileReader();
                 reader.onload = async function() {
