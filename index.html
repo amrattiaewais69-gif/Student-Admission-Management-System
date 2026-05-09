@@ -493,6 +493,9 @@
         const result = await res.json();
         alert(result.message); 
         resetAdmissionUI();
+        } else {
+    alert(result.message); // رسالة التحذير (رقم البطاقة مكرر)
+}
     };
     reader.readAsDataURL(fileInput.files[0]);
 }
