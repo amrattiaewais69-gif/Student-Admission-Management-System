@@ -331,7 +331,9 @@
                 faculty: document.getElementById('faculty').value,
                 phone: document.getElementById('studentPhone').value,
                 email: document.getElementById('studentEmail').value,
-                nationalId: document.getElementById('studentNID').value
+                nationalId: document.getElementById('studentNID').value,
+                photoByte: "",
+                photoName: ""
             };
 
             if (photoFile) {
@@ -343,8 +345,6 @@
                 };
                 reader.readAsDataURL(photoFile);
             } else {
-                p.photoByte = "";
-                p.photoName = "";
                 await submitAdmission(p);
             }
         }
@@ -356,7 +356,6 @@
                 if(d.success) {
                     alert(`Student Registered Successfully! ID: ${d.id}`);
                     document.getElementById('admissionForm').reset();
-                    // Send Email Trigger
                     fetch(API, { method: 'POST', body: new URLSearchParams({action:'sendStudentEmail', email: p.email, name: p.name}) });
                 } else { alert("Error: " + d.error); }
             } catch(err) { alert("Submission Error: " + err); }
@@ -422,8 +421,7 @@
             showLoader(false);
         }
 
-        async function updateIDStatus(field) {
-            const id = document.getElementById('idSearchId').value;
+        async function updateIDStatus(id, field) {
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateIDStatus', id: id, field: field}) });
             const d = await res.json();
@@ -447,7 +445,6 @@
         function toggleLanguage() {
             isArabic = !isArabic;
             document.body.classList.toggle('rtl');
-            // Basic UI translations can be added here
         }
     </script>
 </body>
