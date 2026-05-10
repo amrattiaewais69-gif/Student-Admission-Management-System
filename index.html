@@ -147,8 +147,9 @@
                                 <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
                                 <div>
                                     <h3 id="f_name_h" style="margin:0;"></h3>
-                                    <p id="f_info_h" style="color:var(--gold); margin:5px 0;"></p>
-                                    <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold;"></p>
+                                    <p id="f_info_h" style="color:var(--gold); margin:5px 0; font-weight:bold;"></p>
+                                    <p id="f_nid_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; display:flex; align-items:center; gap:8px;"><i class="fas fa-id-card"></i> <span></span></p>
+                                    <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold; display:flex; align-items:center; gap:8px;"><i class="fas fa-envelope"></i> <span></span></p>
                                     <div id="f_stat_badge"></div>
                                 </div>
                             </div>
@@ -341,7 +342,8 @@
                 document.getElementById('f_img').src = safePhotoUrl;
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
-                document.getElementById('f_mail_h').innerText = "Email: " + (d.email || "N/A");
+                document.getElementById('f_nid_h').querySelector('span').innerText = (d.nid || "N/A");
+                document.getElementById('f_mail_h').querySelector('span').innerText = (d.email || "N/A");
                 document.getElementById('f_paid_amt').value = d.amount || 0;
                 document.getElementById('f_paid_method').value = d.type || "N/A";
                 const badge = document.getElementById('f_stat_badge');
