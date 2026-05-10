@@ -175,6 +175,14 @@
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export Finance Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
+                        <button onclick="exportData('All')" class="btn btn-primary"><i class="fas fa-database"></i> Full Database Export</button>
+                    </div>
+                </div>
             </div>
 
             <div id="p-idcard" class="page" style="display:none;">
@@ -212,6 +220,14 @@
                     <div class="stat-card" style="border-top-color: #9b59b6;"><span class="card-stat-title">Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
                 <div class="card"><canvas id="statsChart" style="height:350px;"></canvas></div>
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
+                        <button onclick="exportData('All')" class="btn btn-primary"><i class="fas fa-database"></i> Full Database Export</button>
+                    </div>
+                </div>
             </div>
         </main>
         <footer>© 2026 University of East Capital</footer>
@@ -399,7 +415,6 @@
 
             showLoader(true);
             
-            // دالة مساعدة لإرسال الطلب
             const sendRequest = async (fileData = "", filename = "") => {
                 try {
                     const res = await fetch(API, { 
@@ -432,13 +447,12 @@
                 }
             };
 
-            // التحقق إذا كان هناك ملف مختار أم لا
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                sendRequest("", ""); // إرسال بدون بيانات صورة
+                sendRequest("", ""); 
             }
         }
 
