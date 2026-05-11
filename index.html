@@ -24,6 +24,7 @@
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .stat-card .card-stat-title { font-size: 0.7rem; color: #666; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: block; white-space: nowrap; }
         .stat-card .card-stat-value { font-size: 1.4rem; margin: 0; font-weight: 700; }
+        
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; background: #fafafa; }
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; text-transform: uppercase; font-size: 0.85rem; }
         .btn-primary { background: var(--primary); color: white; }
@@ -91,7 +92,8 @@
                     </div>
                     <div class="grid">
                         <div><label>Application ID*</label><input type="text" id="a_id"></div>
-                        <div><label>Full Name*</label><input type="text" id="a_name"></div>
+                        <div><label>Full Name (English)*</label><input type="text" id="a_name"></div>
+                        <div><label>الاسم باللغة العربية (رباعي)*</label><input type="text" id="a_name_ar" dir="rtl" placeholder="أدخل الاسم الرباعي"></div>
                         <div><label>National ID*</label><input type="text" id="a_nid" maxlength="14" required></div>
                         <div><label>Faculty*</label>
                             <select id="a_fac">
@@ -315,6 +317,7 @@
             document.getElementById('a_id').value = id;
             document.getElementById('a_id').disabled = true;
             document.getElementById('a_name').value = d.name;
+            document.getElementById('a_name_ar').value = d.name_ar || '';
             document.getElementById('a_nid').value = d.nid || '';
             document.getElementById('a_fac').value = d.faculty;
             document.getElementById('a_mail').value = d.email;
@@ -405,15 +408,16 @@
         async function saveStudent() {
             const id = document.getElementById('a_id').value;
             const name = document.getElementById('a_name').value.trim();
+            const name_ar = document.getElementById('a_name_ar').value.trim();
             const nid = document.getElementById('a_nid').value.trim();
             const email = document.getElementById('a_mail').value.trim();
             const fileInput = document.getElementById('a_file');
             
             if (!name) return alert('Please enter student name.');
-            
-            if (name.split(/\s+/).length < 4) {
-                return alert('Full name must be at least 4 names (Quadruple Name).');
-            }
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
 
             if (!id) return alert('Application ID is required.');
             if (!nid) return alert('National ID is required.');
@@ -429,6 +433,7 @@
                             action: 'addStudentWithPhoto', 
                             id: id, 
                             name: name,
+                            name_ar: name_ar,
                             nid: nid, 
                             faculty: document.getElementById('a_fac').value, 
                             phone: document.getElementById('a_phone').value, 
@@ -465,18 +470,20 @@
         async function updateStudent() {
             const id = document.getElementById('a_id').value;
             const name = document.getElementById('a_name').value.trim();
+            const name_ar = document.getElementById('a_name_ar').value.trim();
             const nid = document.getElementById('a_nid').value.trim();
             const email = document.getElementById('a_mail').value.trim();
             
-            if (name.split(/\s+/).length < 4) {
-                return alert('Full name must be at least 4 names (Quadruple Name).');
-            }
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
+
             if (!nid) return alert('National ID is required.');
             if (!email) return alert('Email Address is required.');
             
             const fileInput = document.getElementById('a_file');
             showLoader(true);
-            const params = {action: 'updateStudentData', id: id, name: name, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email};
+            const params = {action: 'updateStudentData', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email};
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = async () => {
@@ -495,7 +502,7 @@
             document.getElementById('a_id').disabled = false;
             document.getElementById('btn_save_new').style.display = 'flex';
             document.getElementById('btn_update_existing').style.display = 'none';
-            ['a_id','a_name','a_nid','a_mail','a_phone','a_file','a_search_id'].forEach(i=>document.getElementById(i).value='');
+            ['a_id','a_name','a_name_ar','a_nid','a_mail','a_phone','a_file','a_search_id'].forEach(i=>document.getElementById(i).value='');
             document.getElementById('a_preview_img').style.display='none';
             document.getElementById('previewPlaceholder').style.display='block';
         }
