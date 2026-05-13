@@ -43,33 +43,28 @@
         .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
 
-        /* التعديل المعتمد لمقاس A5 للطباعة */
+        /* تعديلات الطباعة لضمان وجه واحد وتصميم احترافي */
         @media print {
             body * { visibility: hidden; }
             #paymentOrderTemplate, #paymentOrderTemplate * { visibility: visible; }
             #paymentOrderTemplate {
-                position: absolute; left: 0; top: 0; 
-                width: 148mm; height: 210mm;
+                position: absolute; left: 0; top: 0; width: 100%;
                 background: white !important; display: block !important;
-                padding: 10mm; box-sizing: border-box; direction: rtl;
-                border: none !important; overflow: hidden;
+                padding: 40px; box-sizing: border-box; direction: rtl;
+                border: none;
             }
-            @page { size: A5; margin: 0; }
+            @page { size: A4; margin: 10mm; }
         }
 
-        /* تنسيق قالب الإيصال ليتناسب مع A5 */
-        #paymentOrderTemplate { 
-            display: none; border: 2px solid #0a192f; padding: 15px; 
-            width: 148mm; height: 210mm; box-sizing: border-box; 
-        }
-        .po-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0a192f; padding-bottom: 10px; }
-        .po-title { text-align: center; margin: 10px 0; border: 1px solid #000; padding: 5px; background: #f0f0f0; }
-        .po-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .po-table td { border: 1px solid #ccc; padding: 8px; font-size: 13px; text-align: right; }
+        #paymentOrderTemplate { display: none; border: 2px solid #0a192f; padding: 20px; }
+        .po-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0a192f; padding-bottom: 15px; }
+        .po-title { text-align: center; margin: 20px 0; border: 1px solid #000; padding: 5px; background: #f0f0f0; }
+        .po-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .po-table td { border: 1px solid #ccc; padding: 10px; font-size: 14px; text-align: right; }
         .po-table td.label { background: #f9f9f9; font-weight: bold; width: 25%; }
-        .po-amount-box { border: 2px solid #000; margin: 15px 0; padding: 10px; text-align: center; font-size: 18px; font-weight: bold; }
-        .po-notes { border-top: 1px solid #000; margin-top: 10px; padding-top: 8px; font-size: 10.5px; line-height: 1.4; }
-        .po-footer { display: flex; justify-content: space-between; margin-top: 25px; font-weight: bold; font-size: 13px; }
+        .po-amount-box { border: 2px solid #000; margin: 20px 0; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+        .po-notes { border-top: 1px solid #000; margin-top: 20px; padding-top: 10px; font-size: 12px; line-height: 1.6; }
+        .po-footer { display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -77,14 +72,14 @@
     <div id="paymentOrderTemplate">
         <div class="po-header">
             <div style="text-align: right;">
-                <h2 style="margin:0; color: #0a192f; font-size: 18px;">University of East Capital</h2>
-                <h4 style="margin:0; color: #C5A059; font-size: 14px;">Admission Department</h4>
+                <h2 style="margin:0; color: #0a192f;">University of East Capital</h2>
+                <h4 style="margin:0; color: #C5A059;">Admission Department</h4>
             </div>
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="65">
+            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80">
         </div>
 
         <div class="po-title">
-            <h3 style="margin:0; font-size: 15px;">إذن توريد رسوم طلب التحاق (Payment Order)</h3>
+            <h3 style="margin:0;">إذن توريد رسوم طلب التحاق (Payment Order)</h3>
         </div>
 
         <table class="po-table">
@@ -96,7 +91,7 @@
             </tr>
             <tr>
                 <td class="label">اسم الطالب (Ar)</td>
-                <td id="po_name_ar" colspan="3" style="font-size: 14px; font-weight: bold;"></td>
+                <td id="po_name_ar" colspan="3" style="font-size: 16px; font-weight: bold;"></td>
             </tr>
             <tr>
                 <td class="label">Student Name (En)</td>
@@ -114,24 +109,24 @@
 
         <div class="po-notes">
             <div style="display: flex; justify-content: space-between;">
-                <div style="width: 49%; text-align: left; direction: ltr;">
+                <div style="width: 48%; text-align: left; direction: ltr;">
                     <strong>Important Notes:</strong><br>
                     - This is not a receipt of payment.<br>
-                    - Payment must be made at the Treasury.<br>
-                    - Valid for 48 hours only from issuance.
+                    - Payment must be made only at the University Treasury.<br>
+                    - This order is valid for 48 hours only from the date of issuance.
                 </div>
-                <div style="width: 49%; text-align: right; direction: rtl;">
+                <div style="width: 48%; text-align: right; direction: rtl;">
                     <strong>ملاحظات هامة:</strong><br>
                     - هذا المستند لا يعتبر إيصالاً بالسداد.<br>
                     - يتم السداد فقط من خلال خزينة الجامعة.<br>
-                    - هذا الإذن صالح لمدة 48 ساعة فقط.
+                    - هذا الإذن صالح لمدة 48 ساعة فقط من تاريخ إصداره.
                 </div>
             </div>
         </div>
 
         <div class="po-footer">
-            <span>توقيع شؤون الطلاب: ...............</span>
-            <span>اعتماد الخزينة: ...............</span>
+            <span>توقيع شؤون الطلاب: .........................</span>
+            <span>اعتماد الخزينة: .........................</span>
         </div>
     </div>
 
@@ -236,19 +231,20 @@
                         <button onclick="search('finance')" class="btn btn-primary">Search</button>
                     </div>
                     <div id="f_res" style="display:none;">
-                        <div style="display:flex; gap:20px; align-items:center; border-bottom:1px solid #eee; padding-bottom:20px;">
-                            <img id="f_img" style="width:90px; height:110px; border-radius:8px; object-fit:cover; border:2px solid var(--gold);">
-                            <div style="flex:1;">
-                                <h3 id="f_name_h" style="margin:0;"></h3>
-                                <p id="f_info_h" style="color:var(--gold); margin:5px 0; font-weight:600;"></p>
-                                <div style="display:flex; gap:15px; font-size:0.85rem; color:#666;">
-                                    <span id="f_nid_h"><i class="fas fa-id-card"></i> <span></span></span>
-                                    <span id="f_mail_h"><i class="fas fa-envelope"></i> <span></span></span>
+                        <div style="display:flex; justify-content: space-between; align-items: start;">
+                            <div style="display:flex; gap:20px; align-items:center;">
+                                <img id="f_img" style="width:100px; height:120px; object-fit:cover; border-radius:8px;">
+                                <div>
+                                    <h3 id="f_name_h" style="margin:0;"></h3>
+                                    <p id="f_info_h" style="color:var(--gold); margin:5px 0; font-weight:bold;"></p>
+                                    <p id="f_nid_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; display:flex; align-items:center; gap:8px;"><i class="fas fa-id-card"></i> <span></span></p>
+                                    <p id="f_mail_h" style="color:var(--primary); margin:5px 0; font-size: 0.9rem; font-weight: bold; display:flex; align-items:center; gap:8px;"><i class="fas fa-envelope"></i> <span></span></p>
+                                    <div id="f_stat_badge"></div>
                                 </div>
                             </div>
-                            <div style="text-align:right;">
-                                <div id="f_stat_badge" class="status-badge"></div><br>
-                                <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none; margin-top:5px;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
+                                <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
                         <div class="grid" style="margin-top:20px;">
@@ -261,9 +257,20 @@
                                     <option value="Online">Online</option>
                                 </select>
                             </div>
-                            <div id="online_date_container" style="display:none;"><label>Actual Transfer Date*</label><input type="date" id="f_transfer_date"></div>
+                            <div id="online_date_container" style="display:none;">
+                                <label>Actual Transfer Date (Online Only)*</label>
+                                <input type="date" id="f_transfer_date">
+                            </div>
                         </div>
                         <button onclick="updatePayment()" class="btn btn-primary" style="margin-top:20px; width:100%;">Confirm & Update Payment</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export Finance Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
+                        <button onclick="exportData('All')" class="btn btn-primary"><i class="fas fa-database"></i> Full Database Export</button>
                     </div>
                 </div>
             </div>
@@ -278,8 +285,12 @@
                         <img id="i_img" style="width:110px; height:130px; border-radius:10px; object-fit:cover; border: 3px solid var(--gold);">
                         <h3 id="i_name_h" style="margin-bottom:5px;"></h3>
                         <p id="i_fac_h" style="color:var(--gold); margin:2px 0; font-weight:bold;"></p>
-                        <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0;"></p>
-                        <div id="i_printed_status" style="margin-bottom:15px; font-weight:bold;"></div>
+                        <p id="i_mail_h" style="color:var(--primary); margin:2px 0 15px 0; font-size:0.9rem;"></p>
+                        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                            <div class="stat-box"><span>Payment</span><br><b id="i_s_pay"></b></div>
+                            <div class="stat-box"><span>Printing</span><br><b id="i_s_prn"></b></div>
+                            <div class="stat-box"><span>Delivery</span><br><b id="i_s_del"></b></div>
+                        </div>
                         <div class="btn-action-group">
                             <button onclick="updateID('Printed')" class="btn btn-print"><i class="fas fa-print"></i> Mark Printed</button>
                             <button onclick="updateID('Delivered')" class="btn btn-deliver"><i class="fas fa-hand-holding-heart"></i> Mark Delivered</button>
@@ -289,28 +300,36 @@
             </div>
 
             <div id="p-reports" class="page" style="display:none;">
-                <div class="stats-row" id="stats-container">
-                    <div class="stat-card"><span class="card-stat-title">Total</span><p class="card-stat-value" id="s_reg">0</p></div>
-                    <div class="stat-card" style="border-top-color:var(--success);"><span class="card-stat-title">Paid</span><p class="card-stat-value" id="s_paid">0</p></div>
-                    <div class="stat-card" style="border-top-color:#ef4444;"><span class="card-stat-title">Unpaid</span><p class="card-stat-value" id="s_unp">0</p></div>
-                    <div class="stat-card" style="border-top-color:#f39c12;"><span class="card-stat-title">Printed</span><p class="card-stat-value" id="s_pri">0</p></div>
-                    <div class="stat-card" style="border-top-color:#3498db;"><span class="card-stat-title">Delivered</span><p class="card-stat-value" id="s_del">0</p></div>
+                <div class="stats-row">
+                    <div class="stat-card" style="border-top-color: var(--primary);"><span class="card-stat-title">Registered</span><h2 id="st_total" class="card-stat-value">0</h2></div>
+                    <div class="stat-card" style="border-top-color: var(--success);"><span class="card-stat-title">Paid</span><h2 id="st_paid" class="card-stat-value" style="color:var(--success);">0</h2></div>
+                    <div class="stat-card" style="border-top-color: #ef4444;"><span class="card-stat-title">Unpaid</span><h2 id="st_unp" class="card-stat-value" style="color:#ef4444;">0</h2></div>
+                    <div class="stat-card" style="border-top-color: var(--warning);"><span class="card-stat-title">Printed</span><h2 id="st_printed" class="card-stat-value" style="color:var(--warning);">0</h2></div>
+                    <div class="stat-card" style="border-top-color: #7f8c8d;"><span class="card-stat-title">Not Printed</span><h2 id="st_not_printed" class="card-stat-value" style="color:#7f8c8d;">0</h2></div>
+                    <div class="stat-card" style="border-top-color: var(--info);"><span class="card-stat-title">Delivered</span><h2 id="st_delivered" class="card-stat-value" style="color:var(--info);">0</h2></div>
+                    <div class="stat-card" style="border-top-color: #9b59b6;"><span class="card-stat-title">Not Delivered</span><h2 id="st_not_delivered" class="card-stat-value" style="color:#9b59b6;">0</h2></div>
                 </div>
-                <div class="card" style="height: 400px;"><canvas id="statsChart"></canvas></div>
+                <div class="card"><canvas id="statsChart" style="height:350px;"></canvas></div>
+                <div class="card">
+                    <div class="export-header"><i class="fas fa-file-export" style="color:var(--gold);"></i> Export System Reports</div>
+                    <div class="export-btn-grid">
+                        <button onclick="exportFinanceData('Paid')" class="btn" style="background:var(--success); color:white;"><i class="fas fa-file-excel"></i> Export Paid Students</button>
+                        <button onclick="exportFinanceData('Unpaid')" class="btn" style="background:#ef4444; color:white;"><i class="fas fa-file-excel"></i> Export Unpaid Students</button>
+                        <button onclick="exportData('All')" class="btn btn-primary"><i class="fas fa-database"></i> Full Database Export</button>
+                    </div>
+                </div>
             </div>
         </main>
+        <footer>© 2026 University of East Capital</footer>
     </div>
 
-    <footer>
-        <p style="margin:0; font-size:0.9rem; color:#666;">&copy; 2026 UEC Admission & IT Department - Managed by University of East Capital</p>
-    </footer>
-
     <script>
-        const API = 'https://script.google.com/macros/s/AKfycbz_K_N6V6M3R8Q-9Xv0L9G4-S4uU-8p6-7G/exec'; // Replace with actual URL
+        const API = 'https://script.google.com/macros/s/AKfycbwadOthwImhldvCRp_-IRoXA-3PX79HMLksAg-N04ZCyEyJAzi8RAIz0MIC3NgsHvDd/exec';
         let currentStudent = null;
         let statsChart = null;
 
-        const FACULTY_PRICES = {
+        // Faculty Price Mapping
+        const facultyPrices = {
             "Faculty of Arts and Design": 1200,
             "Faculty of Business and Economics": 1000,
             "Faculty of Computer Science & Information Technology": 1500,
@@ -326,9 +345,9 @@
 
         window.onload = () => {
             const s = JSON.parse(localStorage.getItem('uec_s'));
-            if(s) {
-                document.getElementById('loginSection').style.display='none';
-                document.getElementById('appSection').style.display='block';
+            if(s) { 
+                document.getElementById('loginSection').style.display='none'; 
+                document.getElementById('appSection').style.display='block'; 
                 document.getElementById('user_display').innerText = s.user;
                 applyRole(s.role);
             }
@@ -338,14 +357,22 @@
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             if(!u || !p) return alert('Please enter username and password.');
+            
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'login', username:u, password:p}) });
                 const d = await res.json();
                 showLoader(false);
-                if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); }
-                else { alert('Invalid Credentials.'); }
-            } catch(e) { showLoader(false); alert('Connection Error.'); }
+                if(d.success) { 
+                    localStorage.setItem('uec_s', JSON.stringify(d)); 
+                    location.reload(); 
+                } else {
+                    alert('Invalid Credentials.');
+                }
+            } catch(e) {
+                showLoader(false);
+                alert('Connection Error.');
+            }
         }
 
         function logout() { localStorage.removeItem('uec_s'); location.reload(); }
@@ -357,10 +384,6 @@
             const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase().includes(p.substring(0,3)));
             if(activeNav) activeNav.classList.add('active');
             if(p==='reports') loadStats();
-            if(p==='admission') document.getElementById('pageTitle').innerText = 'Student Admission';
-            if(p==='finance') document.getElementById('pageTitle').innerText = 'Finance & Payments';
-            if(p==='idcard') document.getElementById('pageTitle').innerText = 'ID Card Management';
-            if(p==='reports') document.getElementById('pageTitle').innerText = 'System Insights';
         }
 
         function applyRole(role) {
@@ -370,12 +393,7 @@
             else if(role==='Finance') document.getElementById('n-fin').style.display='flex';
             else if(role==='Admission') document.getElementById('n-adm').style.display='flex';
             else if(role==='ID') document.getElementById('n-id').style.display='flex';
-            showPage(role==='Admin'?'reports':'admission');
-        }
-
-        function updateAdmissionPrice() {
-            const fac = document.getElementById('a_fac').value;
-            document.getElementById('a_fees').value = FACULTY_PRICES[fac] || 0;
+            showPage(role==='Admin'?'reports':(role==='ID'?'idcard':role.toLowerCase()));
         }
 
         function previewImage(input) {
@@ -383,108 +401,58 @@
             const placeholder = document.getElementById('previewPlaceholder');
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = (e) => { preview.src = e.target.result; preview.style.display = 'block'; placeholder.style.display = 'none'; };
+                reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; placeholder.style.display = 'none'; }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        async function saveStudent() {
-            const id = document.getElementById('a_id').value;
-            const name = document.getElementById('a_name').value.trim();
-            const name_ar = document.getElementById('a_name_ar').value.trim();
-            const nid = document.getElementById('a_nid').value.trim();
-            const email = document.getElementById('a_mail').value.trim();
-            const fileInput = document.getElementById('a_file');
-
-            if (name.split(/\s+/).length < 4) return alert('Full English name must be at least 4 names.');
-            if (name_ar.split(/\s+/).length < 4) return alert('الاسم العربي يجب أن يكون رباعياً على الأقل.');
-            if (!nid || nid.length !== 14) return alert('National ID must be 14 digits.');
-            if (!email) return alert('Email is required.');
-
-            showLoader(true);
-            const sendRequest = async (fileData = "", filename = "") => {
-                try {
-                    const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                        action: 'addStudentWithPhoto', id: id, name: name, name_ar: name_ar, nid: nid, 
-                        faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, 
-                        email: email, filename: filename, fileData: fileData
-                    })});
-                    const result = await res.json();
-                    showLoader(false);
-                    if (result.success) { alert('Student saved successfully.'); resetAdmissionUI(); } else { alert(result.message); }
-                } catch (e) { showLoader(false); alert("Error saving data."); }
-            };
-
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
-                reader.readAsDataURL(fileInput.files[0]);
-            } else { sendRequest("", ""); }
+        function updateAdmissionPrice() {
+            const fac = document.getElementById('a_fac').value;
+            const price = facultyPrices[fac] || 0;
+            document.getElementById('a_fees').value = price ? price + " EGP" : "";
         }
 
-        async function updateStudent() {
+        function printPaymentOrder() {
             const id = document.getElementById('a_id').value;
-            const name = document.getElementById('a_name').value.trim();
-            const name_ar = document.getElementById('a_name_ar').value.trim();
-            const nid = document.getElementById('a_nid').value.trim();
-            const email = document.getElementById('a_mail').value.trim();
-            const fileInput = document.getElementById('a_file');
+            const name = document.getElementById('a_name').value;
+            const nameAr = document.getElementById('a_name_ar').value;
+            const faculty = document.getElementById('a_fac').value;
+            const fees = document.getElementById('a_fees').value;
 
-            if (name.split(/\s+/).length < 4 || name_ar.split(/\s+/).length < 4) return alert('Both names must be quadruple.');
-            
-            showLoader(true);
-            const sendRequest = async (fileData = "", filename = "") => {
-                try {
-                    const res = await fetch(API, { method: 'POST', body: new URLSearchParams({
-                        action: 'updateStudent', id: id, name: name, name_ar: name_ar, nid: nid,
-                        faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value,
-                        email: email, filename: filename, fileData: fileData
-                    })});
-                    const d = await res.json();
-                    showLoader(false);
-                    if(d.success) { alert('Updated Successfully'); resetAdmissionUI(); } else { alert(d.message); }
-                } catch(e) { showLoader(false); alert("Error updating."); }
-            };
+            if(!id || !name || !faculty) return alert('Please fill student info first.');
 
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
-                reader.readAsDataURL(fileInput.files[0]);
-            } else { sendRequest("", ""); }
+            document.getElementById('po_id').innerText = id;
+            document.getElementById('po_name').innerText = name;
+            document.getElementById('po_name_ar').innerText = nameAr;
+            document.getElementById('po_faculty').innerText = faculty;
+            document.getElementById('po_amount').innerText = fees.replace(" EGP", "");
+            document.getElementById('po_date').innerText = new Date().toLocaleDateString('ar-EG');
+
+            window.print();
         }
 
         async function searchAdmission() {
             const id = document.getElementById('a_search_id').value;
-            if(!id) return;
+            if(!id) return alert('Enter ID');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStudent', id:id}) });
             const d = await res.json();
             showLoader(false);
-            if(!d.success) return alert('Not Found');
-            currentStudent = d;
+            if(!d.success) return alert('Not found');
             document.getElementById('a_id').value = id;
+            document.getElementById('a_id').disabled = true;
             document.getElementById('a_name').value = d.name;
-            document.getElementById('a_name_ar').value = d.name_ar || "";
-            document.getElementById('a_nid').value = d.nid;
+            document.getElementById('a_name_ar').value = d.name_ar || '';
+            document.getElementById('a_nid').value = d.nid || '';
             document.getElementById('a_fac').value = d.faculty;
-            document.getElementById('a_fees').value = FACULTY_PRICES[d.faculty] || 0;
+            updateAdmissionPrice(); // Update fees based on faculty
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
-            document.getElementById('a_preview_img').src = (d.photo || "").replace('export=view', 'export=download');
+            document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
             document.getElementById('a_preview_img').style.display = 'block';
             document.getElementById('previewPlaceholder').style.display = 'none';
             document.getElementById('btn_save_new').style.display = 'none';
             document.getElementById('btn_update_existing').style.display = 'flex';
-        }
-
-        function resetAdmissionUI() {
-            ['a_id','a_name','a_name_ar','a_nid','a_fac','a_fees','a_mail','a_phone','a_search_id'].forEach(i=>document.getElementById(i).value="");
-            document.getElementById('a_preview_img').src = "";
-            document.getElementById('a_preview_img').style.display = 'none';
-            document.getElementById('previewPlaceholder').style.display = 'block';
-            document.getElementById('btn_save_new').style.display = 'flex';
-            document.getElementById('btn_update_existing').style.display = 'none';
-            currentStudent = null;
         }
 
         async function search(type) {
@@ -496,62 +464,190 @@
             showLoader(false);
             if(!d.success) return alert('Student Not found');
             currentStudent = d; currentStudent.id = id;
-            const photoUrl = (d.photo || "").replace('export=view', 'export=download');
+            const safePhotoUrl = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
+            
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
-                document.getElementById('f_img').src = photoUrl;
+                document.getElementById('f_img').src = safePhotoUrl;
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
-                document.getElementById('f_nid_h').querySelector('span').innerText = d.nid;
-                document.getElementById('f_mail_h').querySelector('span').innerText = d.email;
+                document.getElementById('f_nid_h').querySelector('span').innerText = (d.nid || "N/A");
+                document.getElementById('f_mail_h').querySelector('span').innerText = (d.email || "N/A");
                 document.getElementById('f_paid_amt').value = d.amount || 0;
                 document.getElementById('f_paid_method').value = d.type || "N/A";
                 const badge = document.getElementById('f_stat_badge');
                 badge.innerText = d.status === 'Paid' ? 'PAID' : 'UNPAID';
                 badge.style.background = d.status === 'Paid' ? '#10b981' : '#ef4444';
-                document.getElementById('btn_mail_adm').style.display = d.status === 'Paid' ? 'inline-block' : 'none';
+                badge.className = 'status-badge';
+                handlePaymentTypeChange(document.getElementById('f_type').value);
             } else {
                 document.getElementById('i_res').style.display='block';
-                document.getElementById('i_img').src = photoUrl;
+                document.getElementById('i_img').src = safePhotoUrl;
                 document.getElementById('i_name_h').innerText = d.name;
                 document.getElementById('i_fac_h').innerText = d.faculty;
-                document.getElementById('i_mail_h').innerText = d.email;
-                document.getElementById('i_printed_status').innerText = `Status: ${d.printed || 'Not Printed'} | ${d.delivered || 'Not Delivered'}`;
+                document.getElementById('i_mail_h').innerText = d.email || "N/A";
+                document.getElementById('i_s_pay').innerText = d.status || "Pending";
+                document.getElementById('i_s_prn').innerText = (d.printed && d.printed.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
+                document.getElementById('i_s_del').innerText = (d.delivered && d.delivered.toString().trim().toLowerCase() === 'yes') ? 'Yes' : 'No';
             }
         }
 
         async function updatePayment() {
             const amt = document.getElementById('f_amt').value;
             const type = document.getElementById('f_type').value;
-            const date = document.getElementById('f_transfer_date').value;
-            if(!amt || amt <=0) return alert('Invalid Amount');
-            if(type==='Online' && !date) return alert('Date required for Online');
+            const transferDate = document.getElementById('f_transfer_date').value;
+            if(!amt) return alert('Enter amount');
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updatePayment', id:currentStudent.id, amount:amt, type:type, date:date}) });
-            const d = await res.json();
-            showLoader(false);
-            if(d.success) { alert('Payment Updated'); search('finance'); } else { alert('Error'); }
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: type, transferDate: type==='Online'?transferDate:''}) });
+            showLoader(false); 
+            const dr = await res.json();
+            alert(dr.message); 
+            search('finance');
         }
 
         async function updateID(field) {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'updateID', id:currentStudent.id, field:field}) });
-            const d = await res.json();
-            showLoader(false);
-            if(d.success) { alert('Status Updated'); search('id'); } else { alert('Error'); }
+            try {
+                const res = await fetch(API, { 
+                    method: 'POST', 
+                    body: new URLSearchParams({
+                        action: 'updateIDStatus', 
+                        id: currentStudent.id, 
+                        field: field
+                    }) 
+                });
+                const result = await res.json();
+                showLoader(false); 
+                
+                if (result.success) {
+                    alert(result.message || 'Updated Successfully.');
+                    search('id');
+                } else {
+                    alert(result.message); 
+                }
+            } catch (e) {
+                showLoader(false);
+                alert("Server Connection Error.");
+            }
+        }
+
+        async function saveStudent() {
+            const id = document.getElementById('a_id').value;
+            const name = document.getElementById('a_name').value.trim();
+            const name_ar = document.getElementById('a_name_ar').value.trim();
+            const nid = document.getElementById('a_nid').value.trim();
+            const email = document.getElementById('a_mail').value.trim();
+            const fileInput = document.getElementById('a_file');
+            
+            if (!name) return alert('Please enter student name.');
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
+
+            if (!id) return alert('Application ID is required.');
+            if (!nid) return alert('National ID is required.');
+            if (!email) return alert('Email Address is required.');
+
+            showLoader(true);
+            
+            const sendRequest = async (fileData = "", filename = "") => {
+                try {
+                    const res = await fetch(API, { 
+                        method: 'POST', 
+                        body: new URLSearchParams({
+                            action: 'addStudentWithPhoto', 
+                            id: id, 
+                            name: name,
+                            name_ar: name_ar,
+                            nid: nid, 
+                            faculty: document.getElementById('a_fac').value, 
+                            phone: document.getElementById('a_phone').value, 
+                            email: email, 
+                            filename: filename, 
+                            fileData: fileData
+                        })
+                    });
+                    
+                    const result = await res.json();
+                    showLoader(false); 
+
+                    if (result.success) {
+                        alert(result.message || 'Student saved successfully.'); 
+                        resetAdmissionUI();
+                    } else {
+                        alert(result.message);
+                    }
+                } catch (e) {
+                    showLoader(false);
+                    alert("Error while saving data.");
+                }
+            };
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sendRequest("", ""); 
+            }
+        }
+
+        async function updateStudent() {
+            const id = document.getElementById('a_id').value;
+            const name = document.getElementById('a_name').value.trim();
+            const name_ar = document.getElementById('a_name_ar').value.trim();
+            const nid = document.getElementById('a_nid').value.trim();
+            const email = document.getElementById('a_mail').value.trim();
+            
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
+
+            if (!nid) return alert('National ID is required.');
+            if (!email) return alert('Email Address is required.');
+            
+            const fileInput = document.getElementById('a_file');
+            showLoader(true);
+            const params = {action: 'updateStudentData', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email};
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    params.fileData = reader.result.split(',')[1]; params.filename = id + ".jpg";
+                    const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                    showLoader(false); alert((await r.json()).message); resetAdmissionUI();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                showLoader(false); alert((await r.json()).message); resetAdmissionUI();
+            }
+        }
+
+        function resetAdmissionUI() {
+            document.getElementById('a_id').disabled = false;
+            document.getElementById('btn_save_new').style.display = 'flex';
+            document.getElementById('btn_update_existing').style.display = 'none';
+            ['a_id','a_name','a_name_ar','a_nid','a_mail','a_phone','a_file','a_search_id','a_fees'].forEach(i=>document.getElementById(i).value='');
+            document.getElementById('a_preview_img').style.display='none';
+            document.getElementById('previewPlaceholder').style.display='block';
         }
 
         async function loadStats() {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
-            const d = await res.json();
+            try {
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+                const d = await res.json();
+                document.getElementById('st_total').innerText = d.registered;
+                document.getElementById('st_paid').innerText = d.paid;
+                document.getElementById('st_unp').innerText = d.unpaid;
+                document.getElementById('st_printed').innerText = d.printed;
+                document.getElementById('st_not_printed').innerText = (d.registered - d.printed);
+                document.getElementById('st_delivered').innerText = d.delivered;
+                document.getElementById('st_not_delivered').innerText = (d.registered - d.delivered);
+                renderChart(d);
+            } catch(e) { console.error(e); }
             showLoader(false);
-            document.getElementById('s_reg').innerText = d.registered;
-            document.getElementById('s_paid').innerText = d.paid;
-            document.getElementById('s_unp').innerText = d.unpaid;
-            document.getElementById('s_pri').innerText = d.printed;
-            document.getElementById('s_del').innerText = d.delivered;
-            renderChart(d);
         }
 
         function renderChart(data) {
@@ -560,31 +656,26 @@
             statsChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Registered', 'Paid', 'Unpaid', 'Printed', 'Delivered'],
-                    datasets: [{ data: [data.registered, data.paid, data.unpaid, data.printed, data.delivered], backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#3498db'], borderRadius: 6 }]
+                    labels: ['Registered', 'Paid', 'Unpaid', 'Printed', 'Not Printed', 'Delivered', 'Not Delivered'],
+                    datasets: [{
+                        data: [data.registered, data.paid, data.unpaid, data.printed, data.registered-data.printed, data.delivered, data.registered-data.delivered],
+                        backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'],
+                        borderRadius: 6
+                    }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        function handlePaymentTypeChange(val) { document.getElementById('online_date_container').style.display = val === 'Online' ? 'block' : 'none'; }
-
-        function printPaymentOrder() {
-            if(!currentStudent && !document.getElementById('a_id').value) return alert('Search student first');
-            const id = document.getElementById('a_id').value;
-            const name = document.getElementById('a_name').value;
-            const name_ar = document.getElementById('a_name_ar').value;
-            const faculty = document.getElementById('a_fac').value;
-            const amount = document.getElementById('a_fees').value;
-            
-            document.getElementById('po_id').innerText = id;
-            document.getElementById('po_date').innerText = new Date().toLocaleDateString();
-            document.getElementById('po_name').innerText = name;
-            document.getElementById('po_name_ar').innerText = name_ar;
-            document.getElementById('po_faculty').innerText = faculty;
-            document.getElementById('po_amount').innerText = amount;
-            
-            window.print();
+        function handlePaymentTypeChange(val) {
+            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
+            const dateContainer = document.getElementById('online_date_container');
+            if (val === 'Online') {
+                dateContainer.style.display = 'block';
+                document.getElementById('f_transfer_date').valueAsDate = new Date();
+            } else {
+                dateContainer.style.display = 'none';
+            }
         }
 
         async function exportData(f) {
@@ -606,8 +697,9 @@
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
                 const d = await res.json();
                 if(d.success) {
-                    if(d.data.length <= 1) { alert(`No ${statusType} students found.`); } 
-                    else {
+                    if(d.data.length <= 1) {
+                        alert(`No ${statusType} students found.`);
+                    } else {
                         const ws = XLSX.utils.aoa_to_sheet(d.data);
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
@@ -626,6 +718,13 @@
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendOfficialPaymentEmail', email: email, id: id})});
             const d = await res.json();
             showLoader(false); alert(d.success ? 'Official Email Sent Successfully' : 'Error sending email');
+        }
+
+        async function sendStudentEmail() {
+            showLoader(true);
+            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
+            const d = await res.json();
+            showLoader(false); alert(d.success ? 'Payment Confirmation Sent' : 'Error');
         }
 
         async function sendManualAdmissionEmail() {
