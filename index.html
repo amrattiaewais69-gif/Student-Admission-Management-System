@@ -43,14 +43,17 @@
         .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
 
-        /* تعديلات مقاس الطباعة A5 (نصف ورقة A4 بالعرض) */
+        /* تعديلات مقاس الطباعة A5 (لمنع الورق الفاضي) */
         @media print {
-            body * { visibility: hidden; overflow: hidden; }
-            #paymentOrderTemplate, #paymentOrderTemplate * { visibility: visible; }
+            /* إخفاء الأقسام الرئيسية تماماً من مساحة الطباعة */
+            #appSection, #loginSection, #loader { display: none !important; }
+            
+            body { margin: 0; padding: 0; background: white; }
+            
             #paymentOrderTemplate {
-                position: absolute; left: 0; top: 0; 
+                display: block !important;
                 width: 210mm; height: 148mm; /* مقاس A5 بالعرض يطابق نصف A4 تماماً */
-                background: white !important; display: block !important;
+                background: white !important; 
                 padding: 10mm 15mm; box-sizing: border-box; direction: ltr;
                 border: none !important; margin: 0; overflow: hidden;
             }
