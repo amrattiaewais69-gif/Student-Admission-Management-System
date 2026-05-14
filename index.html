@@ -43,18 +43,22 @@
         .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
 
-        /* تعديلات مقاس الطباعة A5 لمنع ظهور الورق الفاضي نهائياً */
+        /* إعدادات الطباعة لضمان خروج صفحة A5 واحدة فقط وعدم خروج صفحات فارغة مطلقا */
         @media print {
             #appSection, #loginSection, #loader { display: none !important; }
-            body, html { margin: 0; padding: 0; background: white; height: 100%; overflow: hidden; }
+            body { margin: 0; padding: 0; background: white; height: 100vh; overflow: hidden; }
             #paymentOrderTemplate, #cashReceiptTemplate { display: none; }
             .print-area {
                 display: block !important;
-                width: 210mm; height: 148mm; 
-                max-height: 148mm; /* إجبار الارتفاع لعدم التسريب لصفحة أخرى */
+                width: 210mm; 
+                height: 148mm; /* A5 Landscape EXACT */
+                max-height: 148mm;
                 background: white !important; 
-                padding: 10mm 15mm; box-sizing: border-box; 
-                border: none !important; margin: 0; overflow: hidden;
+                padding: 10mm 15mm; 
+                box-sizing: border-box; 
+                border: none !important; 
+                margin: 0; 
+                overflow: hidden;
                 page-break-after: avoid; 
                 page-break-before: avoid; 
                 page-break-inside: avoid;
@@ -62,39 +66,45 @@
             @page { size: A5 landscape; margin: 0; }
         }
 
-         
-         /* تنسيق إيصال الدفع (Payment Order) */
-        #paymentOrderTemplate { display: none; border: 2px solid #0a192f; padding: 20px; font-family: 'Arial', sans-serif; direction: ltr; }
-        .po-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0a192f; padding-bottom: 15px; direction: ltr; }
-        .po-title { text-align: center; margin: 20px 0; border: 1px solid #000; padding: 5px; background: #f0f0f0; }
-        .po-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .po-table td { border: 1px solid #ccc; padding: 10px; font-size: 14px; text-align: left; }
-        .po-table td.label { background: #f9f9f9; font-weight: bold; width: 25%; }
-        .po-amount-box { border: 2px solid #000; margin: 20px 0; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
-        .po-notes { border-top: 1px solid #000; margin-top: 20px; padding-top: 10px; font-size: 12px; line-height: 1.6; }
-        .po-footer { display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; }
+        /* تنسيق إيصال الدفع (Payment Order) - مطابق للصورة تماماً (LTR) */
+        #paymentOrderTemplate { display: none; background: #fff; color: #000; font-family: 'Arial', sans-serif; direction: ltr; }
+        .po-table { width: 100%; border-collapse: collapse; border: 1px solid #ccc; font-size: 15px; }
+        .po-table td { border: 1px solid #ccc; padding: 8px 12px; vertical-align: middle; }
+        .po-gray { background-color: #e0e0e0; font-weight: bold; text-align: center; }
 
-
-        /* تنسيق إيصال استلام النقدية (Cash Receipt) */
-        #cashReceiptTemplate { display: none; font-family: 'Arial', sans-serif; border: 2px solid #000; padding: 15px; direction: rtl; position: relative; }
-        .rcp-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0a192f; padding-bottom: 10px; margin-bottom: 15px; }
-        .rcp-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 2; }
-        .rcp-table td { padding: 5px; border-bottom: 1px dotted #aaa; vertical-align: bottom; }
-        .rcp-label { font-weight: bold; width: 160px; color: #333; }
-        .rcp-value { font-weight: bold; color: #000; }
-        .rcp-footer { display: flex; justify-content: space-between; margin-top: 30px; font-weight: bold; }
-        .sig-box { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; }
+        /* تنسيق إيصال استلام النقدية (Cash Receipt) - احترافي ومميز (RTL) */
+        #cashReceiptTemplate { 
+            display: none; 
+            font-family: 'Arial', sans-serif; 
+            background: #fff;
+            direction: rtl; 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+        }
+        .cr-border { border: 3px double #0a192f; padding: 15px; height: 100%; box-sizing: border-box; position: relative; }
+        .cr-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #C5A059; padding-bottom: 10px; margin-bottom: 15px; }
+        .cr-title { text-align: center; margin-top: 5px; font-size: 22px; font-weight: bold; color: #0a192f; letter-spacing: 1px; }
+        .cr-info-box { background: #fcfcfc; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 14px; }
+        .cr-table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 2.2; }
+        .cr-table td { padding: 5px 10px; border-bottom: 1px dashed #bbb; vertical-align: bottom; }
+        .cr-label { font-weight: bold; width: 150px; color: #333; }
+        .cr-value { font-weight: bold; color: #000; }
+        .cr-amount-box { border: 2px solid #0a192f; background: #e9ecef; display: inline-block; padding: 5px 20px; font-size: 18px; font-weight: bold; border-radius: 5px; margin-right: 10px; }
+        .cr-footer { display: flex; justify-content: space-between; margin-top: 30px; font-weight: bold; align-items: center; }
+        .cr-sig { border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px; }
+        .cr-stamp { border: 2px solid #ccc; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ccc; transform: rotate(-15deg); font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div id="paymentOrderTemplate">
-        <table class="po-table">
+        <table class="po-table" style="direction: ltr; text-align: left;">
             <tr>
-                <td colspan="2" style="width: 50%; padding: 15px;">
-                    <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="100" style="vertical-align: middle;">
+                <td colspan="2" style="width: 50%; padding: 15px; border-right: none;">
+                    <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="120" style="vertical-align: middle;">
                 </td>
-                <td colspan="2" style="width: 50%; text-align: right; font-weight: bold; font-size: 13px; padding: 15px;">
+                <td colspan="2" style="width: 50%; text-align: right; font-weight: bold; font-size: 16px; padding: 15px; border-left: none;">
                     Student Affairs Department<br>Admissions Policies
                 </td>
             </tr>
@@ -110,20 +120,20 @@
                 <td style="text-align: right;">0</td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">Faculty:</td>
+                <td style="font-weight: bold;">School:</td>
                 <td colspan="3" id="po_faculty"></td>
             </tr>
-            <tr class="po-gray" style="text-align: center;">
+            <tr class="po-gray">
                 <td colspan="2">Payment Item</td>
                 <td colspan="2">Value</td>
             </tr>
             <tr>
                 <td colspan="2">deposit</td>
-                <td colspan="2" style="text-align: center;">EGP <span id="po_amount"></span></td>
+                <td colspan="2" style="text-align: center; font-weight: bold;">EGP <span id="po_amount"></span></td>
             </tr>
             <tr class="po-gray">
                 <td colspan="2" style="text-align: right;">Total Amount</td>
-                <td colspan="2" style="text-align: center;">EGP <span id="po_amount_total"></span></td>
+                <td colspan="2" style="text-align: center; font-weight: bold;">EGP <span id="po_amount_total"></span></td>
             </tr>
             <tr>
                 <td style="font-weight: bold; vertical-align: top;">Notes:</td>
@@ -137,49 +147,60 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2" style="font-weight: bold;">Admission's Signature:</td>
-                <td style="font-weight: bold;">Date: <span id="po_date"></span></td>
-                <td style="font-weight: bold; text-align: right;"><span id="po_time"></span></td>
+                <td colspan="2" style="font-weight: bold; border-right: none;">Admission's Signature:</td>
+                <td style="font-weight: bold; border-left: none; border-right: none; text-align: center;">Date: <span id="po_date"></span></td>
+                <td style="font-weight: bold; border-left: none; text-align: right;"><span id="po_time"></span></td>
             </tr>
         </table>
     </div>
 
-    <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
-
-
     <div id="cashReceiptTemplate">
-        <div class="rcp-header">
-            <div style="text-align: right;">
-                <h2 style="margin:0; color: #0a192f;">إيصال استلام نقدية</h2>
-                <h4 style="margin:0; color: #C5A059;">Cash Receipt</h4>
+        <div class="cr-border">
+            <div class="cr-header">
+                <div style="text-align: right;">
+                    <h2 style="margin:0; color: #0a192f;">جامعة شرق العاصمة</h2>
+                    <h4 style="margin:0; color: #C5A059;">إدارة الحسابات والخزينة</h4>
+                </div>
+                <div style="text-align: center;">
+                    <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70">
+                </div>
+                <div style="text-align: left; direction: ltr; font-size: 14px; font-weight: bold; background:#f9f9f9; padding:5px 10px; border:1px solid #ddd; border-radius:5px;">
+                    Receipt No: <span id="rcp_serial_print" style="color: red; font-size: 16px;"></span><br>
+                    Date: <span id="rcp_date"></span>
+                </div>
             </div>
-            <div style="text-align: center;">
-                <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70">
+            
+            <div class="cr-title">إيصــــال استـــــلام نقديـــــة <span style="font-size:14px; color:#666;">(CASH RECEIPT)</span></div>
+            
+            <table class="cr-table">
+                <tr>
+                    <td class="cr-label">استلمنا من السيد/ة:</td>
+                    <td class="cr-value" id="rcp_name" colspan="3"></td>
+                </tr>
+                <tr>
+                    <td class="cr-label">الكلية المقيد بها:</td>
+                    <td class="cr-value" id="rcp_faculty"></td>
+                    <td class="cr-label" style="width: 100px;">رقم الملف:</td>
+                    <td class="cr-value" id="rcp_id"></td>
+                </tr>
+                <tr>
+                    <td class="cr-label">مبلغاً وقدره (بالحروف):</td>
+                    <td class="cr-value" colspan="3">
+                        <span id="rcp_amount_text"></span>
+                        <span class="cr-amount-box"><span id="rcp_amount_num"></span> EGP</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cr-label">وذلك قيمة:</td>
+                    <td class="cr-value" id="rcp_reason" colspan="3"></td>
+                </tr>
+            </table>
+
+            <div class="cr-footer">
+                <div class="cr-sig">توقيع المستلم<br>(Cashier)</div>
+                <div class="cr-stamp">الختم الرسمي<br>Official Stamp</div>
+                <div style="direction: ltr; color: #666; font-size: 13px;">Time: <span id="rcp_time"></span><br>Payment: <span id="rcp_method_print"></span></div>
             </div>
-            <div style="text-align: left; direction: ltr; font-size: 14px; font-weight: bold;">
-                No: <span id="rcp_serial_print" style="color: red; font-size: 18px;"></span><br>
-                Date: <span id="rcp_date"></span>
-            </div>
-        </div>
-        <table class="rcp-table">
-            <tr><td class="rcp-label">استلمنا من السيد/ة:</td><td class="rcp-value" id="rcp_name" colspan="3"></td></tr>
-            <tr>
-                <td class="rcp-label">الكلية:</td><td class="rcp-value" id="rcp_faculty"></td>
-                <td class="rcp-label" style="width: 100px;">رقم الملف:</td><td class="rcp-value" id="rcp_id"></td>
-            </tr>
-            <tr>
-                <td class="rcp-label">مبلغاً وقدره:</td>
-                <td class="rcp-value" colspan="3" style="display:flex; justify-content: space-between;">
-                    <span id="rcp_amount_text"></span>
-                    <span>( <span id="rcp_amount_num"></span> EGP )</span>
-                </td>
-            </tr>
-            <tr><td class="rcp-label">وذلك قيمة:</td><td class="rcp-value" id="rcp_reason" colspan="3"></td></tr>
-            <tr><td class="rcp-label">ملاحظات:</td><td class="rcp-value" colspan="3">..................................................................................................</td></tr>
-        </table>
-        <div class="rcp-footer">
-            <div class="sig-box">توقيع المستلم</div>
-            <div style="direction: ltr;">Time: <span id="rcp_time"></span></div>
         </div>
     </div>
 
@@ -320,7 +341,7 @@
                             </div>
                         </div>
                         <div style="display:flex; gap:10px; margin-top:20px; width:100%;">
-                            <button onclick="updatePayment()" class="btn btn-primary" style="flex:1;">Confirm & Update Payment</button>
+                            <button id="btn_confirm_pay" onclick="updatePayment()" class="btn btn-primary" style="flex:1;">Confirm & Update Payment</button>
                             <button onclick="printCashReceipt()" class="btn btn-gold" style="flex:1; background: #C5A059;"><i class="fas fa-receipt"></i> طباعة إيصال النقدية</button>
                         </div>
                     </div>
@@ -405,8 +426,6 @@
                 document.getElementById('user_display').innerText = s.user;
                 applyRole(s.role);
             }
-            document.getElementById('f_serial_prefix').value = localStorage.getItem('rcp_prefix') || 'UEC-2026-';
-            document.getElementById('f_serial_next').value = localStorage.getItem('rcp_next') || '1001';
         };
 
         async function login() {
@@ -513,9 +532,17 @@
             
             const cleanFees = fees.replace(" EGP", "");
             document.getElementById('po_amount').innerText = cleanFees;
+            document.getElementById('po_amount_total').innerText = cleanFees;
 
             const now = new Date();
             document.getElementById('po_date').innerText = now.toLocaleDateString('en-GB');
+            
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            const timeStr = hours.toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' ' + ampm;
+            document.getElementById('po_time').innerText = timeStr;
 
             document.getElementById('paymentOrderTemplate').classList.add('print-area');
             window.print();
@@ -530,17 +557,23 @@
             const prefix = document.getElementById('f_serial_prefix').value;
             const nextNo = document.getElementById('f_serial_next').value;
             const reason = document.getElementById('f_receipt_reason').value;
-            const currentSerial = prefix + nextNo;
+            
+            // قراءة الرقم من الحقل المخفي (إذا تم البحث عن طالب سدد من قبل) أو أخذ الرقم الجديد
+            const tempSerial = document.getElementById('rcp_printed_temp').innerText;
+            const currentSerial = tempSerial ? tempSerial : (prefix + nextNo);
             
             document.getElementById('rcp_serial_print').innerText = currentSerial;
-            document.getElementById('rcp_printed_temp').innerText = currentSerial; // حفظ السيريال الحالي في خانة مخفية لإرساله لاحقا
             
             document.getElementById('rcp_name').innerText = currentStudent.name_ar || currentStudent.name;
-            document.getElementById('rcp_faculty').innerText = currentStudent.faculty;
+            let faculty = currentStudent.faculty;
+            faculty = faculty.replace('Faculty of ', '');
+            document.getElementById('rcp_faculty').innerText = faculty;
             document.getElementById('rcp_id').innerText = currentStudent.id;
+            
             document.getElementById('rcp_amount_num').innerText = amt;
             document.getElementById('rcp_amount_text').innerText = tafqeet(parseInt(amt));
             document.getElementById('rcp_reason').innerText = reason;
+            document.getElementById('rcp_method_print').innerText = document.getElementById('f_type').options[document.getElementById('f_type').selectedIndex].text;
             
             const now = new Date();
             document.getElementById('rcp_date').innerText = now.toLocaleDateString('en-GB');
@@ -588,7 +621,25 @@
             
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
-                document.getElementById('rcp_printed_temp').innerText = ''; // تفريغ السيريال المؤقت لطالب جديد
+                
+                // === تعديل المنطق: لو الطالب دفع مسبقا نعرض رقم الإيصال الخاص به ===
+                if(d.status === 'Paid' && d.receiptNo && d.receiptNo !== 'N/A') {
+                    document.getElementById('rcp_printed_temp').innerText = d.receiptNo;
+                    document.getElementById('f_serial_prefix').value = d.receiptNo; // نعرض الرقم كاملاً هنا
+                    document.getElementById('f_serial_next').style.display = 'none';  // ونخفي حقل الرقم
+                    document.getElementById('f_serial_prefix').disabled = true; // نمنع تعديله
+                    document.getElementById('btn_confirm_pay').disabled = true; // نمنع الدفع المتكرر
+                    document.getElementById('btn_confirm_pay').style.background = '#ccc';
+                } else {
+                    // إذا لم يدفع (Pending أو Unpaid)، نعرض السيريال التالي للدفع
+                    document.getElementById('rcp_printed_temp').innerText = '';
+                    document.getElementById('f_serial_prefix').value = localStorage.getItem('rcp_prefix') || 'UEC-2026-';
+                    document.getElementById('f_serial_next').value = localStorage.getItem('rcp_next') || '1001';
+                    document.getElementById('f_serial_next').style.display = 'inline-block';
+                    document.getElementById('f_serial_prefix').disabled = false;
+                    document.getElementById('btn_confirm_pay').disabled = false;
+                    document.getElementById('btn_confirm_pay').style.background = 'var(--primary)';
+                }
                 
                 document.getElementById('f_img').src = safePhotoUrl;
                 document.getElementById('f_name_h').innerText = d.name;
@@ -598,6 +649,7 @@
                 document.getElementById('f_paid_amt').value = d.amount || 0;
                 document.getElementById('f_paid_method').value = d.type || "N/A";
                 
+                // جلب القيمة المطلوبة للدفع من الأسعار
                 document.getElementById('f_amt').value = facultyPrices[d.faculty] || 0;
 
                 const badge = document.getElementById('f_stat_badge');
@@ -623,7 +675,6 @@
             const transferDate = document.getElementById('f_transfer_date').value;
             if(!amt) return alert('Enter amount');
             
-            // تحديد رقم الإيصال المُرسل (إذا طبعنا نأخذ المطبوع، وإلا نأخذ المتوقع)
             const prefix = document.getElementById('f_serial_prefix').value;
             const nextNo = document.getElementById('f_serial_next').value;
             const tempSerial = document.getElementById('rcp_printed_temp').innerText;
@@ -632,14 +683,14 @@
             showLoader(true);
             const res = await fetch(API, { 
                 method: 'POST', 
-                body: new URLSearchParams({
+                body: newSearchParams({
                     action: 'updatePayment', 
                     id: currentStudent.id, 
                     amount: amt, 
                     status: 'Paid', 
                     type: type, 
                     transferDate: type==='Online'?transferDate:'',
-                    receiptNo: finalReceiptNo  // إرسال رقم الإيصال إلى جوجل شيت
+                    receiptNo: finalReceiptNo
                 }) 
             });
             showLoader(false); 
@@ -647,19 +698,11 @@
             
             if(dr.success) {
                 alert(dr.message);
-                // زيادة السيريال وحفظه فقط إذا نجح التحديث ولم يتم زيادته مسبقاً
                 if (!tempSerial) {
                     const newNext = parseInt(nextNo) + 1;
                     document.getElementById('f_serial_next').value = newNext;
                     localStorage.setItem('rcp_prefix', prefix);
                     localStorage.setItem('rcp_next', newNext);
-                } else {
-                    // إذا طبعناه بالفعل ونجح الحفظ، نحدث الـ nextNo للمرة القادمة
-                    const incrementedNext = parseInt(tempSerial.replace(prefix, '')) + 1;
-                    document.getElementById('f_serial_next').value = incrementedNext;
-                    localStorage.setItem('rcp_prefix', prefix);
-                    localStorage.setItem('rcp_next', incrementedNext);
-                    document.getElementById('rcp_printed_temp').innerText = ''; // إعادة تعيين
                 }
             } else {
                 alert('Error Updating Payment!');
@@ -667,10 +710,17 @@
             search('finance');
         }
 
+        // دالة مساعدة لعمل params 
+        function newSearchParams(obj) {
+            const p = new URLSearchParams();
+            for (const key in obj) { p.append(key, obj[key]); }
+            return p;
+        }
+
         async function updateID(field) {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updateIDStatus', id: currentStudent.id, field: field}) });
+                const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'updateIDStatus', id: currentStudent.id, field: field}) });
                 const result = await res.json(); showLoader(false); 
                 if (result.success) { alert(result.message || 'Updated Successfully.'); search('id'); } else { alert(result.message); }
             } catch (e) { showLoader(false); alert("Server Connection Error."); }
@@ -697,7 +747,7 @@
             showLoader(true);
             const sendRequest = async (fileData = "", filename = "") => {
                 try {
-                    const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email, filename: filename, fileData: fileData}) });
+                    const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'addStudentWithPhoto', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email, filename: filename, fileData: fileData}) });
                     const result = await res.json(); showLoader(false); 
                     if (result.success) { alert(result.message || 'Student saved successfully.'); resetAdmissionUI(); } else { alert(result.message); }
                 } catch (e) { showLoader(false); alert("Error while saving data."); }
@@ -731,12 +781,12 @@
                 const reader = new FileReader();
                 reader.onload = async () => {
                     params.fileData = reader.result.split(',')[1]; params.filename = id + ".jpg";
-                    const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                    const r = await fetch(API, { method: 'POST', body: newSearchParams(params) });
                     showLoader(false); alert((await r.json()).message); resetAdmissionUI();
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
+                const r = await fetch(API, { method: 'POST', body: newSearchParams(params) });
                 showLoader(false); alert((await r.json()).message); resetAdmissionUI();
             }
         }
@@ -753,7 +803,7 @@
         async function loadStats() {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getStats'}) });
+                const res = await fetch(API, { method: 'POST', body: newSearchParams({action:'getStats'}) });
                 const d = await res.json();
                 document.getElementById('st_total').innerText = d.registered;
                 document.getElementById('st_paid').innerText = d.paid;
@@ -797,7 +847,7 @@
 
         async function exportData(f) {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'getFilteredData', filter:f}) });
+            const res = await fetch(API, { method: 'POST', body: newSearchParams({action:'getFilteredData', filter:f}) });
             const d = await res.json();
             if(d.success) {
                 const ws = XLSX.utils.aoa_to_sheet(d.data);
@@ -811,7 +861,7 @@
         async function exportFinanceData(statusType) {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
+                const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'getFilteredData', filter: statusType})});
                 const d = await res.json();
                 if(d.success) {
                     if(d.data.length <= 1) {
@@ -832,21 +882,21 @@
             const id = document.getElementById('a_id').value;
             if(!email || !id) return alert('Email & ID Required');
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendOfficialPaymentEmail', email: email, id: id})});
+            const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'sendOfficialPaymentEmail', email: email, id: id})});
             const d = await res.json();
             showLoader(false); alert(d.success ? 'Official Email Sent Successfully' : 'Error sending email');
         }
 
         async function sendStudentEmail() {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
+            const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'sendStudentEmail', email: currentStudent.email, name: currentStudent.name})});
             const d = await res.json();
             showLoader(false); alert(d.success ? 'Payment Confirmation Sent' : 'Error');
         }
 
         async function sendManualAdmissionEmail() {
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
+            const res = await fetch(API, { method: 'POST', body: newSearchParams({action: 'sendManualAdmissionEmail', id: currentStudent.id})});
             const d = await res.json();
             showLoader(false); alert(d.success ? 'Admission Notified Successfully' : 'Error');
         }
