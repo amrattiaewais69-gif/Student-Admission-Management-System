@@ -87,49 +87,63 @@
 <body>
 
     <div id="paymentOrderTemplate">
-        <div class="po-header">
-            <div style="text-align: right;">
-                <h2 style="margin:0; color: #0a192f;">University of East Capital</h2>
-                <h4 style="margin:0; color: #C5A059;">Admission Department</h4>
-            </div>
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80">
-        </div>
-        <div class="po-title">
-            <h3 style="margin:0;">إذن توريد رسوم طلب التحاق (Payment Order)</h3>
-        </div>
         <table class="po-table">
             <tr>
-                <td class="label">رقم الطلب / App ID</td><td id="po_id"></td>
-                <td class="label">تاريخ الإصدار / Date</td><td id="po_date"></td>
+                <td colspan="2" style="width: 50%; padding: 15px;">
+                    <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="100" style="vertical-align: middle;">
+                </td>
+                <td colspan="2" style="width: 50%; text-align: right; font-weight: bold; font-size: 13px; padding: 15px;">
+                    Student Affairs Department<br>Admissions Policies
+                </td>
             </tr>
-            <tr><td class="label">اسم الطالب (Ar)</td><td id="po_name_ar" colspan="3" style="font-size: 16px; font-weight: bold;"></td></tr>
-            <tr><td class="label">Student Name (En)</td><td id="po_name" colspan="3"></td></tr>
-            <tr><td class="label">الكلية / Faculty</td><td id="po_faculty" colspan="3"></td></tr>
+            <tr>
+                <td style="font-weight: bold; width: 15%;">Name:</td>
+                <td style="width: 55%;" id="po_name"></td>
+                <td style="font-weight: bold; width: 15%;">App. ID:</td>
+                <td style="width: 15%; text-align: right;" id="po_id"></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right; font-weight: bold; font-size: 18px;" id="po_name_ar" dir="rtl"></td>
+                <td style="font-weight: bold;">ID:</td>
+                <td style="text-align: right;">0</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Faculty:</td>
+                <td colspan="3" id="po_faculty"></td>
+            </tr>
+            <tr class="po-gray" style="text-align: center;">
+                <td colspan="2">Payment Item</td>
+                <td colspan="2">Value</td>
+            </tr>
+            <tr>
+                <td colspan="2">deposit</td>
+                <td colspan="2" style="text-align: center;">EGP <span id="po_amount"></span></td>
+            </tr>
+            <tr class="po-gray">
+                <td colspan="2" style="text-align: right;">Total Amount</td>
+                <td colspan="2" style="text-align: center;">EGP <span id="po_amount_total"></span></td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; vertical-align: top;">Notes:</td>
+                <td colspan="3">
+                    Payment order is valid only on the day of its issuance and will not be accepted<br>on any subsequent day.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right; font-weight: bold;" dir="rtl">
+                    ملاحظة: برجاء العلم أن أمر الدفع هذا صالح ليوم صدوره فقط ولا يعتد به في أي يوم لاحق.***
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="font-weight: bold;">Admission's Signature:</td>
+                <td style="font-weight: bold;">Date: <span id="po_date"></span></td>
+                <td style="font-weight: bold; text-align: right;"><span id="po_time"></span></td>
+            </tr>
         </table>
-        <div class="po-amount-box">
-            المبلغ المطلوب سداده: <span id="po_amount"></span> EGP Only
-        </div>
-        <div class="po-notes">
-            <div style="display: flex; justify-content: space-between;">
-                <div style="width: 48%; text-align: left; direction: ltr;">
-                    <strong>Important Notes:</strong><br>
-                    - This is not a receipt of payment.<br>
-                    - Payment must be made only at the University Treasury.<br>
-                    - This order is valid for 48 hours only from the date of issuance.
-                </div>
-                <div style="width: 48%; text-align: right; direction: rtl;">
-                    <strong>ملاحظات هامة:</strong><br>
-                    - هذا المستند لا يعتبر إيصالاً بالسداد.<br>
-                    - يتم السداد فقط من خلال خزينة الجامعة.<br>
-                    - هذا الإذن صالح لمدة 48 ساعة فقط من تاريخ إصداره.
-                </div>
-            </div>
-        </div>
-        <div class="po-footer">
-            <span>توقيع شؤون الطلاب: .........................</span>
-            <span>اعتماد الخزينة: .........................</span>
-        </div>
     </div>
+
+    <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
+
 
     <div id="cashReceiptTemplate">
         <div class="rcp-header">
