@@ -43,123 +43,124 @@
         .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
 
-        /* الطباعة A5 */
+        /* إعدادات الطباعة لضمان خروج صفحة A5 واحدة فقط وعدم خروج صفحات فارغة */
         @media print {
             #appSection, #loginSection, #loader { display: none !important; }
             body { margin: 0; padding: 0; background: white; }
-            #paymentOrderTemplate, #cashReceiptTemplate { 
-                display: none; 
-                width: 210mm; height: 148.5mm; 
-                background: white !important; padding: 10mm; box-sizing: border-box; 
+            #paymentOrderTemplate, #cashReceiptTemplate { display: none; }
+            .print-area {
+                display: block !important;
+                width: 210mm; height: 148.5mm; /* مقاس A5 العرضي */
+                background: white !important; 
+                padding: 10mm 15mm; box-sizing: border-box; 
+                border: none !important; margin: 0; overflow: hidden;
             }
-            .printable { display: block !important; }
             @page { size: A5 landscape; margin: 0; }
         }
 
-        /* تنسيق الإيصال الجديد ليطابق الديزاين الاحترافي */
-        #cashReceiptTemplate { display: none; font-family: 'Arial', sans-serif; border: 2px solid #000; direction: rtl; position: relative; }
-        .receipt-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .receipt-body { font-size: 16px; line-height: 1.8; }
-        .receipt-row { display: flex; margin-bottom: 8px; border-bottom: 1px dotted #ccc; }
-        .label-r { font-weight: bold; width: 150px; color: #333; }
-        .value-r { flex: 1; border-bottom: 1px solid #000; padding-right: 10px; }
-        .receipt-footer { margin-top: 20px; display: flex; justify-content: space-between; }
-        .sig-box { border-top: 1px solid #000; width: 200px; text-align: center; margin-top: 40px; padding-top: 5px; font-weight: bold; }
+        /* تنسيق إيصال الدفع (Payment Order) */
+        #paymentOrderTemplate { display: none; border: 2px solid #0a192f; padding: 20px; font-family: 'Arial', sans-serif; direction: rtl; }
+        .po-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0a192f; padding-bottom: 15px; }
+        .po-title { text-align: center; margin: 20px 0; border: 1px solid #000; padding: 5px; background: #f0f0f0; }
+        .po-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .po-table td { border: 1px solid #ccc; padding: 10px; font-size: 14px; text-align: right; }
+        .po-table td.label { background: #f9f9f9; font-weight: bold; width: 25%; }
+        .po-amount-box { border: 2px solid #000; margin: 20px 0; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+        .po-notes { border-top: 1px solid #000; margin-top: 20px; padding-top: 10px; font-size: 12px; line-height: 1.6; }
+        .po-footer { display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; }
 
-        #paymentOrderTemplate { display: none; background: #fff; color: #000; font-family: 'Arial', sans-serif; }
-        .po-table { width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 14px; }
-        .po-table td { border: 1px solid #ccc; padding: 8px 12px; vertical-align: middle; }
-        .po-table .po-gray { background-color: #e0e0e0; font-weight: bold; }
+        /* تنسيق إيصال استلام النقدية (Cash Receipt) */
+        #cashReceiptTemplate { display: none; font-family: 'Arial', sans-serif; border: 2px solid #000; padding: 15px; direction: rtl; position: relative; }
+        .rcp-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0a192f; padding-bottom: 10px; margin-bottom: 15px; }
+        .rcp-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 2; }
+        .rcp-table td { padding: 5px; border-bottom: 1px dotted #aaa; vertical-align: bottom; }
+        .rcp-label { font-weight: bold; width: 160px; color: #333; }
+        .rcp-value { font-weight: bold; color: #000; }
+        .rcp-footer { display: flex; justify-content: space-between; margin-top: 30px; font-weight: bold; }
+        .sig-box { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="cashReceiptTemplate">
-        <div class="receipt-header">
-            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="100">
-            <div style="text-align: center;">
-                <h2 style="margin:0;">إيصال استلام نقدية</h2>
-                <p style="margin:0; font-weight:bold;">Cash Receipt</p>
+    <div id="paymentOrderTemplate">
+        <div class="po-header">
+            <div style="text-align: right;">
+                <h2 style="margin:0; color: #0a192f;">University of East Capital</h2>
+                <h4 style="margin:0; color: #C5A059;">Admission Department</h4>
             </div>
-            <div style="text-align: left;">
-                <p style="margin:0;">رقم المسلسل: <span id="rcp_serial" style="color:red; font-weight:bold;"></span></p>
-                <p style="margin:0;">التاريخ: <span id="rcp_date"></span></p>
-            </div>
+            <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="80">
         </div>
-        <div class="receipt-body">
-            <div class="receipt-row"><div class="label-r">إستلمنا من السيد:</div><div class="value-r" id="rcp_name"></div></div>
-            <div class="receipt-row"><div class="label-r">الكلية:</div><div class="value-r" id="rcp_faculty"></div></div>
-            <div class="receipt-row"><div class="label-r">رقم الملف (App ID):</div><div class="value-r" id="rcp_id"></div></div>
-            <div class="receipt-row">
-                <div class="label-r">مبلغا وقدره:</div>
-                <div class="value-r" style="display:flex; justify-content: space-between;">
-                    <span id="rcp_amount_text"></span>
-                    <span style="font-weight:bold;">( <span id="rcp_amount_num"></span> EGP )</span>
+        <div class="po-title">
+            <h3 style="margin:0;">إذن توريد رسوم طلب التحاق (Payment Order)</h3>
+        </div>
+        <table class="po-table">
+            <tr>
+                <td class="label">رقم الطلب / App ID</td><td id="po_id"></td>
+                <td class="label">تاريخ الإصدار / Date</td><td id="po_date"></td>
+            </tr>
+            <tr><td class="label">اسم الطالب (Ar)</td><td id="po_name_ar" colspan="3" style="font-size: 16px; font-weight: bold;"></td></tr>
+            <tr><td class="label">Student Name (En)</td><td id="po_name" colspan="3"></td></tr>
+            <tr><td class="label">الكلية / Faculty</td><td id="po_faculty" colspan="3"></td></tr>
+        </table>
+        <div class="po-amount-box">
+            المبلغ المطلوب سداده: <span id="po_amount"></span> EGP Only
+        </div>
+        <div class="po-notes">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="width: 48%; text-align: left; direction: ltr;">
+                    <strong>Important Notes:</strong><br>
+                    - This is not a receipt of payment.<br>
+                    - Payment must be made only at the University Treasury.<br>
+                    - This order is valid for 48 hours only from the date of issuance.
+                </div>
+                <div style="width: 48%; text-align: right; direction: rtl;">
+                    <strong>ملاحظات هامة:</strong><br>
+                    - هذا المستند لا يعتبر إيصالاً بالسداد.<br>
+                    - يتم السداد فقط من خلال خزينة الجامعة.<br>
+                    - هذا الإذن صالح لمدة 48 ساعة فقط من تاريخ إصداره.
                 </div>
             </div>
-            <div class="receipt-row"><div class="label-r">وذلك مقابل:</div><div class="value-r">رسوم جدية حجز خريف 2026-2027</div></div>
-            <div class="receipt-row"><div class="label-r">ملاحظات:</div><div class="value-r" id="rcp_notes"></div></div>
         </div>
-        <div class="receipt-footer">
-            <div>الوقت: <span id="rcp_time"></span></div>
-            <div class="sig-box">توقيع المستلم</div>
+        <div class="po-footer">
+            <span>توقيع شؤون الطلاب: .........................</span>
+            <span>اعتماد الخزينة: .........................</span>
         </div>
     </div>
 
-    <div id="paymentOrderTemplate">
-        <table class="po-table">
+    <div id="cashReceiptTemplate">
+        <div class="rcp-header">
+            <div style="text-align: right;">
+                <h2 style="margin:0; color: #0a192f;">إيصال استلام نقدية</h2>
+                <h4 style="margin:0; color: #C5A059;">Cash Receipt</h4>
+            </div>
+            <div style="text-align: center;">
+                <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70">
+            </div>
+            <div style="text-align: left; direction: ltr; font-size: 14px; font-weight: bold;">
+                No: <span id="rcp_serial" style="color: red; font-size: 18px;"></span><br>
+                Date: <span id="rcp_date"></span>
+            </div>
+        </div>
+        <table class="rcp-table">
+            <tr><td class="rcp-label">استلمنا من السيد/ة:</td><td class="rcp-value" id="rcp_name" colspan="3"></td></tr>
             <tr>
-                <td colspan="2" style="width: 50%; padding: 15px;">
-                    <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="120" style="vertical-align: middle;">
-                </td>
-                <td colspan="2" style="width: 50%; text-align: right; font-weight: bold; font-size: 16px; padding: 15px;">
-                    Student Affairs Department<br>Admissions Policies
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold; width: 15%;">Name:</td>
-                <td style="width: 55%;" id="po_name"></td>
-                <td style="font-weight: bold; width: 15%;">App. ID:</td>
-                <td style="width: 15%; text-align: right;" id="po_id"></td>
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align: right; font-weight: bold; font-size: 18px;" id="po_name_ar" dir="rtl"></td>
-                <td style="font-weight: bold;">ID:</td>
-                <td style="text-align: right;">0</td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;">School:</td>
-                <td colspan="3" id="po_faculty"></td>
-            </tr>
-            <tr class="po-gray" style="text-align: center;">
-                <td colspan="2">Payment Item</td>
-                <td colspan="2">Value</td>
+                <td class="rcp-label">الكلية:</td><td class="rcp-value" id="rcp_faculty"></td>
+                <td class="rcp-label" style="width: 100px;">رقم الملف:</td><td class="rcp-value" id="rcp_id"></td>
             </tr>
             <tr>
-                <td colspan="2">deposit</td>
-                <td colspan="2" style="text-align: center;">EGP <span id="po_amount"></span></td>
-            </tr>
-            <tr class="po-gray">
-                <td colspan="2" style="text-align: right;">Total Amount</td>
-                <td colspan="2" style="text-align: center;">EGP <span id="po_amount_total"></span></td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold; vertical-align: top;">Notes:</td>
-                <td colspan="3">
-                    Payment order is valid only on the day of its issuance and will not be accepted<br>on any subsequent day.
+                <td class="rcp-label">مبلغاً وقدره:</td>
+                <td class="rcp-value" colspan="3" style="display:flex; justify-content: space-between;">
+                    <span id="rcp_amount_text"></span>
+                    <span>( <span id="rcp_amount_num"></span> EGP )</span>
                 </td>
             </tr>
-            <tr>
-                <td colspan="4" style="text-align: right; font-weight: bold;" dir="rtl">
-                    ملاحظة: برجاء العلم أن أمر الدفع هذا صالح ليوم صدوره فقط ولا يعتد به في أي يوم لاحق.***
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="font-weight: bold;">Admission's Signature:</td>
-                <td style="font-weight: bold;">Date: <span id="po_date"></span></td>
-                <td style="font-weight: bold; text-align: right;"><span id="po_time"></span></td>
-            </tr>
+            <tr><td class="rcp-label">وذلك قيمة:</td><td class="rcp-value" id="rcp_reason" colspan="3"></td></tr>
+            <tr><td class="rcp-label">ملاحظات:</td><td class="rcp-value" colspan="3">..................................................................................................</td></tr>
         </table>
+        <div class="rcp-footer">
+            <div class="sig-box">توقيع المستلم</div>
+            <div style="direction: ltr;">Time: <span id="rcp_time"></span></div>
+        </div>
     </div>
 
     <div id="loader" class="loader"><i class="fas fa-sync fa-spin"></i> Processing...</div>
@@ -275,18 +276,22 @@
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="border:1px solid #ccc; padding:10px; border-radius:8px; background:#f9f9f9;">
-                                    <label style="font-size:0.7rem; font-weight:bold;">Serial Settings</label>
-                                    <input type="text" id="f_serial_prefix" placeholder="Prefix (e.g. UEC-)" style="font-size:0.8rem; padding:5px; margin-bottom:5px;">
-                                    <input type="number" id="f_serial_next" placeholder="Next No." style="font-size:0.8rem; padding:5px;">
+                                <div style="border:1px solid #ccc; padding:10px; border-radius:8px; background:#f9f9f9; text-align:right; direction:rtl;">
+                                    <label style="font-size:0.75rem; font-weight:bold; color:var(--primary);">إعدادات إيصال النقدية</label>
+                                    <div style="display:flex; gap:5px; margin-top:5px;">
+                                        <input type="text" id="f_serial_prefix" placeholder="البادئة (UEC-)" style="font-size:0.8rem; padding:5px; flex:1;">
+                                        <input type="number" id="f_serial_next" placeholder="الرقم" style="font-size:0.8rem; padding:5px; width:70px;">
+                                    </div>
+                                    <input type="text" id="f_receipt_reason" value="رسوم جدية حجز خريف 2026-2027" placeholder="سبب الدفع" style="font-size:0.8rem; padding:5px; margin-top:5px; width:100%;">
                                 </div>
                                 <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
+                                <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
                             </div>
                         </div>
                         <div class="grid" style="margin-top:20px;">
                             <div><label>Total Paid Amount</label><input type="text" id="f_paid_amt" disabled style="background:#e9ecef; font-weight:bold;"></div>
                             <div><label>Last Method</label><input type="text" id="f_paid_method" disabled style="background:#e9ecef; font-weight:bold;"></div>
-                            <div><label>New Amount (EGP)*</label><input type="number" id="f_amt"></div>
+                            <div><label>New Amount</label><input type="number" id="f_amt"></div>
                             <div><label>Payment Method</label>
                                 <select id="f_type" onchange="handlePaymentTypeChange(this.value)">
                                     <option value="Onsite">Onsite</option>
@@ -298,9 +303,9 @@
                                 <input type="date" id="f_transfer_date">
                             </div>
                         </div>
-                        <div class="btn-action-group" style="margin-top:25px;">
-                            <button onclick="updatePayment()" class="btn btn-primary" style="flex:1;"><i class="fas fa-check-circle"></i> Confirm Payment</button>
-                            <button onclick="printCashReceipt()" class="btn btn-gold" style="flex:1; background: #C5A059;"><i class="fas fa-receipt"></i> Print Cash Receipt</button>
+                        <div style="display:flex; gap:10px; margin-top:20px; width:100%;">
+                            <button onclick="updatePayment()" class="btn btn-primary" style="flex:1;">Confirm & Update Payment</button>
+                            <button onclick="printCashReceipt()" class="btn btn-gold" style="flex:1; background: #C5A059;"><i class="fas fa-receipt"></i> طباعة إيصال النقدية</button>
                         </div>
                     </div>
                 </div>
@@ -367,6 +372,7 @@
         let currentStudent = null;
         let statsChart = null;
 
+        // Faculty Price Mapping
         const facultyPrices = {
             "Faculty of Arts and Design": 1200,
             "Faculty of Business and Economics": 1000,
@@ -389,7 +395,7 @@
                 document.getElementById('user_display').innerText = s.user;
                 applyRole(s.role);
             }
-            // استرجاع السيريال من الذاكرة
+            // استرجاع السيريال المحفوظ في الذاكرة لصفحة الحسابات
             document.getElementById('f_serial_prefix').value = localStorage.getItem('rcp_prefix') || 'UEC-2026-';
             document.getElementById('f_serial_next').value = localStorage.getItem('rcp_next') || '1001';
         };
@@ -398,13 +404,22 @@
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             if(!u || !p) return alert('Please enter username and password.');
+            
             showLoader(true);
             try {
                 const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action:'login', username:u, password:p}) });
                 const d = await res.json();
                 showLoader(false);
-                if(d.success) { localStorage.setItem('uec_s', JSON.stringify(d)); location.reload(); } else alert('Invalid Credentials.');
-            } catch(e) { showLoader(false); alert('Connection Error.'); }
+                if(d.success) { 
+                    localStorage.setItem('uec_s', JSON.stringify(d)); 
+                    location.reload(); 
+                } else {
+                    alert('Invalid Credentials.');
+                }
+            } catch(e) {
+                showLoader(false);
+                alert('Connection Error.');
+            }
         }
 
         function logout() { localStorage.removeItem('uec_s'); location.reload(); }
@@ -444,34 +459,7 @@
             document.getElementById('a_fees').value = price ? price + " EGP" : "";
         }
 
-        function printPaymentOrder() {
-            const id = document.getElementById('a_id').value;
-            const name = document.getElementById('a_name').value;
-            const nameAr = document.getElementById('a_name_ar').value;
-            let faculty = document.getElementById('a_fac').value;
-            const fees = document.getElementById('a_fees').value;
-            if(!id || !name || !faculty) return alert('Please fill student info first.');
-            faculty = faculty.replace('Faculty of ', '');
-            document.getElementById('po_id').innerText = id;
-            document.getElementById('po_name').innerText = name;
-            document.getElementById('po_name_ar').innerText = nameAr;
-            document.getElementById('po_faculty').innerText = faculty;
-            const cleanFees = fees.replace(" EGP", "");
-            document.getElementById('po_amount').innerText = cleanFees;
-            document.getElementById('po_amount_total').innerText = cleanFees;
-            const now = new Date();
-            const dateStr = now.getDate().toString().padStart(2, '0') + '/' + (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getFullYear();
-            let hours = now.getHours(); const ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12 || 12;
-            const timeStr = hours.toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' ' + ampm;
-            document.getElementById('po_date').innerText = dateStr;
-            document.getElementById('po_time').innerText = timeStr;
-            
-            document.getElementById('paymentOrderTemplate').classList.add('printable');
-            window.print();
-            document.getElementById('paymentOrderTemplate').classList.remove('printable');
-        }
-
-        // تحويل الأرقام إلى كلمات (تفقيط)
+        // تحويل الرقم إلى تفقيط عربي
         function tafqeet(n) {
             if (n == 0) return "صفر";
             let words = "";
@@ -480,44 +468,83 @@
             const tens = ["", "", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
             const hundreds = ["", "مائة", "مائتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
             
-            if (n >= 1000) { words += units[Math.floor(n/1000)] + " آلاف "; n %= 1000; }
+            if (n >= 1000) { 
+                let th = Math.floor(n/1000);
+                if (th === 1) words += "ألف ";
+                else if (th === 2) words += "ألفان ";
+                else if (th >= 3 && th <= 10) words += units[th] + " آلاف ";
+                else words += tafqeet(th).replace(" جنيهاً مصرياً لا غير", "") + " ألف ";
+                n %= 1000; 
+            }
             if (n >= 100) { words += (words ? " و " : "") + hundreds[Math.floor(n/100)]; n %= 100; }
             if (n > 0) {
                 if (words) words += " و ";
                 if (n < 11) words += units[n];
                 else if (n < 20) words += teens[n-10];
-                else { words += units[n%10] + (n%10 ? " و " : "") + tens[Math.floor(n/10)]; }
+                else { words += (n%10 ? units[n%10] + " و " : "") + tens[Math.floor(n/10)]; }
             }
             return words + " جنيهاً مصرياً لا غير";
         }
 
+        // طباعة أمر الدفع (Admission Tab)
+        function printPaymentOrder() {
+            const id = document.getElementById('a_id').value;
+            const name = document.getElementById('a_name').value;
+            const nameAr = document.getElementById('a_name_ar').value;
+            let faculty = document.getElementById('a_fac').value;
+            const fees = document.getElementById('a_fees').value;
+
+            if(!id || !name || !faculty) return alert('Please fill student info first.');
+
+            document.getElementById('po_id').innerText = id;
+            document.getElementById('po_name').innerText = name;
+            document.getElementById('po_name_ar').innerText = nameAr;
+            document.getElementById('po_faculty').innerText = faculty;
+            
+            const cleanFees = fees.replace(" EGP", "");
+            document.getElementById('po_amount').innerText = cleanFees;
+
+            const now = new Date();
+            document.getElementById('po_date').innerText = now.toLocaleDateString('en-GB');
+
+            // تفعيل الطباعة لهذا القالب فقط
+            document.getElementById('paymentOrderTemplate').classList.add('print-area');
+            window.print();
+            document.getElementById('paymentOrderTemplate').classList.remove('print-area');
+        }
+
+        // طباعة إيصال استلام النقدية (Finance Tab)
         function printCashReceipt() {
             const amt = document.getElementById('f_amt').value;
-            if(!amt || !currentStudent) return alert('Search for a student and enter amount first.');
+            if(!amt || !currentStudent) return alert('برجاء البحث عن طالب وإدخال المبلغ أولاً.');
             
             const prefix = document.getElementById('f_serial_prefix').value;
             const nextNo = document.getElementById('f_serial_next').value;
+            const reason = document.getElementById('f_receipt_reason').value;
             
+            // تعبئة البيانات
             document.getElementById('rcp_serial').innerText = prefix + nextNo;
             document.getElementById('rcp_name').innerText = currentStudent.name_ar || currentStudent.name;
             document.getElementById('rcp_faculty').innerText = currentStudent.faculty;
             document.getElementById('rcp_id').innerText = currentStudent.id;
             document.getElementById('rcp_amount_num').innerText = amt;
             document.getElementById('rcp_amount_text').innerText = tafqeet(parseInt(amt));
+            document.getElementById('rcp_reason').innerText = reason;
             
             const now = new Date();
             document.getElementById('rcp_date').innerText = now.toLocaleDateString('en-GB');
             document.getElementById('rcp_time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-            // زيادة السيريال وحفظه
+            // زيادة السيريال وحفظه في الذاكرة
             const newNext = parseInt(nextNo) + 1;
             document.getElementById('f_serial_next').value = newNext;
             localStorage.setItem('rcp_prefix', prefix);
             localStorage.setItem('rcp_next', newNext);
 
-            document.getElementById('cashReceiptTemplate').classList.add('printable');
+            // تفعيل الطباعة لهذا القالب فقط
+            document.getElementById('cashReceiptTemplate').classList.add('print-area');
             window.print();
-            document.getElementById('cashReceiptTemplate').classList.remove('printable');
+            document.getElementById('cashReceiptTemplate').classList.remove('print-area');
         }
 
         async function searchAdmission() {
@@ -534,7 +561,7 @@
             document.getElementById('a_name_ar').value = d.name_ar || '';
             document.getElementById('a_nid').value = d.nid || '';
             document.getElementById('a_fac').value = d.faculty;
-            updateAdmissionPrice();
+            updateAdmissionPrice(); // Update fees based on faculty
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
             document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
@@ -565,7 +592,7 @@
                 document.getElementById('f_paid_amt').value = d.amount || 0;
                 document.getElementById('f_paid_method').value = d.type || "N/A";
                 
-                // ملء المبلغ تلقائياً بناءً على الكلية
+                // إضافة القيمة التلقائية للمبلغ المطلوب حسب الكلية
                 document.getElementById('f_amt').value = facultyPrices[d.faculty] || 0;
 
                 const badge = document.getElementById('f_stat_badge');
@@ -592,16 +619,36 @@
             if(!amt) return alert('Enter amount');
             showLoader(true);
             const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: type, transferDate: type==='Online'?transferDate:''}) });
-            showLoader(false); const dr = await res.json(); alert(dr.message); search('finance');
+            showLoader(false); 
+            const dr = await res.json();
+            alert(dr.message); 
+            search('finance');
         }
 
         async function updateID(field) {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updateIDStatus', id: currentStudent.id, field: field}) });
-                const result = await res.json(); showLoader(false); 
-                if (result.success) { alert(result.message || 'Updated Successfully.'); search('id'); } else alert(result.message); 
-            } catch (e) { showLoader(false); alert("Server Connection Error."); }
+                const res = await fetch(API, { 
+                    method: 'POST', 
+                    body: new URLSearchParams({
+                        action: 'updateIDStatus', 
+                        id: currentStudent.id, 
+                        field: field
+                    }) 
+                });
+                const result = await res.json();
+                showLoader(false); 
+                
+                if (result.success) {
+                    alert(result.message || 'Updated Successfully.');
+                    search('id');
+                } else {
+                    alert(result.message); 
+                }
+            } catch (e) {
+                showLoader(false);
+                alert("Server Connection Error.");
+            }
         }
 
         async function saveStudent() {
@@ -611,36 +658,86 @@
             const nid = document.getElementById('a_nid').value.trim();
             const email = document.getElementById('a_mail').value.trim();
             const fileInput = document.getElementById('a_file');
-            if (!name || name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names.');
-            if (!name_ar || name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً.');
-            if (!id || !nid || !email) return alert('Fill all mandatory fields.');
+            
+            if (!name) return alert('Please enter student name.');
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
+
+            if (!id) return alert('Application ID is required.');
+            if (!nid) return alert('National ID is required.');
+            if (!email) return alert('Email Address is required.');
+
             showLoader(true);
-            const sendRequest = async (fD = "", fN = "") => {
+            
+            const sendRequest = async (fileData = "", filename = "") => {
                 try {
-                    const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email, filename: fN, fileData: fD}) });
-                    const result = await res.json(); showLoader(false); 
-                    if (result.success) { alert('Student saved successfully.'); resetAdmissionUI(); } else alert(result.message);
-                } catch (e) { showLoader(false); alert("Error while saving."); }
+                    const res = await fetch(API, { 
+                        method: 'POST', 
+                        body: new URLSearchParams({
+                            action: 'addStudentWithPhoto', 
+                            id: id, 
+                            name: name,
+                            name_ar: name_ar,
+                            nid: nid, 
+                            faculty: document.getElementById('a_fac').value, 
+                            phone: document.getElementById('a_phone').value, 
+                            email: email, 
+                            filename: filename, 
+                            fileData: fileData
+                        })
+                    });
+                    
+                    const result = await res.json();
+                    showLoader(false); 
+
+                    if (result.success) {
+                        alert(result.message || 'Student saved successfully.'); 
+                        resetAdmissionUI();
+                    } else {
+                        alert(result.message);
+                    }
+                } catch (e) {
+                    showLoader(false);
+                    alert("Error while saving data.");
+                }
             };
+
             if (fileInput.files.length > 0) {
-                const reader = new FileReader(); reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg"); reader.readAsDataURL(fileInput.files[0]);
-            } else sendRequest("", "");
+                const reader = new FileReader();
+                reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sendRequest("", ""); 
+            }
         }
 
         async function updateStudent() {
             const id = document.getElementById('a_id').value;
             const name = document.getElementById('a_name').value.trim();
             const name_ar = document.getElementById('a_name_ar').value.trim();
-            if (name.split(/\s+/).length < 4 || name_ar.split(/\s+/).length < 4) return alert('Full name must be quadruple.');
+            const nid = document.getElementById('a_nid').value.trim();
+            const email = document.getElementById('a_mail').value.trim();
+            
+            if (name.split(/\s+/).length < 4) return alert('Full name must be at least 4 names (Quadruple Name).');
+            if (!name_ar) return alert('الرجاء إدخال الاسم باللغة العربية.');
+            if (name_ar.split(/\s+/).length < 4) return alert('الاسم باللغة العربية يجب أن يكون رباعياً على الأقل.');
+
+            if (!nid) return alert('National ID is required.');
+            if (!email) return alert('Email Address is required.');
+            
             const fileInput = document.getElementById('a_file');
             showLoader(true);
-            const params = {action: 'updateStudentData', id: id, name: name, name_ar: name_ar, nid: document.getElementById('a_nid').value, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: document.getElementById('a_mail').value};
+            const params = {action: 'updateStudentData', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email};
             if (fileInput.files.length > 0) {
-                const reader = new FileReader(); reader.onload = async () => {
+                const reader = new FileReader();
+                reader.onload = async () => {
                     params.fileData = reader.result.split(',')[1]; params.filename = id + ".jpg";
                     const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
                     showLoader(false); alert((await r.json()).message); resetAdmissionUI();
-                }; reader.readAsDataURL(fileInput.files[0]);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
             } else {
                 const r = await fetch(API, { method: 'POST', body: new URLSearchParams(params) });
                 showLoader(false); alert((await r.json()).message); resetAdmissionUI();
@@ -680,18 +777,25 @@
                 type: 'bar',
                 data: {
                     labels: ['Registered', 'Paid', 'Unpaid', 'Printed', 'Not Printed', 'Delivered', 'Not Delivered'],
-                    datasets: [{ data: [data.registered, data.paid, data.unpaid, data.printed, data.registered-data.printed, data.delivered, data.registered-data.delivered], backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'], borderRadius: 6 }]
+                    datasets: [{
+                        data: [data.registered, data.paid, data.unpaid, data.printed, data.registered-data.printed, data.delivered, data.registered-data.delivered],
+                        backgroundColor: ['#0a192f', '#10b981', '#ef4444', '#f39c12', '#7f8c8d', '#3498db', '#9b59b6'],
+                        borderRadius: 6
+                    }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
         function handlePaymentTypeChange(val) {
+            document.getElementById('btn_mail_adm').style.display = (val === 'Online') ? 'flex' : 'none';
             const dateContainer = document.getElementById('online_date_container');
             if (val === 'Online') {
                 dateContainer.style.display = 'block';
                 document.getElementById('f_transfer_date').valueAsDate = new Date();
-            } else dateContainer.style.display = 'none';
+            } else {
+                dateContainer.style.display = 'none';
+            }
         }
 
         async function exportData(f) {
@@ -707,17 +811,21 @@
             showLoader(false);
         }
 
-        async function exportFinanceData(sT) {
+        async function exportFinanceData(statusType) {
             showLoader(true);
             try {
-                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: sT})});
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'getFilteredData', filter: statusType})});
                 const d = await res.json();
-                if(d.success && d.data.length > 1) {
-                    const ws = XLSX.utils.aoa_to_sheet(d.data);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, `${sT}_List`);
-                    XLSX.writeFile(wb, `UEC_${sT}_Report.xlsx`);
-                } else alert(`No ${sT} students found.`);
+                if(d.success) {
+                    if(d.data.length <= 1) {
+                        alert(`No ${statusType} students found.`);
+                    } else {
+                        const ws = XLSX.utils.aoa_to_sheet(d.data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, `${statusType}_List`);
+                        XLSX.writeFile(wb, `UEC_${statusType}_Detailed_Report.xlsx`);
+                    }
+                } else { alert("Error: " + d.error); }
             } catch(e) { alert("Export failed"); }
             showLoader(false);
         }
