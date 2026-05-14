@@ -43,17 +43,21 @@
         .export-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         footer { margin-left: 260px; padding: 25px; text-align: center; background: #fff; border-top: 1px solid #ddd; }
 
-        /* إعدادات الطباعة لضمان خروج صفحة A5 واحدة فقط وعدم خروج صفحات فارغة */
+        /* تعديلات مقاس الطباعة A5 لمنع ظهور الورق الفاضي نهائياً */
         @media print {
             #appSection, #loginSection, #loader { display: none !important; }
-            body { margin: 0; padding: 0; background: white; }
+            body, html { margin: 0; padding: 0; background: white; height: 100%; overflow: hidden; }
             #paymentOrderTemplate, #cashReceiptTemplate { display: none; }
             .print-area {
                 display: block !important;
-                width: 210mm; height: 148.5mm; /* مقاس A5 العرضي */
+                width: 210mm; height: 148mm; 
+                max-height: 148mm; /* إجبار الارتفاع لعدم التسريب لصفحة أخرى */
                 background: white !important; 
                 padding: 10mm 15mm; box-sizing: border-box; 
                 border: none !important; margin: 0; overflow: hidden;
+                page-break-after: avoid; 
+                page-break-before: avoid; 
+                page-break-inside: avoid;
             }
             @page { size: A5 landscape; margin: 0; }
         }
@@ -137,7 +141,7 @@
                 <img src="https://amrattiaewais69-gif.github.io/Student-Admission-Management-System/photos/logo.png" width="70">
             </div>
             <div style="text-align: left; direction: ltr; font-size: 14px; font-weight: bold;">
-                No: <span id="rcp_serial" style="color: red; font-size: 18px;"></span><br>
+                No: <span id="rcp_serial_print" style="color: red; font-size: 18px;"></span><br>
                 Date: <span id="rcp_date"></span>
             </div>
         </div>
@@ -215,14 +219,9 @@
                         <div><label>Faculty*</label>
                             <select id="a_fac" onchange="updateAdmissionPrice()">
                                 <option value="">Select Faculty...</option>
-                                <option>Faculty of Arts and Design</option>
                                 <option>Faculty of Business and Economics</option>
                                 <option>Faculty of Computer Science & Information Technology</option>
-                                <option>Faculty of Dentistry</option>
-                                <option>Faculty of Engineering</option>
-                                <option>Faculty of Mass Communication</option>
                                 <option>Faculty of Medicine</option>
-                                <option>Faculty of Pharmacy</option>
                                 <option>Faculty of Physical Therapy</option>                                
                             </select>
                         </div>
@@ -283,6 +282,7 @@
                                         <input type="number" id="f_serial_next" placeholder="الرقم" style="font-size:0.8rem; padding:5px; width:70px;">
                                     </div>
                                     <input type="text" id="f_receipt_reason" value="رسوم جدية حجز خريف 2026-2027" placeholder="سبب الدفع" style="font-size:0.8rem; padding:5px; margin-top:5px; width:100%;">
+                                    <span id="rcp_printed_temp" style="display:none;"></span>
                                 </div>
                                 <button onclick="sendStudentEmail()" class="btn btn-outline" style="font-size: 0.75rem;"><i class="fas fa-envelope"></i> Mail Student</button>
                                 <button id="btn_mail_adm" onclick="sendManualAdmissionEmail()" class="btn btn-gold" style="font-size: 0.75rem; display:none;"><i class="fas fa-paper-plane"></i> Alert Admission</button>
@@ -372,17 +372,11 @@
         let currentStudent = null;
         let statsChart = null;
 
-        // Faculty Price Mapping
         const facultyPrices = {
-            "Faculty of Arts and Design": 1200,
-            "Faculty of Business and Economics": 1000,
-            "Faculty of Computer Science & Information Technology": 1500,
-            "Faculty of Dentistry": 2500,
-            "Faculty of Engineering": 1800,
-            "Faculty of Mass Communication": 1100,
-            "Faculty of Medicine": 3000,
-            "Faculty of Pharmacy": 2200,
-            "Faculty of Physical Therapy": 1900
+            "Faculty of Business and Economics": 20000,
+            "Faculty of Computer Science & Information Technology": 25000,
+            "Faculty of Medicine": 30000,
+            "Faculty of Physical Therapy": 25000
         };
 
         function showLoader(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
@@ -395,7 +389,6 @@
                 document.getElementById('user_display').innerText = s.user;
                 applyRole(s.role);
             }
-            // استرجاع السيريال المحفوظ في الذاكرة لصفحة الحسابات
             document.getElementById('f_serial_prefix').value = localStorage.getItem('rcp_prefix') || 'UEC-2026-';
             document.getElementById('f_serial_next').value = localStorage.getItem('rcp_next') || '1001';
         };
@@ -496,6 +489,7 @@
 
             if(!id || !name || !faculty) return alert('Please fill student info first.');
 
+            faculty = faculty.replace('Faculty of ', '');
             document.getElementById('po_id').innerText = id;
             document.getElementById('po_name').innerText = name;
             document.getElementById('po_name_ar').innerText = nameAr;
@@ -507,7 +501,6 @@
             const now = new Date();
             document.getElementById('po_date').innerText = now.toLocaleDateString('en-GB');
 
-            // تفعيل الطباعة لهذا القالب فقط
             document.getElementById('paymentOrderTemplate').classList.add('print-area');
             window.print();
             document.getElementById('paymentOrderTemplate').classList.remove('print-area');
@@ -521,9 +514,11 @@
             const prefix = document.getElementById('f_serial_prefix').value;
             const nextNo = document.getElementById('f_serial_next').value;
             const reason = document.getElementById('f_receipt_reason').value;
+            const currentSerial = prefix + nextNo;
             
-            // تعبئة البيانات
-            document.getElementById('rcp_serial').innerText = prefix + nextNo;
+            document.getElementById('rcp_serial_print').innerText = currentSerial;
+            document.getElementById('rcp_printed_temp').innerText = currentSerial; // حفظ السيريال الحالي في خانة مخفية لإرساله لاحقا
+            
             document.getElementById('rcp_name').innerText = currentStudent.name_ar || currentStudent.name;
             document.getElementById('rcp_faculty').innerText = currentStudent.faculty;
             document.getElementById('rcp_id').innerText = currentStudent.id;
@@ -535,13 +530,6 @@
             document.getElementById('rcp_date').innerText = now.toLocaleDateString('en-GB');
             document.getElementById('rcp_time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-            // زيادة السيريال وحفظه في الذاكرة
-            const newNext = parseInt(nextNo) + 1;
-            document.getElementById('f_serial_next').value = newNext;
-            localStorage.setItem('rcp_prefix', prefix);
-            localStorage.setItem('rcp_next', newNext);
-
-            // تفعيل الطباعة لهذا القالب فقط
             document.getElementById('cashReceiptTemplate').classList.add('print-area');
             window.print();
             document.getElementById('cashReceiptTemplate').classList.remove('print-area');
@@ -561,7 +549,7 @@
             document.getElementById('a_name_ar').value = d.name_ar || '';
             document.getElementById('a_nid').value = d.nid || '';
             document.getElementById('a_fac').value = d.faculty;
-            updateAdmissionPrice(); // Update fees based on faculty
+            updateAdmissionPrice();
             document.getElementById('a_mail').value = d.email;
             document.getElementById('a_phone').value = d.phone;
             document.getElementById('a_preview_img').src = (d.photo || "").replace('uc?export=view', 'thumbnail?sz=w500');
@@ -584,6 +572,8 @@
             
             if(type==='finance') {
                 document.getElementById('f_res').style.display='block';
+                document.getElementById('rcp_printed_temp').innerText = ''; // تفريغ السيريال المؤقت لطالب جديد
+                
                 document.getElementById('f_img').src = safePhotoUrl;
                 document.getElementById('f_name_h').innerText = d.name;
                 document.getElementById('f_info_h').innerText = d.faculty;
@@ -592,7 +582,6 @@
                 document.getElementById('f_paid_amt').value = d.amount || 0;
                 document.getElementById('f_paid_method').value = d.type || "N/A";
                 
-                // إضافة القيمة التلقائية للمبلغ المطلوب حسب الكلية
                 document.getElementById('f_amt').value = facultyPrices[d.faculty] || 0;
 
                 const badge = document.getElementById('f_stat_badge');
@@ -617,38 +606,58 @@
             const type = document.getElementById('f_type').value;
             const transferDate = document.getElementById('f_transfer_date').value;
             if(!amt) return alert('Enter amount');
+            
+            // تحديد رقم الإيصال المُرسل (إذا طبعنا نأخذ المطبوع، وإلا نأخذ المتوقع)
+            const prefix = document.getElementById('f_serial_prefix').value;
+            const nextNo = document.getElementById('f_serial_next').value;
+            const tempSerial = document.getElementById('rcp_printed_temp').innerText;
+            const finalReceiptNo = tempSerial ? tempSerial : (prefix + nextNo);
+
             showLoader(true);
-            const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updatePayment', id: currentStudent.id, amount: amt, status: 'Paid', type: type, transferDate: type==='Online'?transferDate:''}) });
+            const res = await fetch(API, { 
+                method: 'POST', 
+                body: new URLSearchParams({
+                    action: 'updatePayment', 
+                    id: currentStudent.id, 
+                    amount: amt, 
+                    status: 'Paid', 
+                    type: type, 
+                    transferDate: type==='Online'?transferDate:'',
+                    receiptNo: finalReceiptNo  // إرسال رقم الإيصال إلى جوجل شيت
+                }) 
+            });
             showLoader(false); 
             const dr = await res.json();
-            alert(dr.message); 
+            
+            if(dr.success) {
+                alert(dr.message);
+                // زيادة السيريال وحفظه فقط إذا نجح التحديث ولم يتم زيادته مسبقاً
+                if (!tempSerial) {
+                    const newNext = parseInt(nextNo) + 1;
+                    document.getElementById('f_serial_next').value = newNext;
+                    localStorage.setItem('rcp_prefix', prefix);
+                    localStorage.setItem('rcp_next', newNext);
+                } else {
+                    // إذا طبعناه بالفعل ونجح الحفظ، نحدث الـ nextNo للمرة القادمة
+                    const incrementedNext = parseInt(tempSerial.replace(prefix, '')) + 1;
+                    document.getElementById('f_serial_next').value = incrementedNext;
+                    localStorage.setItem('rcp_prefix', prefix);
+                    localStorage.setItem('rcp_next', incrementedNext);
+                    document.getElementById('rcp_printed_temp').innerText = ''; // إعادة تعيين
+                }
+            } else {
+                alert('Error Updating Payment!');
+            }
             search('finance');
         }
 
         async function updateID(field) {
             showLoader(true);
             try {
-                const res = await fetch(API, { 
-                    method: 'POST', 
-                    body: new URLSearchParams({
-                        action: 'updateIDStatus', 
-                        id: currentStudent.id, 
-                        field: field
-                    }) 
-                });
-                const result = await res.json();
-                showLoader(false); 
-                
-                if (result.success) {
-                    alert(result.message || 'Updated Successfully.');
-                    search('id');
-                } else {
-                    alert(result.message); 
-                }
-            } catch (e) {
-                showLoader(false);
-                alert("Server Connection Error.");
-            }
+                const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'updateIDStatus', id: currentStudent.id, field: field}) });
+                const result = await res.json(); showLoader(false); 
+                if (result.success) { alert(result.message || 'Updated Successfully.'); search('id'); } else { alert(result.message); }
+            } catch (e) { showLoader(false); alert("Server Connection Error."); }
         }
 
         async function saveStudent() {
@@ -670,47 +679,19 @@
             if (!email) return alert('Email Address is required.');
 
             showLoader(true);
-            
             const sendRequest = async (fileData = "", filename = "") => {
                 try {
-                    const res = await fetch(API, { 
-                        method: 'POST', 
-                        body: new URLSearchParams({
-                            action: 'addStudentWithPhoto', 
-                            id: id, 
-                            name: name,
-                            name_ar: name_ar,
-                            nid: nid, 
-                            faculty: document.getElementById('a_fac').value, 
-                            phone: document.getElementById('a_phone').value, 
-                            email: email, 
-                            filename: filename, 
-                            fileData: fileData
-                        })
-                    });
-                    
-                    const result = await res.json();
-                    showLoader(false); 
-
-                    if (result.success) {
-                        alert(result.message || 'Student saved successfully.'); 
-                        resetAdmissionUI();
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (e) {
-                    showLoader(false);
-                    alert("Error while saving data.");
-                }
+                    const res = await fetch(API, { method: 'POST', body: new URLSearchParams({action: 'addStudentWithPhoto', id: id, name: name, name_ar: name_ar, nid: nid, faculty: document.getElementById('a_fac').value, phone: document.getElementById('a_phone').value, email: email, filename: filename, fileData: fileData}) });
+                    const result = await res.json(); showLoader(false); 
+                    if (result.success) { alert(result.message || 'Student saved successfully.'); resetAdmissionUI(); } else { alert(result.message); }
+                } catch (e) { showLoader(false); alert("Error while saving data."); }
             };
 
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = () => sendRequest(reader.result.split(',')[1], id + ".jpg");
                 reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                sendRequest("", ""); 
-            }
+            } else { sendRequest("", ""); }
         }
 
         async function updateStudent() {
